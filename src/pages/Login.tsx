@@ -14,7 +14,7 @@ const Login = () => {
         <div>with learning English!</div>
       </div>
       <div className="pt-8 h-1/3">
-        <img className="mx-auto" src="login-image.svg" alt="login-image" />
+        <img className="mx-auto" src="login-image.svg" alt="login" />
       </div>
       <div className="flex justify-center items-center	 h-1/6">
         <button
