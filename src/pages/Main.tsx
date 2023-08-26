@@ -57,6 +57,7 @@ const Main = () => {
         onClick={openModal}
       >
         <img
+          draggable="false"
           className="mx-auto rounded-[100%] border-8 bg-[#ffffff] shadow-2xl"
           src={myInfo ? myInfo.avatar : "default-avatar.jpeg"}
           alt="main-avatar"
