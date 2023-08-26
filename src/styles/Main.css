@@ -1,0 +1,21 @@
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%); /* 아래에서 위로 이동 */
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0); /* 최종 위치는 위로 이동하지 않음 */
+    opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(0); /* 아래에서 위로 이동 */
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%); /* 최종 위치는 위로 이동하지 않음 */
+    opacity: 0;
+  }
+}

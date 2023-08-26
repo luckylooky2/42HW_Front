@@ -1,12 +1,15 @@
-import { useEffect, useContext, useCallback } from "react";
+import { useEffect, useContext, useCallback, useState } from "react";
 import { AuthContext } from "@utils/AuthProvider";
 import { API_URL } from "@utils/constant";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import Loading from "@utils/Loading";
 import ChatButton from "@components/Main/ChatButton";
+import ProfileModal from "@components/Main/ProfileModal";
+import "@styles/Main.css";
 
 const Main = () => {
+  const [isOpen, setIsOpen] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
@@ -32,6 +35,10 @@ const Main = () => {
     console.log("group chat");
   }, []);
 
+  const openModal = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
   useEffect(() => {
     // getMyInfo();
   }, []);
@@ -39,22 +46,28 @@ const Main = () => {
   return !isLoading ? (
     <Loading />
   ) : (
-    <div className="flex flex-col h-full justify-center items-center relative">
+    <div className="flex flex-col h-full justify-center items-center relative overflow-hidden">
       <ChatButton
         value="1:1 chat"
         css="hover:bg-gray-100"
         onClick={joinSingleChat}
       />
-      <img
-        className="w-[35%] min-w-[120px] aspect-square rounded-[100%] border-white border-8 absolute bg-[#ffffff]"
-        src={myInfo ? myInfo.avatar : "default-avatar.jpeg"}
-        alt="main-avatar"
-      />
+      <button
+        className="w-[35%] min-w-[120px] aspect-square absolute"
+        onClick={openModal}
+      >
+        <img
+          className="mx-auto rounded-[100%] border-8 bg-[#ffffff] shadow-2xl"
+          src={myInfo ? myInfo.avatar : "default-avatar.jpeg"}
+          alt="main-avatar"
+        />
+      </button>
       <ChatButton
         value="Group chat"
         css="rounded-t-3xl bg-orange-100 shadow-[inset_0_0.2em_rgba(221,221,221,1)] hover:bg-orange-200"
         onClick={joinGroupChat}
       />
+      <ProfileModal isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 };
