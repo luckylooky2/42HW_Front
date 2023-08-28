@@ -14,8 +14,6 @@ const Main = () => {
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
 
-  console.log(myInfo);
-
   const getMyInfo = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/users`);
@@ -40,10 +38,10 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    // getMyInfo();
+    getMyInfo();
   }, []);
 
-  return !isLoading ? (
+  return isLoading ? (
     <Loading />
   ) : (
     <div className="flex flex-col h-full justify-center items-center relative overflow-hidden">
@@ -52,13 +50,10 @@ const Main = () => {
         css="hover:bg-gray-100"
         onClick={joinSingleChat}
       />
-      <button
-        className="w-[35%] min-w-[120px] aspect-square absolute"
-        onClick={openModal}
-      >
+      <button className="w-[35%] min-w-[120px] absolute" onClick={openModal}>
         <img
           draggable="false"
-          className="mx-auto rounded-[100%] border-8 bg-[#ffffff] shadow-2xl"
+          className="mx-auto aspect-square rounded-[100%] bg-[#ffffff] shadow-2xl"
           src={myInfo ? myInfo.avatar : "default-avatar.jpeg"}
           alt="main-avatar"
         />

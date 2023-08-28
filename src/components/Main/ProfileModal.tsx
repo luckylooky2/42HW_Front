@@ -1,7 +1,10 @@
-import { FC, useCallback, useContext, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "@utils/AuthProvider";
-import CloseButton from "@utils/CloseButton";
-import { IUser } from "@typings/db";
+import { ICallHistory } from "@typings/db";
+import { API_URL } from "@utils/constant";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import CallHistory from "./CallHistory";
 
 interface Props {
   isOpen: boolean | null;
@@ -9,21 +12,32 @@ interface Props {
 }
 
 const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
-  const { myInfo, setMyInfo } = useContext(AuthContext);
+  const { myInfo } = useContext(AuthContext);
   const [systemLang, setSystemLang] = useState("");
-  const dummy: IUser = {
-    id: 0,
-    avatar:
-      "https://cdn.intra.42.fr/users/e9b5e4a92782d715c9cf44819cce7695/chanhyle.jpg",
-    nickname: "chanhyle",
-    campus: "Seoul",
-    level: 1.3,
-    preferredLang: "en",
-  };
+  const [callHistory, setCallHistory] = useState<ICallHistory[]>([]);
+  const navigate = useNavigate();
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
   }, []);
+
+  const getCallHistory = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_URL}/call/callHistory`);
+      console.log(response.data);
+      setCallHistory(response.data);
+    } catch (e) {
+      alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
+      navigate("/login");
+    }
+  }, []);
+
+  useEffect(() => {
+    getCallHistory();
+  }, []);
+
+  // undefined를 리턴할 수 없음
+  if (!myInfo) return null;
 
   return (
     <>
@@ -48,15 +62,15 @@ const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
               <img
                 draggable="false"
                 className="h-[100%] aspect-square rounded-[100%] bg-[#ffffff] shadow-2xl"
-                src={dummy ? dummy.avatar : "default-avatar.jpeg"}
+                src={myInfo ? myInfo.avatar : "default-avatar.jpeg"}
                 alt="main-avatar"
               />
               <div className="w-full flex flex-col justify-around">
-                <div className="text-center">{dummy.nickname}</div>
-                <div className="text-center">🇰🇷 42 {dummy.campus}</div>
+                <div className="text-center">{myInfo.nickname}</div>
+                <div className="text-center">🇰🇷 42 {myInfo.campus}</div>
                 <div className="flex justify-center items-center">
                   <div className="text-center mx-3">
-                    Lv {Math.floor(dummy.level)}
+                    Lv {Math.floor(myInfo.level)}
                   </div>
                   <div
                     style={{
@@ -68,7 +82,7 @@ const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
                   >
                     <div
                       style={{
-                        width: isOpen ? `${(dummy.level % 1) * 100}%` : "0%",
+                        width: isOpen ? `${(myInfo.level % 1) * 100}%` : "0%",
                         height: "15px",
                         borderRadius: "5px",
                         backgroundColor: "#4caf50",
@@ -81,80 +95,44 @@ const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
             </div>
             <div className="flex flex-col h-[20%] justify-between">
               <div className="h-[20%]">언어 설정</div>
-              <div className="flex flex-col h-[75%] w-full justify-around bg-gray-200 rounded-md p-3">
-                <div>
-                  <span>배우고 싶은 언어 : </span>
-                  <select className="w-20" disabled>
-                    {["영어"].map((v) => (
-                      <option>{v}</option>
-                    ))}
-                  </select>
+              <div className="flex flex-col h-[75%] w-full justify-around ">
+                <div className="flex items-center bg-gray-200 rounded-md h-8 mx-2 px-5">
+                  <div>
+                    <span>배우고 싶은 언어 : </span>
+                    <select className="w-20" disabled>
+                      {["영어"].map((v, i) => (
+                        <option key={`배우고 싶은 언어-${i}`}>{v}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <span>시스템 언어 설정 : </span>
-                  <select
-                    className="w-20"
-                    onChange={(e) => setSystemLang(e.target.value)}
-                  >
-                    {["한국어", "영어"].map((v) => (
-                      <option>{v}</option>
-                    ))}
-                  </select>
+                <div className="flex items-center bg-gray-200 rounded-md h-8 mx-2 px-5">
+                  <div>
+                    <span>시스템 언어 설정 : </span>
+                    <select
+                      className="w-20"
+                      onChange={(e) => setSystemLang(e.target.value)}
+                    >
+                      {["한국어", "영어"].map((v, i) => (
+                        <option key={`시스템 언어-${i}`}>{v}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
             <div className="flex flex-col h-[50%] justify-between">
               <div className="h-[8%]">대화 히스토리</div>
-              <div className="h-[90%] overflow-auto justify-around bg-gray-200 rounded-md p-3">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse dolor neque, pellentesque et varius non, iaculis et
-                velit. Sed nulla urna, ornare ac tincidunt condimentum, iaculis
-                at turpis. Nullam sed laoreet urna. Vestibulum congue nulla
-                vitae placerat rutrum. Praesent a ante a tortor suscipit viverra
-                sit amet malesuada diam. Quisque venenatis justo ut mi
-                consectetur, vitae ullamcorper diam ultrices. Aliquam ultricies
-                luctus dignissim. In hac habitasse platea dictumst. Ut dignissim
-                porttitor vulputate. Nunc erat elit, rhoncus in lorem a,
-                vestibulum pellentesque est. Fusce porta laoreet lectus, quis
-                porttitor turpis ornare eget. Integer malesuada at purus eu
-                eleifend. Nullam commodo accumsan placerat. Suspendisse at est
-                quis odio blandit posuere. Aliquam placerat quam urna, vel
-                tincidunt elit dapibus pulvinar. Aenean vitae nisl blandit,
-                efficitur felis non, venenatis risus. Vestibulum purus nulla,
-                tristique congue est at, pulvinar gravida sapien. Pellentesque
-                sagittis, sem at fringilla finibus, dui nisi vehicula risus, sed
-                porta ante velit sit amet turpis. Curabitur augue massa,
-                condimentum ac rutrum at, volutpat ac odio. Sed venenatis
-                dapibus orci ut porttitor. Nunc dapibus enim eget cursus
-                vehicula. Nullam congue tellus eget leo eleifend pellentesque.
-                Quisque mi ante, convallis a quam vitae, tincidunt tincidunt
-                metus. Pellentesque arcu augue, placerat eget ex eget, placerat
-                vulputate sapien. Nulla accumsan porttitor augue ac rutrum.
-                Aenean tincidunt quis ligula suscipit tristique. Suspendisse
-                faucibus vel eros et semper. Pellentesque ante odio, porta vel
-                consectetur sed, maximus in metus. Curabitur lobortis enim ut
-                sem mollis, bibendum euismod ante gravida. Vivamus vehicula diam
-                eget vehicula rutrum. Aliquam porttitor nibh vel tellus
-                suscipit, a egestas purus commodo. Nam quis placerat justo.
-                Vivamus ac mauris nisl. Pellentesque at ornare velit, eget
-                lacinia risus. Fusce pharetra hendrerit tincidunt. Vivamus sed
-                justo tellus. Sed vestibulum dolor quis odio porttitor interdum.
-                Nulla vulputate risus non lobortis malesuada. Aenean bibendum
-                justo ac mauris convallis, vel rutrum nisi gravida. Donec
-                finibus mauris vel fringilla tempus. Aenean quis tortor non
-                magna tincidunt feugiat consectetur id quam. Fusce ullamcorper
-                vestibulum nulla eget imperdiet. Donec convallis urna nisi, eu
-                sagittis nisi gravida mollis. Curabitur dapibus laoreet
-                placerat. Duis tincidunt magna sit amet mi volutpat molestie.
-                Phasellus consequat enim ut turpis porta aliquam. Nunc consequat
-                metus ac sapien hendrerit, id facilisis arcu elementum. Nunc
-                placerat laoreet felis, ut placerat enim tincidunt sed. Duis
-                malesuada lacus lacus, eu ultrices tellus auctor quis. Mauris
-                euismod, nunc vel gravida hendrerit, nulla nisl accumsan lorem,
-                eget accumsan risus diam aliquam felis. Vestibulum vel congue
-                erat, ut rutrum justo. Sed ut malesuada ligula, ac aliquam urna.
-                Praesent placerat odio eu lorem aliquet, at imperdiet odio
-                gravida.
+              <div className="h-[90%] overflow-auto bg-gray-200 rounded-md p-3 mx-2 px-2">
+                {callHistory.length === 0 ? (
+                  <div className="h-full flex justify-center items-center text-gray-500">
+                    대화 히스토리가 존재하지 않습니다!
+                  </div>
+                ) : (
+                  callHistory.map((v) => (
+                    <CallHistory key={`${v.id}-${v.startTime}`} callData={v} />
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -173,4 +151,4 @@ const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
 };
 export default ProfileModal;
 
-// width: `${(dummy.level % 1) * 100}%`,
+// width: `${(myInfo.level % 1) * 100}%`,
