@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import Loading from "@utils/Loading";
 import ChatButton from "@components/Main/ChatButton";
-import ProfileModal from "@components/Main/ProfileModal";
+import ProfileModal from "@components/Main/ProfileModal/ProfileModal";
 import "@styles/Main.css";
 
 const Main = () => {
@@ -50,11 +50,11 @@ const Main = () => {
         css="hover:bg-gray-100"
         onClick={joinSingleChat}
       />
-      <button className="w-[35%] min-w-[120px] absolute" onClick={openModal}>
+      <button className="absolute" onClick={openModal}>
         <img
           draggable="false"
-          className="mx-auto aspect-square rounded-[100%] bg-[#ffffff] shadow-2xl"
-          src={myInfo ? myInfo.avatar : "default-avatar.jpeg"}
+          className="mx-auto w-[150px] h-[150px] rounded-[100%] bg-[#ffffff]"
+          src={myInfo && myInfo.avatar ? myInfo.avatar : "default-avatar.jpeg"}
           alt="main-avatar"
         />
       </button>
