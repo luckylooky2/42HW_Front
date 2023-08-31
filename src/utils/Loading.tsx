@@ -1,6 +1,11 @@
+import { FC } from "react";
 import { PulseLoader } from "react-spinners";
+interface Props {
+  children?: React.ReactNode;
+  text?: string;
+}
 
-const Loading = () => {
+const Loading: FC<Props> = ({ children, text }) => {
   const pulseLoaderCss = {
     paddingTop: "20px",
     width: "45px",
@@ -19,10 +24,16 @@ const Loading = () => {
           data-testid="loader"
           cssOverride={pulseLoaderCss}
         />
+        <div className="text-center">{text}</div>
       </div>
-      <div className="flex justify-center h-1/6"></div>
+      <div className="flex justify-center h-1/6">{children}</div>
     </div>
   );
 };
 
 export default Loading;
+
+Loading.defaultProps = {
+  children: null,
+  text: "",
+};
