@@ -12,7 +12,7 @@ const ProfileCard: FC<Props> = ({ isOpen }) => {
   if (!myInfo) return null;
 
   return (
-    <div className="flex h-[20%] w-full">
+    <div className="flex justify-center h-[20%] w-full">
       {" "}
       <img
         draggable="false"
@@ -20,7 +20,7 @@ const ProfileCard: FC<Props> = ({ isOpen }) => {
         src={myInfo && myInfo.avatar ? myInfo.avatar : "default-avatar.jpeg"}
         alt="profile-avatar"
       />
-      <div className="w-full flex flex-col justify-around">
+      <div className="w-[60%] flex flex-col justify-around">
         <div className="text-center">{myInfo.nickname}</div>
         <div className="text-center">🇰🇷 42 {myInfo.campus}</div>
         <div className="flex justify-center items-center">

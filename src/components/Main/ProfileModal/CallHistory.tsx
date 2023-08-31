@@ -26,8 +26,11 @@ const CallHistory: FC<Props> = ({ callData }) => {
 
   return (
     <div className={`flex flex-col bg-white rounded-md my-2`}>
-      <div className="mx-auto text-sm my-2">
-        {startDate} / 📞 {timeConverter(diffSeconds)}
+      <div className="bg-orange-100">
+        <div className="flex justify-between text-sm my-1.5 px-3">
+          <div>{startDate}</div>
+          <div>📞 {timeConverter(diffSeconds)}</div>
+        </div>
       </div>
       <div
         className={`grow flex items-center h-[${
@@ -41,12 +44,13 @@ const CallHistory: FC<Props> = ({ callData }) => {
         >
           {callData.user.map((v, i) => (
             <div key={i} className="px-[10%]">
+              🇰🇷{" "}
               <Link
                 to={`https://profile.intra.42.fr/users/${v.nickname}`}
                 target="_blank"
                 className="hover:text-blue-300 hover:underline"
               >
-                🇰🇷 {v.nickname}
+                {v.nickname}
               </Link>
             </div>
           ))}

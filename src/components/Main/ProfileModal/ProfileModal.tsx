@@ -2,6 +2,7 @@ import { FC, useCallback } from "react";
 import ProfileCard from "@components/Main/ProfileModal/ProfileCard";
 import LangSelect from "@components/Main/ProfileModal/LangSelect";
 import CallHistoryList from "@components/Main/ProfileModal/CallHistoryList";
+import BasicButton from "@utils/BasicButton";
 
 interface Props {
   isOpen: boolean | null;
@@ -24,7 +25,7 @@ const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
         onClick={closeModal}
       />
       <div
-        className="absolute w-[80%] h-[85%] bg-gray-100 rounded-xl z-2"
+        className="absolute w-[90%] h-[80%] bg-gray-100 rounded-xl z-2"
         style={{
           display: isOpen === null ? "none" : "block",
           animation: `${isOpen ? "slide-up" : "slide-down"} 0.5s ease forwards`,
@@ -38,12 +39,7 @@ const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
               <CallHistoryList />
             </div>
             <div className="h-[10%] flex items-center justify-center">
-              <button
-                className="w-40 h-8 block rounded-md bg-orange-100 hover:bg-orange-200 "
-                onClick={closeModal}
-              >
-                닫기
-              </button>
+              <BasicButton onClick={closeModal} text="닫기" />
             </div>
           </div>
         </div>
