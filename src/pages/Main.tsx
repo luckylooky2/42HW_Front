@@ -27,10 +27,12 @@ const Main = () => {
 
   const joinSingleChat = useCallback(() => {
     console.log("1:1 chat");
+    navigate("/waiting");
   }, []);
 
   const joinGroupChat = useCallback(() => {
     console.log("group chat");
+    navigate("/waiting");
   }, []);
 
   const openModal = useCallback(() => {
