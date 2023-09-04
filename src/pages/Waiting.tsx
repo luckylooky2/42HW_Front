@@ -2,10 +2,9 @@ import { useCallback, useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Loading from "@utils/Loading";
 import BasicButton from "@utils/BasicButton";
-import { SocketContext } from "@utils/SocketProvider";
-import { AuthContext } from "@utils/AuthProvider";
-import { StreamContext } from "@utils/StreamProvider";
-import Peer from "simple-peer";
+import { SocketContext } from "@contexts/SocketProvider";
+import { AuthContext } from "@contexts/AuthProvider";
+import { StreamContext } from "@contexts/StreamProvider";
 
 const Waiting = () => {
   const navigate = useNavigate();
@@ -22,15 +21,9 @@ const Waiting = () => {
     let newStream;
     try {
       newStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
-
-      // const peer: CustomPeer = new Peer({
-      //   initiator: false,
-      //   trickle: false,
-      //   stream: newStream,
-      // });
 
       setStream(newStream);
       console.log("get audio");
