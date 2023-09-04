@@ -29,3 +29,12 @@ const Login = () => {
 };
 
 export default Login;
+
+// TODO : 로그인 페이지에 추가
+/* <footer className="h-[5%] text-center text-gray-500 flex justify-center items-center">
+  <div className="py-auto">
+    <small className="italic">Copyright &copy; 2023 Mozila</small>
+    <small> | </small>
+    <small>문의하기</small>
+  </div>
+</footer>; */
