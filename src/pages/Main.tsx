@@ -7,12 +7,23 @@ import Loading from "@utils/Loading";
 import ChatButton from "@components/Main/ChatButton";
 import ProfileModal from "@components/Main/ProfileModal/ProfileModal";
 import "@styles/Main.css";
+import { SocketContext } from "@utils/SocketProvider";
+import { io } from "socket.io-client";
 
 const Main = () => {
   const [isOpen, setIsOpen] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
+  const { socket, setSocket } = useContext(SocketContext);
+
+  const connectSocket = useCallback(() => {
+    if (socket === null) {
+      const socket = io(`${API_URL}`);
+      console.log(socket);
+      setSocket(socket);
+    }
+  }, []);
 
   const getMyInfo = useCallback(async () => {
     try {
@@ -41,6 +52,7 @@ const Main = () => {
 
   useEffect(() => {
     getMyInfo();
+    connectSocket();
   }, []);
 
   return isLoading ? (
