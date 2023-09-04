@@ -7,6 +7,8 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { API_URL } from "@utils/constant";
 import AuthProvider from "@utils/AuthProvider";
+import SocketProvider from "@utils/SocketProvider";
+import StreamProvider from "@utils/StreamProvider";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
@@ -38,13 +40,17 @@ const root = ReactDOM.createRoot(
 // AuthProvider는 BrowserRouter 안에 존재해야 함
 // Uncaught Error: useNavigate() may be used only in the context of a <Router> component.
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <BrowserRouter>
+    <AuthProvider>
+      <SocketProvider>
+        <StreamProvider>
+          <App />
+        </StreamProvider>
+      </SocketProvider>
+    </AuthProvider>
+  </BrowserRouter>
+  // {/* </React.StrictMode> */}
 );
 
 // If you want your app to work offline and load faster, you can change
