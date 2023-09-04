@@ -1,5 +1,5 @@
 import { useEffect, useContext, useCallback, useState } from "react";
-import { AuthContext } from "@utils/AuthProvider";
+import { AuthContext } from "@contexts/AuthProvider";
 import { API_URL } from "@utils/constant";
 import { useNavigate } from "react-router";
 import axios from "axios";
@@ -7,7 +7,7 @@ import Loading from "@utils/Loading";
 import ChatButton from "@components/Main/ChatButton";
 import ProfileModal from "@components/Main/ProfileModal/ProfileModal";
 import "@styles/Main.css";
-import { SocketContext } from "@utils/SocketProvider";
+import { SocketContext } from "@contexts/SocketProvider";
 import { io } from "socket.io-client";
 
 const Main = () => {

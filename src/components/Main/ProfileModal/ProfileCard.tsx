@@ -1,5 +1,5 @@
 import { FC, useContext } from "react";
-import { AuthContext } from "@utils/AuthProvider";
+import { AuthContext } from "@contexts/AuthProvider";
 
 interface Props {
   isOpen: boolean | null;

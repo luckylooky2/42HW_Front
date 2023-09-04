@@ -6,9 +6,9 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { API_URL } from "@utils/constant";
-import AuthProvider from "@utils/AuthProvider";
-import SocketProvider from "@utils/SocketProvider";
-import StreamProvider from "@utils/StreamProvider";
+import AuthProvider from "@contexts/AuthProvider";
+import SocketProvider from "@contexts/SocketProvider";
+import StreamProvider from "@contexts/StreamProvider";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
