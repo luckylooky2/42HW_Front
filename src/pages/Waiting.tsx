@@ -6,15 +6,13 @@ import { SocketContext } from "@utils/SocketProvider";
 import { AuthContext } from "@utils/AuthProvider";
 import { StreamContext } from "@utils/StreamProvider";
 import Peer from "simple-peer";
-import { CustomPeer } from "@utils/StreamProvider";
 
 const Waiting = () => {
   const navigate = useNavigate();
   const { myInfo } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
-  const { stream, setStream, peer, setPeer } = useContext(StreamContext);
-
-  console.log(stream, peer);
+  const { stream, setStream, initiator, setInitiator, setOpponent } =
+    useContext(StreamContext);
 
   const cancelWaiting = useCallback(() => {
     navigate("/main");
@@ -52,13 +50,8 @@ const Waiting = () => {
 
       socket.on("matching", (data: any) => {
         console.log("matching");
-        setPeer(
-          new Peer({
-            initiator: data.initiator,
-            // trickle: false,
-            stream: stream,
-          })
-        );
+        setInitiator(data.initiator);
+        setOpponent(data.opponent);
         setTimeout(() => {
           navigate("/call");
         }, 3000);
