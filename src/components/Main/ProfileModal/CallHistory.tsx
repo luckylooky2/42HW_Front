@@ -2,6 +2,7 @@ import { ICallHistory } from "@typings/db";
 import { FC } from "react";
 import dayjs from "dayjs";
 import { Link } from "react-router-dom";
+import { timeConverter } from "@utils/timeConverter";
 
 interface Props {
   callData: ICallHistory;
@@ -13,16 +14,6 @@ const CallHistory: FC<Props> = ({ callData }) => {
     dayjs(callData.startTime),
     "s"
   );
-
-  function timeConverter(seconds: number): string {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-
-    const formattedMinutes = String(minutes).padStart(2, "0");
-    const formattedSeconds = String(secs).padStart(2, "0");
-
-    return `${formattedMinutes}m ${formattedSeconds}s`;
-  }
 
   return (
     <div className={`flex flex-col bg-white rounded-md my-2`}>
