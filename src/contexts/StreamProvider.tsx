@@ -1,43 +1,69 @@
-import React, { createContext, FC, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  FC,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import Peer from "simple-peer";
 
 interface Props {
   children: React.ReactNode;
 }
 
-export const StreamContext = createContext<{
+interface Stream {
   stream: MediaStream | null;
-  setStream: React.Dispatch<React.SetStateAction<MediaStream | null>>;
   initiator: boolean;
-  setInitiator: React.Dispatch<React.SetStateAction<boolean>>;
   opponent: string | null;
-  setOpponent: React.Dispatch<React.SetStateAction<string | null>>;
-}>({
+}
+
+export const StreamActionType = {
+  SET_STREAM: "SET_STREAM",
+  SET_MATCHING: "SET_MATCHING",
+  DEL_ALL: "DEL_ALL",
+};
+
+const initialStreamState: Stream = {
   stream: null,
-  setStream: () => {},
   initiator: false,
-  setInitiator: () => {},
   opponent: null,
-  setOpponent: () => {},
+};
+
+export const StreamContext = createContext<{
+  streamInfo: Stream;
+  dispatch: React.Dispatch<{
+    type: string;
+    payload?: any;
+  }>;
+}>({
+  streamInfo: initialStreamState,
+  dispatch: () => {},
 });
 
+const streamReducer = (
+  state: Stream,
+  action: { type: string; payload?: any }
+): Stream => {
+  switch (action.type) {
+    case StreamActionType.SET_STREAM:
+      return { ...state, stream: action.payload };
+    case StreamActionType.SET_MATCHING:
+      return {
+        ...state,
+        initiator: action.payload.initiator,
+        opponent: action.payload.opponent,
+      };
+    case StreamActionType.DEL_ALL:
+      return { stream: null, initiator: false, opponent: null };
+    default:
+      return state;
+  }
+};
+
 const StreamProvider: FC<Props> = ({ children }) => {
-  // useState를 사용하면, context를 자식 컴포넌트에서도 업데이트할 수 있음
-  // useReducer ?
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [initiator, setInitiator] = useState<boolean>(false);
-  const [opponent, setOpponent] = useState<string | null>(null);
-  const value = useMemo(
-    () => ({
-      stream,
-      setStream,
-      initiator,
-      setInitiator,
-      opponent,
-      setOpponent,
-    }),
-    [stream, setStream, initiator, setInitiator, opponent, setOpponent]
-  );
+  const [streamInfo, dispatch] = useReducer(streamReducer, initialStreamState);
+  const value = useMemo(() => ({ streamInfo, dispatch }), [streamInfo]);
 
   return (
     <StreamContext.Provider value={value}>{children}</StreamContext.Provider>
