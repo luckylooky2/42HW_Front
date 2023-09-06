@@ -6,6 +6,11 @@ import Redirect from "@pages/Redirect";
 import Main from "@pages/Main";
 import Waiting from "@pages/Waiting";
 import Call from "@pages/Call";
+import * as process from "process";
+
+(window as any).global = window;
+(window as any).process = process;
+(window as any).Buffer = [];
 
 function App() {
   return (
