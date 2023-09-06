@@ -1,0 +1,39 @@
+import { StreamContext } from "@contexts/StreamProvider";
+import { useState, useEffect, useContext } from "react";
+
+const MicrophoneSoundChecker = () => {
+  const { streamInfo } = useContext(StreamContext);
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    const microphone =
+      streamInfo.stream &&
+      audioContext.createMediaStreamSource(streamInfo.stream);
+
+    microphone && microphone.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    analyser.fftSize = 256; // FFT 크기 설정
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    // 실시간으로 크기(음량) 모니터링
+    function updateMicrophoneLevel() {
+      analyser.getByteFrequencyData(dataArray);
+      setValue(Math.floor(dataArray.reduce((a, b) => a + b) / 100));
+
+      // dataArray에는 실시간으로 마이크 입력의 크기 정보가 들어있습니다.
+      // dataArray를 이용하여 원하는 작업을 수행할 수 있습니다.
+      requestAnimationFrame(updateMicrophoneLevel);
+    }
+
+    // 크기(음량) 모니터링 시작
+    updateMicrophoneLevel();
+  }, []);
+
+  return <div>{value}</div>;
+};
+
+export default MicrophoneSoundChecker;

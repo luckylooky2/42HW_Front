@@ -2,41 +2,57 @@ import { AuthContext } from "@contexts/AuthProvider";
 import { SocketContext } from "@contexts/SocketProvider";
 import { StreamContext } from "@contexts/StreamProvider";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { API_URL } from "@utils/constant";
 import Peer from "simple-peer";
+import { useNavigate } from "react-router";
+import { ToastContainer } from "react-toastify";
+import BasicButton from "@utils/BasicButton";
+import Timer from "@components/Call/Timer";
+import MicrophoneSoundChecker from "@components/Call/MicrophoneSoundChecker";
 
 const Call = () => {
-  // peer 객체에서 찾아봐서 connection 여부에 따라 설정하자
-  const [isConnected, setIsConnected] = useState(false);
+  const navigate = useNavigate();
+  const [opponentStatus, setOpponentStatus] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const { myInfo } = useContext(AuthContext);
-  const { stream, initiator, opponent } = useContext(StreamContext);
+  const { streamInfo } = useContext(StreamContext);
   const { socket } = useContext(SocketContext);
-  const myVideo = useRef<any>(null);
-  const otherVideo = useRef<any>(null);
+  const opponentVideo = useRef<HTMLVideoElement>(null);
+  const peerRef = useRef<Peer.Instance>(
+    streamInfo.stream &&
+      new Peer({
+        initiator: streamInfo.initiator,
+        trickle: false,
+        stream: streamInfo.stream,
+      })
+  );
+  const peer = peerRef.current;
 
-  const peer =
-    stream &&
-    new Peer({
-      initiator: initiator,
-      trickle: false,
-      stream: stream,
-    });
-
+  // TODO : 좌우 반전, 마이크 mute
   useEffect(() => {
-    if (myVideo.current) myVideo.current.srcObject = stream;
-
     if (peer) {
       peer.on("signal", (data) => {
         socket?.emit("joinSingle", {
           signal: data,
           name: myInfo?.nickname,
-          opponent: opponent,
+          opponent: streamInfo.opponent,
         });
       });
 
       peer.on("stream", (currentStream) => {
-        otherVideo.current.srcObject = currentStream;
+        if (opponentVideo.current)
+          opponentVideo.current.srcObject = currentStream;
       });
+      peer.on("error", () => {
+        setOpponentStatus(false);
+        console.log("opponent left");
+      });
+
+      peer.on("close", () => {
+        console.log("Peer 연결이 종료되었습니다.");
+        setOpponentStatus(false);
+      });
+
+      peer.on("data", (data) => console.log(data));
 
       socket?.on("peerConnection", (data) => {
         peer.signal(data.signal);
@@ -45,24 +61,85 @@ const Call = () => {
 
     return () => {
       socket?.off("peerConnection");
+      stopMicrophone();
     };
   }, [peer, socket]);
 
-  useEffect(() => {}, [isConnected]);
+  useEffect(() => {
+    if (peer === null) {
+      alert("메인 페이지를 통해 접근해주세요");
+      navigate("/main");
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", preventClose);
+
+    return () => {
+      window.removeEventListener("beforeunload", preventClose);
+    };
+  }, []);
+
+  const preventClose = useCallback((e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    const result = window.confirm();
+    if (result) {
+      alert("통화가 종료되었습니다. 메인 화면으로 이동합니다.");
+      navigate("/");
+    }
+    e.returnValue = result ? true : false;
+  }, []);
+
+  const muteToggle = useCallback(() => {
+    const tracks = streamInfo.stream?.getAudioTracks();
+    if (tracks) tracks[0].enabled = !tracks[0].enabled;
+    setIsMuted((prev) => !prev);
+  }, [streamInfo]);
+
+  const stopMicrophone = useCallback(() => {
+    const tracks = streamInfo.stream?.getAudioTracks();
+    if (tracks) tracks[0].stop();
+  }, [streamInfo]);
 
   return (
     <>
-      <video width={100} height={100} playsInline autoPlay ref={myVideo} />
-      <video width={100} height={100} playsInline autoPlay ref={otherVideo} />
-      <button
+      <Timer opponentStatus={opponentStatus} />
+      <video width={0} height={0} playsInline autoPlay ref={opponentVideo} />
+      <BasicButton
+        onClick={muteToggle}
+        text={isMuted ? "mute off" : "mute on"}
+      />
+      <div>
+        opponent connection :{" "}
+        {opponentStatus ? "🟢 connected" : "🔴 disconnected"}
+      </div>
+      <div>my mute : {!isMuted ? "🟢" : "🔴"}</div>
+      <ToastContainer />
+      <MicrophoneSoundChecker />
+      <BasicButton
         onClick={() => {
-          const tracks = stream?.getTracks();
-          //   console.log(tracks);
-          //   tracks[1].stop();
+          peer?.destroy();
+          console.log("hang up");
+          const tracks = streamInfo.stream?.getAudioTracks();
+          if (tracks) tracks[0].stop();
+          setIsMuted(true);
+          navigate("/");
         }}
-      >
-        mute
-      </button>
+        text="hang up"
+      />
+      <BasicButton
+        onClick={() => {
+          peer?.send("hello?");
+        }}
+        text="send text"
+        disabled={!opponentStatus}
+      />
+      {!opponentStatus && (
+        <>
+          <div>상대방이 연결을 종료하였습니다.</div>
+          <BasicButton onClick={() => navigate("/")} text="back to home" />
+        </>
+      )}
     </>
   );
 };
