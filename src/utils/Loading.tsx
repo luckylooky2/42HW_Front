@@ -14,7 +14,7 @@ const Loading: FC<Props> = ({ children, text }) => {
 
   return (
     <div className="flex flex-col h-full justify-center">
-      <div className="px-10 h-1/4" />
+      <div className="px-10 h-1/4 flex justify-center items-center">{text}</div>
       <div className="pt-8 h-1/3">
         <img className="mx-auto" src="login-image.svg" alt="loading" />
         <PulseLoader
@@ -24,7 +24,6 @@ const Loading: FC<Props> = ({ children, text }) => {
           data-testid="loader"
           cssOverride={pulseLoaderCss}
         />
-        <div className="text-center">{text}</div>
       </div>
       <div className="flex justify-center h-1/6">{children}</div>
     </div>
