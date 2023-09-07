@@ -32,7 +32,6 @@ const Call = () => {
   useEffect(() => {
     if (myVideo.current) {
       myVideo.current.srcObject = streamInfo.stream;
-      console.log(myVideo.current);
     }
     if (peer) {
       peer.on("signal", (data) => {
@@ -44,7 +43,7 @@ const Call = () => {
       });
 
       peer.on("stream", (currentStream) => {
-        console.log(currentStream);
+        console.log("others", currentStream);
         if (opponentVideo.current)
           // if ("srcObject" in opponentVideo.current)
           opponentVideo.current.srcObject = currentStream;
@@ -53,7 +52,8 @@ const Call = () => {
         // window.URL.createObjectURL(currentStream);
       });
 
-      peer.on("error", () => {
+      peer.on("error", (err) => {
+        console.log(err);
         setOpponentStatus(false);
         console.log("opponent left");
       });
@@ -117,8 +117,14 @@ const Call = () => {
       <div className="h-[15%] flex flex-col justify-evenly">
         <div className="text-4xl">chanhyle</div>
         <Timer opponentStatus={opponentStatus} />
-        <video width={0} height={0} playsInline autoPlay ref={myVideo} />
-        <video width={0} height={0} playsInline autoPlay ref={opponentVideo} />
+        <video width={100} height={100} playsInline autoPlay ref={myVideo} />
+        <video
+          width={100}
+          height={100}
+          playsInline
+          autoPlay
+          ref={opponentVideo}
+        />
         <ToastContainer />
       </div>
       <div className="h-[65%] w-full flex flex-col justify-center">
