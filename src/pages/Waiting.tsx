@@ -24,7 +24,7 @@ const Waiting = () => {
     let newStream;
     try {
       newStream = await navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true,
       });
 
