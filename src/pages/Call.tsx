@@ -5,7 +5,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { useNavigate } from "react-router";
 import { ToastContainer } from "react-toastify";
-import BasicButton from "@utils/BasicButton";
+import CallButton from "@components/Call/CallButton";
 import Timer from "@components/Call/Timer";
 import MicrophoneSoundChecker from "@components/Call/MicrophoneSoundChecker";
 
@@ -40,8 +40,13 @@ const Call = () => {
 
       peer.on("stream", (currentStream) => {
         if (opponentVideo.current)
-          opponentVideo.current.srcObject = currentStream;
+          if ("srcObject" in opponentVideo.current)
+            opponentVideo.current.srcObject = currentStream;
+        // else
+        // opponentVideo.current.src =
+        // window.URL.createObjectURL(currentStream);
       });
+
       peer.on("error", () => {
         setOpponentStatus(false);
         console.log("opponent left");
@@ -102,45 +107,61 @@ const Call = () => {
   }, [streamInfo]);
 
   return (
-    <>
-      <Timer opponentStatus={opponentStatus} />
-      <video width={0} height={0} playsInline autoPlay ref={opponentVideo} />
-      <BasicButton
-        onClick={muteToggle}
-        text={isMuted ? "mute off" : "mute on"}
-      />
-      <div>
-        opponent connection :{" "}
-        {opponentStatus ? "🟢 connected" : "🔴 disconnected"}
+    <div className="w-full h-full flex flex-col items-center justify-center">
+      <div className="h-[15%] flex flex-col justify-evenly">
+        <div className="text-4xl">chanhyle</div>
+        <Timer opponentStatus={opponentStatus} />
+        <video width={0} height={0} playsInline autoPlay ref={opponentVideo} />
+        <ToastContainer />
       </div>
-      <div>my mute : {!isMuted ? "🟢" : "🔴"}</div>
-      <ToastContainer />
-      <MicrophoneSoundChecker />
-      <BasicButton
-        onClick={() => {
-          peer?.destroy();
-          console.log("hang up");
-          const tracks = streamInfo.stream?.getAudioTracks();
-          if (tracks) tracks[0].stop();
-          setIsMuted(true);
-          navigate("/");
-        }}
-        text="hang up"
-      />
-      <BasicButton
-        onClick={() => {
-          peer?.send("hello?");
-        }}
-        text="send text"
-        disabled={!opponentStatus}
-      />
-      {!opponentStatus && (
-        <>
-          <div>상대방이 연결을 종료하였습니다.</div>
-          <BasicButton onClick={() => navigate("/")} text="back to home" />
-        </>
-      )}
-    </>
+      <div className="h-[65%] w-full flex flex-col justify-center">
+        <div className="h-[70%] w-[95%] overflow mx-auto">
+          <MicrophoneSoundChecker />
+          <div>
+            opponent : {opponentStatus ? "🟢 connected" : "🔴 disconnected"}
+            {!opponentStatus && <div>상대방이 연결을 종료하였습니다.</div>}
+          </div>
+        </div>
+        <div className="grid grid-cols-3 max-w-[300px] h-[20%] w-full mx-auto">
+          <CallButton
+            onClick={() => {
+              peer?.send("hello?");
+            }}
+            text="topic"
+            img="topic.svg"
+            disabled={!opponentStatus}
+          />
+          <CallButton
+            onClick={() => {
+              peer?.send("hello?");
+            }}
+            text="game"
+            img="game.svg"
+            disabled={!opponentStatus}
+          />
+          <CallButton
+            onClick={muteToggle}
+            clicked={isMuted}
+            text={isMuted ? "mute off" : "mute"}
+            img={isMuted ? "mute-off.svg" : "mute.svg"}
+          />
+        </div>
+      </div>
+      <div className="flex justify-center h-[10%]">
+        <CallButton
+          onClick={() => {
+            peer?.destroy();
+            console.log("hang up");
+            const tracks = streamInfo.stream?.getAudioTracks();
+            if (tracks) tracks[0].stop();
+            setIsMuted(true);
+            navigate("/");
+          }}
+          type="hang-up"
+          img="hang-up.svg"
+        />
+      </div>
+    </div>
   );
 };
 

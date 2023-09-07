@@ -25,7 +25,7 @@ const Timer: FC<Props> = ({ opponentStatus }) => {
     };
   }, [opponentStatus]);
 
-  return <div>{diff}</div>;
+  return <div className="text-gray-400 text-xl text-center">{diff}</div>;
 };
 
 export default Timer;
