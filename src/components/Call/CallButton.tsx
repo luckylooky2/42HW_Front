@@ -34,7 +34,7 @@ const CallButton: FC<Props> = ({
         disabled={disabled}
       >
         <img
-          className={type === "hang-up" ? "w-16 h-16" : "w-8 h-8"}
+          className={type === "hang-up" ? "" : "w-8 h-8"}
           src={img}
           alt="hang-up"
         />
