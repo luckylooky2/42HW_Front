@@ -16,7 +16,7 @@ const Call = () => {
   const { myInfo } = useContext(AuthContext);
   const { streamInfo } = useContext(StreamContext);
   const { socket } = useContext(SocketContext);
-  const myVideo = useRef<HTMLVideoElement>(null);
+  // const myVideo = useRef<HTMLVideoElement>(null);
   const opponentVideo = useRef<HTMLVideoElement>(null);
   const peerRef = useRef<Peer.Instance>(
     streamInfo.stream &&
@@ -30,9 +30,9 @@ const Call = () => {
 
   // TODO : 좌우 반전, 마이크 mute
   useEffect(() => {
-    if (myVideo.current) {
-      myVideo.current.srcObject = streamInfo.stream;
-    }
+    // if (myVideo.current) {
+    //   myVideo.current.srcObject = streamInfo.stream;
+    // }
     if (peer) {
       peer.on("signal", (data) => {
         socket?.emit("joinSingle", {
@@ -117,7 +117,7 @@ const Call = () => {
       <div className="h-[15%] flex flex-col justify-evenly">
         <div className="text-4xl">chanhyle</div>
         <Timer opponentStatus={opponentStatus} />
-        <video width={100} height={100} playsInline autoPlay ref={myVideo} />
+        {/* <video width={100} height={100} playsInline autoPlay ref={myVideo} /> */}
         <video
           width={100}
           height={100}
