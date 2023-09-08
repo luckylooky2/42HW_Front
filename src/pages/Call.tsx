@@ -16,8 +16,8 @@ const Call = () => {
   const { myInfo } = useContext(AuthContext);
   const { streamInfo } = useContext(StreamContext);
   const { socket } = useContext(SocketContext);
-  // const myVideo = useRef<HTMLVideoElement>(null);
-  const opponentVideo = useRef<HTMLVideoElement>(null);
+  const myVideo = useRef<HTMLVideoElement>(null);
+  // const opponentVideo = useRef<HTMLVideoElement>(null);
   const peerRef = useRef<Peer.Instance>(
     streamInfo.stream &&
       new Peer({
@@ -30,9 +30,9 @@ const Call = () => {
 
   // TODO : 좌우 반전, 마이크 mute
   useEffect(() => {
-    // if (myVideo.current) {
-    //   myVideo.current.srcObject = streamInfo.stream;
-    // }
+    if (myVideo.current) {
+      myVideo.current.srcObject = streamInfo.stream;
+    }
     if (peer) {
       peer.on("signal", (data) => {
         socket?.emit("joinSingle", {
@@ -44,9 +44,9 @@ const Call = () => {
 
       peer.on("stream", (currentStream) => {
         console.log("others", currentStream);
-        if (opponentVideo.current)
-          // if ("srcObject" in opponentVideo.current)
-          opponentVideo.current.srcObject = currentStream;
+        // if (opponentVideo.current)
+        //   // if ("srcObject" in opponentVideo.current)
+        //   opponentVideo.current.srcObject = currentStream;
         // else
         // opponentVideo.current.src =
         // window.URL.createObjectURL(currentStream);
@@ -117,14 +117,14 @@ const Call = () => {
       <div className="h-[15%] flex flex-col justify-evenly">
         <div className="text-4xl">chanhyle</div>
         <Timer opponentStatus={opponentStatus} />
-        {/* <video width={100} height={100} playsInline autoPlay ref={myVideo} /> */}
-        <video
+        <video width={100} height={100} playsInline autoPlay ref={myVideo} />
+        {/* <video
           width={100}
           height={100}
           playsInline
           autoPlay
           ref={opponentVideo}
-        />
+        /> */}
         <ToastContainer />
       </div>
       <div className="h-[65%] w-full flex flex-col justify-center">
