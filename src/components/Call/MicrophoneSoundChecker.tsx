@@ -13,7 +13,8 @@ const MicrophoneSoundChecker = () => {
       audioContext.createMediaStreamSource(streamInfo.stream);
 
     microphone && microphone.connect(analyser);
-    analyser.connect(audioContext.destination);
+    // destination 기본 값은 스피커. 스피커에 현재 audio context를 연결
+    // analyser.connect(audioContext.destination);
 
     analyser.fftSize = 256; // FFT 크기 설정
     const bufferLength = analyser.frequencyBinCount;
