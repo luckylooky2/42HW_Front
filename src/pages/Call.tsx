@@ -8,11 +8,15 @@ import { ToastContainer } from "react-toastify";
 import CallButton from "@components/Call/CallButton";
 import Timer from "@components/Call/Timer";
 import MicrophoneSoundChecker from "@components/Call/MicrophoneSoundChecker";
+import InitialScreen from "@components/Call/InitialScreen";
+import { SCREEN } from "@utils/constant";
+import TopicSelect from "@components/Call/TopicSelect";
 
 const Call = () => {
   const navigate = useNavigate();
   const [opponentStatus, setOpponentStatus] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [screen, setScreen] = useState(SCREEN.INIT);
   const { myInfo } = useContext(AuthContext);
   const { streamInfo } = useContext(StreamContext);
   const { socket } = useContext(SocketContext);
@@ -67,13 +71,11 @@ const Call = () => {
 
     return () => {
       socket?.off("peerConnection");
-      stopMicrophone();
     };
   }, [peer, socket]);
 
   useEffect(() => {
     if (peer === null) {
-      alert("메인 페이지를 통해 접근해주세요");
       navigate("/main");
     }
   }, []);
@@ -83,17 +85,13 @@ const Call = () => {
 
     return () => {
       window.removeEventListener("beforeunload", preventClose);
+      stopMicrophone();
     };
   }, []);
 
   const preventClose = useCallback((e: BeforeUnloadEvent) => {
     e.preventDefault();
-    const result = window.confirm();
-    if (result) {
-      alert("통화가 종료되었습니다. 메인 화면으로 이동합니다.");
-      navigate("/");
-    }
-    e.returnValue = result ? true : false;
+    e.returnValue = true;
   }, []);
 
   const muteToggle = useCallback(() => {
@@ -101,6 +99,15 @@ const Call = () => {
     if (tracks) tracks[0].enabled = !tracks[0].enabled;
     setIsMuted((prev) => !prev);
   }, [streamInfo]);
+
+  const hangUp = useCallback(() => {
+    peer?.destroy();
+    console.log("hang up");
+    const tracks = streamInfo.stream?.getAudioTracks();
+    if (tracks) tracks[0].stop();
+    setIsMuted(true);
+    navigate("/");
+  }, [peer, streamInfo]);
 
   const stopMicrophone = useCallback(() => {
     const tracks = streamInfo.stream?.getAudioTracks();
@@ -110,58 +117,26 @@ const Call = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="h-[15%] flex flex-col justify-evenly">
+        <video width={0} height={0} playsInline autoPlay ref={opponentVideo} />
         <div className="text-4xl">chanhyle</div>
         <Timer opponentStatus={opponentStatus} />
-        <video width={0} height={0} playsInline autoPlay ref={opponentVideo} />
-        <ToastContainer />
+        <MicrophoneSoundChecker />
       </div>
       <div className="h-[65%] w-full flex flex-col justify-center">
-        <div className="h-[70%] w-[95%] overflow mx-auto">
-          <MicrophoneSoundChecker />
-          <div>
-            opponent : {opponentStatus ? "🟢 connected" : "🔴 disconnected"}
-            {!opponentStatus && <div>상대방이 연결을 종료하였습니다.</div>}
-          </div>
-        </div>
-        <div className="grid grid-cols-3 max-w-[300px] h-[20%] w-full mx-auto">
-          <CallButton
-            onClick={() => {
-              peer?.send("hello?");
-            }}
-            text="topic"
-            img="topic.svg"
-            disabled={!opponentStatus}
+        {screen === SCREEN.INIT && (
+          <InitialScreen
+            opponentStatus={opponentStatus}
+            isMuted={isMuted}
+            muteToggle={muteToggle}
+            setScreen={setScreen}
           />
-          <CallButton
-            onClick={() => {
-              peer?.send("hello?");
-            }}
-            text="game"
-            img="game.svg"
-            disabled={!opponentStatus}
-          />
-          <CallButton
-            onClick={muteToggle}
-            clicked={isMuted}
-            text={isMuted ? "mute off" : "mute"}
-            img={isMuted ? "mute-off.svg" : "mute.svg"}
-          />
-        </div>
+        )}
+        {screen === SCREEN.TOPIC_SELECT && <TopicSelect />}
       </div>
       <div className="flex justify-center h-[10%]">
-        <CallButton
-          onClick={() => {
-            peer?.destroy();
-            console.log("hang up");
-            const tracks = streamInfo.stream?.getAudioTracks();
-            if (tracks) tracks[0].stop();
-            setIsMuted(true);
-            navigate("/");
-          }}
-          type="hang-up"
-          img="hang-up.svg"
-        />
+        <CallButton onClick={hangUp} type="hang-up" img="hang-up.svg" />
       </div>
+      <ToastContainer />
     </div>
   );
 };

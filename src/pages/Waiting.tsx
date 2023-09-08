@@ -15,12 +15,52 @@ const Waiting = () => {
   const { socket } = useContext(SocketContext);
   const { streamInfo, dispatch } = useContext(StreamContext);
 
-  const cancelWaiting = useCallback(() => {
-    dispatch({ type: StreamActionType.DEL_ALL });
-    navigate("/main");
+  useEffect(() => {
+    if (myInfo === null) {
+      stopMicrophone();
+      navigate("/main");
+    }
+    getUserMedia();
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on(
+        "matching",
+        (data: { initiator: boolean; opponent: string }) => {
+          console.log("matching");
+          dispatch({
+            type: StreamActionType.SET_MATCHING,
+            payload: { initiator: data.initiator, opponent: data.opponent },
+          });
+          toast.info("매칭이 완료되었습니다.");
+          setTimeout(() => {
+            navigate("/call");
+          }, READY_COUNT * 1000);
+        }
+      );
+    }
+
+    return () => {
+      socket?.off("matching");
+    };
+  }, [socket, streamInfo]);
+
+  useEffect(() => {
+    if (socket) socket.emit("registerSingle", { nickname: myInfo?.nickname });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", preventClose);
+
+    return () => {
+      window.removeEventListener("beforeunload", preventClose);
+    };
   }, []);
 
   const getUserMedia = useCallback(async () => {
+    if (myInfo == null || socket === null) return;
+
     let newStream;
     try {
       newStream = await navigator.mediaDevices.getUserMedia({
@@ -36,35 +76,20 @@ const Waiting = () => {
     }
   }, []);
 
-  useEffect(() => {
-    getUserMedia();
-  }, []);
+  const cancelWaiting = useCallback(() => {
+    dispatch({ type: StreamActionType.DEL_ALL });
+    stopMicrophone();
+    navigate("/main");
+  }, [streamInfo]);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on(
-        "matching",
-        (data: { initiator: boolean; opponent: string }) => {
-          console.log("matching");
-          dispatch({
-            type: StreamActionType.SET_MATCHING,
-            payload: { initiator: data.initiator, opponent: data.opponent },
-          });
-          toast.info(`매칭이 완료되었습니다. 통화를 시작합니다.`);
-          setTimeout(() => {
-            navigate("/call");
-          }, READY_COUNT * 1000);
-        }
-      );
-    }
+  const stopMicrophone = useCallback(() => {
+    const tracks = streamInfo.stream?.getAudioTracks();
+    if (tracks) tracks[0].stop();
+  }, [streamInfo]);
 
-    return () => {
-      socket?.off("matching");
-    };
-  }, [socket, streamInfo]);
-
-  useEffect(() => {
-    if (socket) socket.emit("registerSingle", { nickname: myInfo?.nickname });
+  const preventClose = useCallback((e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = true;
   }, []);
 
   return (
