@@ -136,7 +136,14 @@ const Call = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="h-[15%] flex flex-col justify-evenly">
-        <video width={0} height={0} playsInline autoPlay ref={opponentVideo} />
+        <video
+          width={0}
+          height={0}
+          playsInline
+          autoPlay
+          muted={false}
+          ref={opponentVideo}
+        />
         <div className="text-4xl">chanhyle</div>
         <Timer opponentStatus={opponentStatus} />
         <MicrophoneSoundChecker />
