@@ -4,10 +4,9 @@ import { StreamContext } from "@contexts/StreamProvider";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { useNavigate } from "react-router";
-import { ToastContainer } from "react-toastify";
 import CallButton from "@components/Call/CallButton";
 import Timer from "@components/Call/Timer";
-import MicrophoneSoundChecker from "@components/Call/MicrophoneSoundChecker";
+import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
 import InitialScreen from "@components/Call/InitialScreen";
 import { SCREEN } from "@utils/constant";
 import TopicSelect from "@components/Call/TopicSelect";
@@ -183,7 +182,6 @@ const Call = () => {
       <div className="flex justify-center h-[10%]">
         <CallButton onClick={hangUp} type="hang-up" img="hang-up.svg" />
       </div>
-      <ToastContainer />
     </div>
   );
 };

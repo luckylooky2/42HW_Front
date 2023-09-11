@@ -1,7 +1,11 @@
 import { StreamContext } from "@contexts/StreamProvider";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, FC } from "react";
 
-const MicrophoneSoundChecker = () => {
+interface Props {
+  isDone?: boolean;
+}
+
+const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
   const { streamInfo } = useContext(StreamContext);
   const [value, setValue] = useState(0);
 
@@ -14,7 +18,7 @@ const MicrophoneSoundChecker = () => {
 
     microphone && microphone.connect(analyser);
     // destination 기본 값은 스피커. 스피커에 현재 audio context를 연결
-    // analyser.connect(audioContext.destination);
+    if (isDone) analyser.connect(audioContext.destination);
 
     analyser.fftSize = 256; // FFT 크기 설정
     const bufferLength = analyser.frequencyBinCount;
@@ -32,9 +36,17 @@ const MicrophoneSoundChecker = () => {
 
     // 크기(음량) 모니터링 시작
     updateMicrophoneLevel();
-  }, []);
+
+    return () => {
+      analyser.disconnect();
+    };
+  }, [isDone]);
 
   return <div>{value}</div>;
 };
 
 export default MicrophoneSoundChecker;
+
+MicrophoneSoundChecker.defaultProps = {
+  isDone: false,
+};
