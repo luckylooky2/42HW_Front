@@ -11,6 +11,7 @@ import MicrophoneSoundChecker from "@components/Call/MicrophoneSoundChecker";
 import InitialScreen from "@components/Call/InitialScreen";
 import { SCREEN } from "@utils/constant";
 import TopicSelect from "@components/Call/TopicSelect";
+import { TURN_URL, TURN_USERNAME, TURN_PASSWORD } from "@utils/constant";
 
 const Call = () => {
   const navigate = useNavigate();
@@ -27,6 +28,16 @@ const Call = () => {
         initiator: streamInfo.initiator,
         trickle: false,
         stream: streamInfo.stream,
+        config: {
+          iceServers: [
+            { urls: "stun:stun.1.google.com:19302" },
+            {
+              urls: `turn:${TURN_URL}`,
+              username: TURN_USERNAME,
+              credential: TURN_PASSWORD,
+            },
+          ],
+        },
       })
   );
   const peer = peerRef.current;
