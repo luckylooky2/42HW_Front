@@ -38,12 +38,12 @@ const Main = () => {
 
   const joinSingleChat = useCallback(() => {
     console.log("1:1 chat");
-    navigate("/waiting");
+    navigate("/setting");
   }, []);
 
   const joinGroupChat = useCallback(() => {
     console.log("group chat");
-    navigate("/waiting");
+    navigate("/setting");
   }, []);
 
   const openModal = useCallback(() => {

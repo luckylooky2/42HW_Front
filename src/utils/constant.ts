@@ -6,3 +6,8 @@ export const TURN_PASSWORD = process.env.REACT_APP_TURN_PASSWORD;
 
 export const READY_COUNT: number = 3;
 export const SCREEN = { INIT: "INIT", TOPIC_SELECT: "TOPIC_SELECT" };
+export const MIC_STATUS = {
+  GRANTED: "granted",
+  PROMPT: "prompt",
+  DENIED: "denied",
+};
