@@ -6,7 +6,10 @@ import Redirect from "@pages/Redirect";
 import Main from "@pages/Main";
 import Waiting from "@pages/Waiting";
 import Call from "@pages/Call";
+import Setting from "@pages/Setting";
+import { ToastContainer } from "react-toastify";
 import * as process from "process";
+import { READY_COUNT } from "@utils/constant";
 
 (window as any).global = window;
 (window as any).process = process;
@@ -19,12 +22,20 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate replace to="/main" />} />
           <Route path="/login" Component={Login} />
+          <Route path="/setting" Component={Setting} />
           <Route path="/redirect" Component={Redirect} />
           <Route path="/main" Component={Main} />
           <Route path="/waiting" Component={Waiting} />
           <Route path="/call" Component={Call} />
           <Route path="/profile" />
         </Routes>
+        <ToastContainer
+          position="top-center"
+          theme="colored"
+          pauseOnHover={false}
+          pauseOnFocusLoss={false}
+          autoClose={(READY_COUNT - 1.5) * 1000}
+        />
       </div>
     </div>
   );

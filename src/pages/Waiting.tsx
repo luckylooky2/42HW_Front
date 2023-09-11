@@ -5,7 +5,7 @@ import BasicButton from "@utils/BasicButton";
 import { SocketContext } from "@contexts/SocketProvider";
 import { AuthContext } from "@contexts/AuthProvider";
 import { StreamContext, StreamActionType } from "@contexts/StreamProvider";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { READY_COUNT } from "@utils/constant";
 
@@ -96,11 +96,6 @@ const Waiting = () => {
     <Loading text={"상대방을 찾는 중입니다."}>
       <div className="my-auto">
         <BasicButton onClick={cancelWaiting} text="매칭 취소하기" />
-        <ToastContainer
-          position="top-center"
-          theme="colored"
-          autoClose={(READY_COUNT - 1.5) * 1000}
-        />
       </div>
     </Loading>
   );
