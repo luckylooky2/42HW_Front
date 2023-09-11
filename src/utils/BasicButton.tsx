@@ -9,7 +9,7 @@ interface Props {
 const BasicButton: FC<Props> = ({ onClick, text, disabled }) => {
   return (
     <button
-      className={`w-40 h-8 block rounded-md ${
+      className={`w-40 h-8 my-2 block rounded-md ${
         disabled ? "bg-gray-100" : "bg-orange-100 hover:bg-orange-200"
       }`}
       onClick={onClick}
