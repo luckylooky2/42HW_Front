@@ -125,6 +125,14 @@ const Call = () => {
     if (tracks) tracks[0].stop();
   }, [streamInfo]);
 
+  const openTopicSelect = useCallback(() => {
+    setScreen(SCREEN.TOPIC_SELECT);
+  }, []);
+
+  const closeTopicSelect = useCallback(() => {
+    setScreen(SCREEN.INIT);
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="h-[15%] flex flex-col justify-evenly">
@@ -134,15 +142,36 @@ const Call = () => {
         <MicrophoneSoundChecker />
       </div>
       <div className="h-[65%] w-full flex flex-col justify-center">
-        {screen === SCREEN.INIT && (
-          <InitialScreen
-            opponentStatus={opponentStatus}
-            isMuted={isMuted}
-            muteToggle={muteToggle}
-            setScreen={setScreen}
+        <div className="h-[70%] w-[95%] overflow mx-auto">
+          {screen === SCREEN.INIT && (
+            <InitialScreen opponentStatus={opponentStatus} />
+          )}
+          {screen === SCREEN.TOPIC_SELECT && <TopicSelect />}
+        </div>
+        <div className="grid grid-cols-3 max-w-[300px] h-[20%] w-full mx-auto">
+          <CallButton
+            onClick={
+              screen === SCREEN.TOPIC_SELECT
+                ? closeTopicSelect
+                : openTopicSelect
+            }
+            text={screen === SCREEN.TOPIC_SELECT ? "return" : "topic"}
+            img={screen === SCREEN.TOPIC_SELECT ? "favicon.ico" : "topic.svg"}
+            disabled={!opponentStatus}
           />
-        )}
-        {screen === SCREEN.TOPIC_SELECT && <TopicSelect />}
+          <CallButton
+            onClick={() => {}}
+            text="game"
+            img="game.svg"
+            disabled={!opponentStatus}
+          />
+          <CallButton
+            onClick={muteToggle}
+            clicked={isMuted}
+            text={isMuted ? "mute off" : "mute"}
+            img={isMuted ? "mute-off.svg" : "mute.svg"}
+          />
+        </div>
       </div>
       <div className="flex justify-center h-[10%]">
         <CallButton onClick={hangUp} type="hang-up" img="hang-up.svg" />
