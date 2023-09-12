@@ -162,7 +162,7 @@ const Call = () => {
                 : openTopicSelect
             }
             text={screen === SCREEN.TOPIC_SELECT ? "return" : "topic"}
-            img={screen === SCREEN.TOPIC_SELECT ? "favicon.ico" : "topic.svg"}
+            img={screen === SCREEN.TOPIC_SELECT ? "return.svg" : "topic.svg"}
             disabled={!opponentStatus}
           />
           <CallButton
