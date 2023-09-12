@@ -6,9 +6,8 @@ interface Props {
 
 const InitialScreen: FC<Props> = ({ opponentStatus }) => {
   return (
-    <div>
-      opponent : {opponentStatus ? "🟢 connected" : "🔴 disconnected"}
-      {!opponentStatus && <div>상대방이 연결을 종료하였습니다.</div>}
+    <div className="flex justify-center">
+      <div>{!opponentStatus && <div>상대방이 연결을 종료하였습니다.</div>}</div>
     </div>
   );
 };
