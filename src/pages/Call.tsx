@@ -166,7 +166,9 @@ const Call = () => {
             disabled={!opponentStatus}
           />
           <CallButton
-            onClick={() => {}}
+            onClick={() => {
+              peer?.send("hello");
+            }}
             text="game"
             img="game.svg"
             disabled={!opponentStatus}
