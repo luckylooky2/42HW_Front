@@ -136,8 +136,8 @@ const Call = () => {
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="h-[15%] flex flex-col justify-evenly">
         <video
-          width={0}
-          height={0}
+          width={1}
+          height={1}
           playsInline
           autoPlay
           muted={false}

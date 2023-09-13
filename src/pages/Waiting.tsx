@@ -20,8 +20,8 @@ const Waiting = () => {
       stopMicrophone();
       navigate("/main");
     }
-    getUserMedia();
   }, []);
+  console.log(streamInfo.stream);
 
   useEffect(() => {
     if (socket) {
@@ -56,24 +56,6 @@ const Waiting = () => {
     return () => {
       window.removeEventListener("beforeunload", preventClose);
     };
-  }, []);
-
-  const getUserMedia = useCallback(async () => {
-    if (myInfo == null || socket === null) return;
-
-    let newStream;
-    try {
-      newStream = await navigator.mediaDevices.getUserMedia({
-        video: false,
-        audio: true,
-      });
-
-      dispatch({ type: StreamActionType.SET_STREAM, payload: newStream });
-      console.log("get audio");
-    } catch (e) {
-      toast.error("마이크 권한 설정을 허용해 주세요!");
-      // navigate("/");
-    }
   }, []);
 
   const cancelWaiting = useCallback(() => {
