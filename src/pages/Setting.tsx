@@ -22,17 +22,17 @@ const Setting = () => {
       navigate("/main");
     }
     getUserMedia();
-  }, [micStatus]);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      pollMicAvailable();
-    }, 100);
-
-    return () => {
-      clearInterval(id);
-    };
   }, []);
+
+  //   useEffect(() => {
+  //     const id = setInterval(() => {
+  //       pollMicAvailable();
+  //     }, 100);
+
+  //     return () => {
+  //       clearInterval(id);
+  //     };
+  //   }, []);
 
   const pollMicAvailable = async () => {
     const permissionName = "microphone" as PermissionName;
@@ -82,7 +82,7 @@ const Setting = () => {
         <BasicButton
           onClick={goToWaiting}
           text="매칭 시작하기"
-          disabled={micStatus !== MIC_STATUS.GRANTED}
+          disabled={!isDone}
         />
         <BasicButton onClick={goToMain} text="뒤로 가기" />
       </div>
