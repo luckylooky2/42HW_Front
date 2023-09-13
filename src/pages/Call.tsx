@@ -40,6 +40,7 @@ const Call = () => {
       })
   );
   const peer = peerRef.current;
+  console.log("my : ", streamInfo.stream);
 
   // TODO : 좌우 반전, 마이크 mute
   useEffect(() => {
@@ -53,6 +54,7 @@ const Call = () => {
       });
 
       peer.on("stream", (currentStream) => {
+        console.log("others :", currentStream);
         if (opponentVideo.current)
           //   // if ("srcObject" in opponentVideo.current)
           opponentVideo.current.srcObject = currentStream;
