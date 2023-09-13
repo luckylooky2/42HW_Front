@@ -25,7 +25,7 @@ const Call = () => {
     streamInfo.stream &&
       new Peer({
         initiator: streamInfo.initiator,
-        trickle: false,
+        trickle: true,
         stream: streamInfo.stream,
         config: {
           iceServers: [
