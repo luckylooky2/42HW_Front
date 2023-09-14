@@ -17,23 +17,26 @@ const Main = () => {
     useContext(AuthContext);
   const { socket, setSocket } = useContext(SocketContext);
 
-  const connectSocket = useCallback(() => {
-    if (socket === null) {
-      // TODO : useSocket 만들기
-      const socket = io(`${API_URL}`, {
-        query: { nickname: myInfo?.nickname },
-      });
-      console.log(socket);
-      setSocket(socket);
-    }
-  }, [myInfo]);
+  const connectSocket = useCallback(
+    (nickname: string) => {
+      if (socket === null) {
+        // TODO : useSocket 만들기
+        const socket = io(`${API_URL}`, {
+          query: { nickname: nickname },
+        });
+        console.log(socket);
+        setSocket(socket);
+      }
+    },
+    [myInfo]
+  );
 
   const getMyInfo = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/users`);
       setMyInfo(response.data);
       setIsLoading(false);
-      connectSocket();
+      connectSocket(response.data);
     } catch (e) {
       alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
       navigate("/login");
