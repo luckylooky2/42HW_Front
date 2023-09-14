@@ -38,11 +38,11 @@ const Call = () => {
             //     "stun:stun4.l.google.com:19302",
             //   ],
             // },
-            {
-              urls: `turn:${TURN_URL}`,
-              username: TURN_USERNAME,
-              credential: TURN_PASSWORD,
-            },
+            // {
+            //   urls: `turn:${TURN_URL}`,
+            //   username: TURN_USERNAME,
+            //   credential: TURN_PASSWORD,
+            // },
           ],
         },
       })
