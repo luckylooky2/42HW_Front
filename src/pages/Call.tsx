@@ -38,11 +38,11 @@ const Call = () => {
                 "stun:stun4.l.google.com:19302",
               ],
             },
-            // {
-            //   urls: `turn:${TURN_URL}`,
-            //   username: TURN_USERNAME,
-            //   credential: TURN_PASSWORD,
-            // },
+            {
+              urls: `turn:${TURN_URL}`,
+              username: TURN_USERNAME,
+              credential: TURN_PASSWORD,
+            },
           ],
         },
       })
@@ -158,13 +158,13 @@ const Call = () => {
         <MicrophoneSoundChecker />
       </div>
       <div className="h-[65%] w-full flex flex-col justify-center">
-        <div className="h-[70%] w-[95%] overflow mx-auto">
+        <div className="h-[75%] w-[95%] overflow mx-auto">
           {screen === SCREEN.INIT && (
             <InitialScreen opponentStatus={opponentStatus} />
           )}
           {screen === SCREEN.TOPIC_SELECT && <TopicSelect />}
         </div>
-        <div className="grid grid-cols-3 max-w-[300px] h-[20%] w-full mx-auto">
+        <div className="grid grid-cols-3 max-w-[300px] h-[25%] w-full mx-auto">
           <CallButton
             onClick={
               screen === SCREEN.TOPIC_SELECT
