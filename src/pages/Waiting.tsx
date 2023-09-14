@@ -33,6 +33,7 @@ const Waiting = () => {
           opponentNickname: string;
         }) => {
           console.log("matching");
+          console.log(data);
           dispatch({
             type: StreamActionType.SET_MATCHING,
             payload: {

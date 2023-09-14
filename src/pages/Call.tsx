@@ -49,6 +49,7 @@ const Call = () => {
   );
   const peer = peerRef.current;
   console.log("my : ", streamInfo.stream);
+  console.log(streamInfo);
 
   // TODO : 좌우 반전, 마이크 mute
   useEffect(() => {
