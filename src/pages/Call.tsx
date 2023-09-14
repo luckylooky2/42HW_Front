@@ -153,7 +153,7 @@ const Call = () => {
           muted={false}
           ref={opponentVideo}
         />
-        <div className="text-4xl">chanhyle</div>
+        <div className="text-4xl">{streamInfo.opponentNickname}</div>
         <Timer opponentStatus={opponentStatus} />
         <MicrophoneSoundChecker />
       </div>

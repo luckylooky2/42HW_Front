@@ -1,12 +1,4 @@
-import React, {
-  createContext,
-  FC,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
-import Peer from "simple-peer";
+import React, { createContext, FC, useMemo, useReducer } from "react";
 
 interface Props {
   children: React.ReactNode;
@@ -16,6 +8,7 @@ interface Stream {
   stream: MediaStream | null;
   initiator: boolean;
   opponent: string | null;
+  opponentNickname: string | null;
 }
 
 export const StreamActionType = {
@@ -28,6 +21,7 @@ const initialStreamState: Stream = {
   stream: null,
   initiator: false,
   opponent: null,
+  opponentNickname: null,
 };
 
 export const StreamContext = createContext<{
@@ -53,9 +47,15 @@ const streamReducer = (
         ...state,
         initiator: action.payload.initiator,
         opponent: action.payload.opponent,
+        opponentNickname: action.payload.opponentNickname,
       };
     case StreamActionType.DEL_ALL:
-      return { stream: null, initiator: false, opponent: null };
+      return {
+        stream: null,
+        initiator: false,
+        opponent: null,
+        opponentNickname: null,
+      };
     default:
       return state;
   }
