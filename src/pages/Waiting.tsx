@@ -27,11 +27,19 @@ const Waiting = () => {
     if (socket) {
       socket.on(
         "matching",
-        (data: { initiator: boolean; opponent: string }) => {
+        (data: {
+          initiator: boolean;
+          opponent: string;
+          opponentNickname: string;
+        }) => {
           console.log("matching");
           dispatch({
             type: StreamActionType.SET_MATCHING,
-            payload: { initiator: data.initiator, opponent: data.opponent },
+            payload: {
+              initiator: data.initiator,
+              opponent: data.opponent,
+              opponentNickname: data.opponentNickname,
+            },
           });
           toast.info("매칭이 완료되었습니다.");
           setTimeout(() => {

@@ -19,7 +19,10 @@ const Main = () => {
 
   const connectSocket = useCallback(() => {
     if (socket === null) {
-      const socket = io(`${API_URL}`);
+      // TODO : useSocket 만들기
+      const socket = io(`${API_URL}`, {
+        query: { nickname: myInfo?.nickname },
+      });
       console.log(socket);
       setSocket(socket);
     }
