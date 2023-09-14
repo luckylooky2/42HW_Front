@@ -26,13 +26,14 @@ const Main = () => {
       console.log(socket);
       setSocket(socket);
     }
-  }, []);
+  }, [myInfo]);
 
   const getMyInfo = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}/users`);
       setMyInfo(response.data);
       setIsLoading(false);
+      connectSocket();
     } catch (e) {
       alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
       navigate("/login");
@@ -55,7 +56,6 @@ const Main = () => {
 
   useEffect(() => {
     getMyInfo();
-    connectSocket();
   }, []);
 
   return isLoading ? (
