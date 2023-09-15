@@ -1,6 +1,6 @@
 import { AuthContext } from "@contexts/AuthProvider";
 import { SocketContext } from "@contexts/SocketProvider";
-import { StreamContext } from "@contexts/StreamProvider";
+import { StreamActionType, StreamContext } from "@contexts/StreamProvider";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { useNavigate } from "react-router";
@@ -18,7 +18,7 @@ const Call = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [screen, setScreen] = useState(SCREEN.INIT);
   const { myInfo } = useContext(AuthContext);
-  const { streamInfo } = useContext(StreamContext);
+  const { streamInfo, dispatch } = useContext(StreamContext);
   const { socket } = useContext(SocketContext);
   const opponentVideo = useRef<HTMLVideoElement>(null);
   const peerRef = useRef<Peer.Instance>(
@@ -124,8 +124,7 @@ const Call = () => {
   const hangUp = useCallback(() => {
     peer?.destroy();
     console.log("hang up");
-    const tracks = streamInfo.stream?.getAudioTracks();
-    if (tracks) tracks[0].stop();
+    stopMicrophone();
     setIsMuted(true);
     navigate("/");
   }, [peer, streamInfo]);
@@ -133,6 +132,7 @@ const Call = () => {
   const stopMicrophone = useCallback(() => {
     const tracks = streamInfo.stream?.getAudioTracks();
     if (tracks) tracks[0].stop();
+    dispatch({ type: StreamActionType.DEL_ALL });
   }, [streamInfo]);
 
   const openTopicSelect = useCallback(() => {
