@@ -38,7 +38,12 @@ const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
     updateMicrophoneLevel();
 
     return () => {
-      analyser.disconnect();
+      // 마이크 입력 중지
+      if (microphone) {
+        microphone.mediaStream.getTracks().forEach((track) => {
+          track.stop();
+        }); // 마이크 트랙 가져오기
+      }
     };
   }, [isDone]);
 
