@@ -21,9 +21,7 @@ const Main = () => {
     (nickname: string) => {
       if (socket === null) {
         // TODO : useSocket 만들기
-        const socket = io(`${API_URL}`, {
-          query: { nickname: nickname },
-        });
+        const socket = io(`${API_URL}`);
         console.log(socket);
         setSocket(socket);
       }
