@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { SocketContext } from "@contexts/SocketProvider";
 import { AuthContext } from "@contexts/AuthProvider";
@@ -15,10 +15,11 @@ const Setting = () => {
   const { myInfo } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
   const { streamInfo, dispatch } = useContext(StreamContext);
+  const streamArray = useRef<MediaStream[]>([]);
 
   useEffect(() => {
     if (myInfo === null) {
-      stopMicrophone();
+      stopAllStreams();
       navigate("/main");
     }
     getUserMedia();
@@ -27,7 +28,7 @@ const Setting = () => {
   useEffect(() => {
     const id = setInterval(() => {
       pollMicAvailable();
-    }, 100);
+    }, 300);
 
     return () => {
       clearInterval(id);
@@ -40,9 +41,23 @@ const Setting = () => {
     setMicStatus(result.state);
   };
 
-  const stopMicrophone = useCallback(() => {
-    const tracks = streamInfo.stream?.getAudioTracks();
-    if (tracks) tracks[0].stop();
+  const stopAllStreams = useCallback(() => {
+    streamArray.current.forEach((stream) => {
+      stream.getTracks().forEach((track) => {
+        track.stop();
+      });
+    });
+    dispatch({ type: StreamActionType.DEL_ALL });
+  }, [streamInfo]);
+
+  const stopPrevStreams = useCallback(() => {
+    streamArray.current
+      .filter((v, i) => i !== streamArray.current.length - 1)
+      .forEach((stream) => {
+        stream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      });
   }, [streamInfo]);
 
   const getUserMedia = useCallback(async () => {
@@ -55,8 +70,10 @@ const Setting = () => {
         audio: true,
       });
 
+      console.log(newStream);
       dispatch({ type: StreamActionType.SET_STREAM, payload: newStream });
       setIsDone(true);
+      streamArray.current = [...streamArray.current, newStream];
     } catch (e) {
       toast.error("마이크 권한을 허용해 주세요!");
       dispatch({ type: StreamActionType.DEL_ALL });
@@ -65,11 +82,12 @@ const Setting = () => {
   }, []);
 
   const goToMain = useCallback(() => {
-    stopMicrophone();
+    stopAllStreams();
     navigate("/main");
   }, []);
 
   const goToWaiting = useCallback(() => {
+    stopPrevStreams();
     navigate("/waiting");
   }, []);
 
