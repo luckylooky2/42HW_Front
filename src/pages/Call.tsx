@@ -11,11 +11,13 @@ import InitialScreen from "@components/Call/InitialScreen";
 import { SCREEN } from "@utils/constant";
 import TopicSelect from "@components/Call/TopicSelect";
 import { TURN_URL, TURN_USERNAME, TURN_PASSWORD } from "@utils/constant";
+import { toast } from "react-toastify";
 
 const Call = () => {
   const navigate = useNavigate();
   const [opponentStatus, setOpponentStatus] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [screen, setScreen] = useState(SCREEN.INIT);
   const { myInfo } = useContext(AuthContext);
   const { streamInfo, dispatch } = useContext(StreamContext);
@@ -48,8 +50,6 @@ const Call = () => {
       })
   );
   const peer = peerRef.current;
-  console.log("my : ", streamInfo.stream);
-  console.log(streamInfo);
 
   // TODO : 좌우 반전, 마이크 mute
   useEffect(() => {
@@ -63,7 +63,6 @@ const Call = () => {
       });
 
       peer.on("stream", (currentStream) => {
-        console.log("others :", currentStream);
         if (opponentVideo.current)
           //   // if ("srcObject" in opponentVideo.current)
           opponentVideo.current.srcObject = currentStream;
@@ -80,7 +79,13 @@ const Call = () => {
 
       peer.on("close", () => {
         console.log("Peer 연결이 종료되었습니다.");
+        toast.error(
+          "상대방이 연결을 종료하였습니다. 메인 화면으로 돌아갑니다."
+        );
         setOpponentStatus(false);
+        setTimeout(() => {
+          hangUp();
+        }, 5000);
       });
 
       peer.on("data", (data) => console.log(data));
@@ -91,6 +96,7 @@ const Call = () => {
     }
 
     return () => {
+      hangUp();
       socket?.off("peerConnection");
     };
   }, [peer, socket]);
@@ -123,6 +129,7 @@ const Call = () => {
 
   const hangUp = useCallback(() => {
     peer?.destroy();
+    socket?.emit("leaveRoom", {});
     console.log("hang up");
     stopMicrophone();
     setIsMuted(true);
@@ -140,7 +147,10 @@ const Call = () => {
   }, []);
 
   const closeTopicSelect = useCallback(() => {
-    setScreen(SCREEN.INIT);
+    setIsOpen(false);
+    setTimeout(() => {
+      setScreen(SCREEN.INIT);
+    }, 300);
   }, []);
 
   return (
@@ -156,14 +166,13 @@ const Call = () => {
         />
         <div className="text-4xl">{streamInfo.opponentNickname}</div>
         <Timer opponentStatus={opponentStatus} />
-        <MicrophoneSoundChecker />
       </div>
       <div className="h-[65%] w-full flex flex-col justify-center">
         <div className="h-[75%] w-[95%] overflow mx-auto">
-          {screen === SCREEN.INIT && (
-            <InitialScreen opponentStatus={opponentStatus} />
+          {screen === SCREEN.INIT && <InitialScreen />}
+          {screen === SCREEN.TOPIC_SELECT && (
+            <TopicSelect isOpen={isOpen} setIsOpen={setIsOpen} />
           )}
-          {screen === SCREEN.TOPIC_SELECT && <TopicSelect />}
         </div>
         <div className="grid grid-cols-3 max-w-[300px] h-[25%] w-full mx-auto">
           <CallButton
@@ -174,7 +183,7 @@ const Call = () => {
             }
             text={screen === SCREEN.TOPIC_SELECT ? "return" : "topic"}
             img={screen === SCREEN.TOPIC_SELECT ? "return.svg" : "topic.svg"}
-            disabled={!opponentStatus}
+            disabled={!opponentStatus && screen === SCREEN.INIT}
           />
           <CallButton
             onClick={() => {
@@ -189,6 +198,7 @@ const Call = () => {
             clicked={isMuted}
             text={isMuted ? "mute off" : "mute"}
             img={isMuted ? "mute-off.svg" : "mute.svg"}
+            children={<MicrophoneSoundChecker />}
           />
         </div>
       </div>
