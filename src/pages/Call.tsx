@@ -96,10 +96,9 @@ const Call = () => {
     }
 
     return () => {
-      hangUp();
       socket?.off("peerConnection");
     };
-  }, [peer, socket]);
+  }, [socket]);
 
   useEffect(() => {
     if (peer === null) {
@@ -129,12 +128,13 @@ const Call = () => {
 
   const hangUp = useCallback(() => {
     peer?.destroy();
+    peer?.removeAllListeners();
     socket?.emit("leaveRoom", {});
     console.log("hang up");
     stopMicrophone();
     setIsMuted(true);
     navigate("/");
-  }, [peer, streamInfo]);
+  }, [streamInfo]);
 
   const stopMicrophone = useCallback(() => {
     const tracks = streamInfo.stream?.getAudioTracks();
