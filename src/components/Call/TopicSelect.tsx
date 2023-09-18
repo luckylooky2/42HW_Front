@@ -1,10 +1,14 @@
-import { useContext, useEffect, useState } from "react";
+import { SetStateAction, useContext, useEffect, useState, FC } from "react";
 import TopicButton from "./TopicButton";
 import { SocketContext } from "@contexts/SocketProvider";
 
-const TopicSelect = () => {
+interface Props {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<SetStateAction<boolean>>;
+}
+
+const TopicSelect: FC<Props> = ({ isOpen, setIsOpen }) => {
   const { socket } = useContext(SocketContext);
-  const [isOpen, setIsOpen] = useState(false);
   const topicList: string[] = [
     "shopping",
     "business",
@@ -23,7 +27,6 @@ const TopicSelect = () => {
     }, 100);
 
     return () => {
-      setIsOpen(false);
       clearTimeout(id);
     };
   }, []);
@@ -31,7 +34,7 @@ const TopicSelect = () => {
   return (
     <div
       className="h-[90%] max-w-[300px] grid grid-cols-3 mx-auto"
-      style={{ transform: `scale(${isOpen ? 1 : 0})`, transition: ".5s" }}
+      style={{ transform: `scale(${isOpen ? 1 : 0})`, transition: ".3s" }}
     >
       {topicList.map((v, i) => (
         <TopicButton
@@ -39,7 +42,9 @@ const TopicSelect = () => {
           text={v}
           img="game.svg"
           onClick={() => {
-            socket?.emit("chooseTopic", {});
+            socket?.emit("chooseTopic", {
+              topic: v,
+            });
           }}
         />
       ))}
