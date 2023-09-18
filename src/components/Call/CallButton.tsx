@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 
 interface Props {
   onClick: () => void;
@@ -7,6 +7,7 @@ interface Props {
   disabled?: boolean;
   clicked?: boolean;
   img: string;
+  children?: ReactNode;
 }
 
 const CallButton: FC<Props> = ({
@@ -16,6 +17,7 @@ const CallButton: FC<Props> = ({
   disabled,
   clicked,
   img,
+  children,
 }) => {
   return (
     <div className="mx-auto">
@@ -40,6 +42,7 @@ const CallButton: FC<Props> = ({
         />
       </button>
       {text && <div className="text-center">{text}</div>}
+      {children}
     </div>
   );
 };
@@ -51,4 +54,5 @@ CallButton.defaultProps = {
   clicked: false,
   type: "normal",
   text: "",
+  children: null,
 };
