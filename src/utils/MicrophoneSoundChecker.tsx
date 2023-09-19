@@ -47,7 +47,7 @@ const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
     };
   }, [isDone]);
 
-  return <div>{value}</div>;
+  return <div className="text-center">{value}</div>;
 };
 
 export default MicrophoneSoundChecker;
