@@ -1,4 +1,4 @@
-import React, { createContext, FC, useEffect, useMemo, useState } from "react";
+import React, { createContext, FC, useMemo, useState } from "react";
 import { IUser } from "@typings/db";
 
 interface Props {
