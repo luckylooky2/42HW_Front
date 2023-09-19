@@ -8,10 +8,10 @@ import CallButton from "@components/Call/CallButton";
 import Timer from "@components/Call/Timer";
 import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
 import InitialScreen from "@components/Call/InitialScreen";
-import { SCREEN } from "@utils/constant";
 import TopicSelect from "@components/Call/TopicSelect";
-import { TURN_URL, TURN_USERNAME, TURN_PASSWORD } from "@utils/constant";
-import { toast } from "react-toastify";
+import { SCREEN, ICE_SERVER, COUNT, MILLISECOND } from "@utils/constant";
+import { toast, Id } from "react-toastify";
+import VoteToast from "@components/Call/VoteToast";
 
 const Call = () => {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ const Call = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [screen, setScreen] = useState(SCREEN.INIT);
+  const [voteId, setVoteId] = useState<Id>(0);
   const { myInfo } = useContext(AuthContext);
   const { streamInfo, dispatch } = useContext(StreamContext);
   const { socket } = useContext(SocketContext);
@@ -29,24 +30,7 @@ const Call = () => {
         initiator: streamInfo.initiator,
         trickle: true,
         stream: streamInfo.stream,
-        config: {
-          iceServers: [
-            {
-              urls: [
-                "stun:stun.l.google.com:19302",
-                "stun:stun1.l.google.com:19302",
-                "stun:stun2.l.google.com:19302",
-                "stun:stun3.l.google.com:19302",
-                "stun:stun4.l.google.com:19302",
-              ],
-            },
-            {
-              urls: `turn:${TURN_URL}`,
-              username: TURN_USERNAME,
-              credential: TURN_PASSWORD,
-            },
-          ],
-        },
+        config: { iceServers: ICE_SERVER },
       })
   );
   const peer = peerRef.current;
@@ -58,7 +42,7 @@ const Call = () => {
         socket?.emit("joinSingle", {
           signal: data,
           name: myInfo?.nickname,
-          opponent: streamInfo.opponent,
+          roomName: streamInfo.roomName,
         });
       });
 
@@ -85,20 +69,28 @@ const Call = () => {
         setOpponentStatus(false);
         setTimeout(() => {
           hangUp();
-        }, 5000);
+        }, COUNT.HANG_UP * MILLISECOND);
       });
 
       peer.on("data", (data) => console.log(data));
 
-      socket?.on("peerConnection", (data) => {
-        peer.signal(data.signal);
-      });
+      socket?.on("peerConnection", onPeerConnection);
     }
 
     return () => {
-      socket?.off("peerConnection");
+      socket?.off("peerConnection", onPeerConnection);
     };
   }, [socket]);
+
+  useEffect(() => {
+    socket?.on("vote", onVote);
+    socket?.on("voteResult", onVoteResult);
+
+    return () => {
+      socket?.off("vote", onVote);
+      socket?.off("voteResult", onVoteResult);
+    };
+  }, [voteId]);
 
   useEffect(() => {
     if (peer === null) {
@@ -153,6 +145,42 @@ const Call = () => {
     }, 300);
   }, []);
 
+  const onPeerConnection = useCallback(
+    (data: { signal: Peer.SignalData }) => {
+      if (peer) peer.signal(data.signal);
+    },
+    [socket]
+  );
+
+  const onVote = useCallback(
+    (data: { contentsName: string; requester: string }) => {
+      const id = toast.info(
+        <VoteToast
+          contentsName={data.contentsName}
+          requester={data.requester}
+        />,
+        { autoClose: COUNT.VOTE * MILLISECOND }
+      );
+      setVoteId(id);
+    },
+    [socket]
+  );
+
+  const onVoteResult = useCallback(
+    // TODO : contents type 지정하기
+    (data: { result: boolean; contents: any }) => {
+      toast.update(voteId, {
+        type: data.result ? toast.TYPE.SUCCESS : toast.TYPE.ERROR,
+        render: data.result ? "성공" : "실패",
+        autoClose: COUNT.READY * MILLISECOND,
+        isLoading: false,
+      });
+    },
+    [voteId]
+  );
+
+  // TODO : 한 명이라도 시간 초과가 되었을 때, 백엔드에서 새로운 소켓 이벤트 호출
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="h-[15%] flex flex-col justify-evenly">
@@ -171,7 +199,11 @@ const Call = () => {
         <div className="h-[75%] w-[95%] overflow mx-auto">
           {screen === SCREEN.INIT && <InitialScreen />}
           {screen === SCREEN.TOPIC_SELECT && (
-            <TopicSelect isOpen={isOpen} setIsOpen={setIsOpen} />
+            <TopicSelect
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              setVoteId={setVoteId}
+            />
           )}
         </div>
         <div className="grid grid-cols-3 max-w-[300px] h-[25%] w-full mx-auto">
