@@ -9,7 +9,7 @@ import Call from "@pages/Call";
 import Setting from "@pages/Setting";
 import { ToastContainer } from "react-toastify";
 import * as process from "process";
-import { READY_COUNT } from "@utils/constant";
+import { COUNT, MILLISECOND } from "@utils/constant";
 
 (window as any).global = window;
 (window as any).process = process;
@@ -32,9 +32,10 @@ function App() {
         <ToastContainer
           position="top-center"
           theme="colored"
+          closeOnClick={false}
           pauseOnHover={false}
           pauseOnFocusLoss={false}
-          autoClose={(READY_COUNT - 1.5) * 1000}
+          autoClose={COUNT.READY * MILLISECOND}
         />
       </div>
     </div>
