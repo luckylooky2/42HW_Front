@@ -1,25 +1,16 @@
-import { SetStateAction, useContext, useEffect, useState, FC } from "react";
+import { SetStateAction, useEffect, FC } from "react";
 import TopicButton from "./TopicButton";
-import { SocketContext } from "@contexts/SocketProvider";
+import { Id } from "react-toastify";
+import { TOPIC_LIST } from "@utils/constant";
 
 interface Props {
   isOpen: boolean;
   setIsOpen: React.Dispatch<SetStateAction<boolean>>;
+  setVoteId: React.Dispatch<SetStateAction<Id>>;
 }
 
-const TopicSelect: FC<Props> = ({ isOpen, setIsOpen }) => {
-  const { socket } = useContext(SocketContext);
-  const topicList: string[] = [
-    "shopping",
-    "business",
-    "travel",
-    "sports",
-    "home",
-    "music",
-    "food",
-    "hobbies",
-    "42",
-  ];
+const TopicSelect: FC<Props> = ({ isOpen, setIsOpen, setVoteId }) => {
+  const topicList: string[] = TOPIC_LIST;
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -41,11 +32,7 @@ const TopicSelect: FC<Props> = ({ isOpen, setIsOpen }) => {
           key={`topic-button-${v}`}
           text={v}
           img="game.svg"
-          onClick={() => {
-            socket?.emit("chooseTopic", {
-              topic: v,
-            });
-          }}
+          setVoteId={setVoteId}
         />
       ))}
     </div>
