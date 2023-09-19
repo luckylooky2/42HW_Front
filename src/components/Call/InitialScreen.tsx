@@ -6,10 +6,8 @@ const InitialScreen = () => {
       <div className="bg-gray-100 w-full h-full max-w-[350px] mx-auto rounded-lg overflow-auto">
         <div className="p-5">
           <div>
-            <p>
-              <div>Start talking!</div>
-              <div>What is your name?</div>
-            </p>
+            <div>Start talking!</div>
+            <div>What is your name?</div>
           </div>
         </div>
       </div>
