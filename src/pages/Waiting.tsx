@@ -7,7 +7,7 @@ import { AuthContext } from "@contexts/AuthProvider";
 import { StreamContext, StreamActionType } from "@contexts/StreamProvider";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { READY_COUNT } from "@utils/constant";
+import { COUNT, MILLISECOND } from "@utils/constant";
 
 const Waiting = () => {
   const navigate = useNavigate();
@@ -29,8 +29,8 @@ const Waiting = () => {
         "matching",
         (data: {
           initiator: boolean;
-          opponent: string;
           opponentNickname: string;
+          roomName: string;
         }) => {
           console.log("matching");
           console.log(data);
@@ -38,14 +38,14 @@ const Waiting = () => {
             type: StreamActionType.SET_MATCHING,
             payload: {
               initiator: data.initiator,
-              opponent: data.opponent,
               opponentNickname: data.opponentNickname,
+              roomName: data.roomName,
             },
           });
           toast.info("매칭이 완료되었습니다.");
           setTimeout(() => {
             navigate("/call");
-          }, READY_COUNT * 1000);
+          }, COUNT.MATCH * MILLISECOND);
         }
       );
     }

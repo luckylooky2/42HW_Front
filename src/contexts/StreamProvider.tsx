@@ -7,7 +7,7 @@ interface Props {
 interface Stream {
   stream: MediaStream | null;
   initiator: boolean;
-  opponent: string | null;
+  roomName: string | null;
   opponentNickname: string | null;
 }
 
@@ -20,7 +20,7 @@ export const StreamActionType = {
 const initialStreamState: Stream = {
   stream: null,
   initiator: false,
-  opponent: null,
+  roomName: null,
   opponentNickname: null,
 };
 
@@ -46,14 +46,14 @@ const streamReducer = (
       return {
         ...state,
         initiator: action.payload.initiator,
-        opponent: action.payload.opponent,
+        roomName: action.payload.roomName,
         opponentNickname: action.payload.opponentNickname,
       };
     case StreamActionType.DEL_ALL:
       return {
         stream: null,
         initiator: false,
-        opponent: null,
+        roomName: null,
         opponentNickname: null,
       };
     default:
