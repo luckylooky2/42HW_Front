@@ -1,15 +1,22 @@
+import { CallInfo } from "@typings/Call";
+
 export const API_URL = process.env.REACT_APP_API_URL;
 export const FRONT_URL = process.env.REACT_APP_FRONT_URL;
 
 export const COUNT = {
+  DEFAULT: 1.5,
+  DIFF: 1.5,
   MATCH: 3,
-  READY: 1.5,
   VOTE: 10,
   HANG_UP: 3,
 };
 export const MILLISECOND = 1000;
 
-export const SCREEN = { INIT: "INIT", TOPIC_SELECT: "TOPIC_SELECT" };
+export const SCREEN = {
+  INIT: "INIT",
+  TOPIC_SELECT: "TOPIC_SELECT",
+  TOPIC_MODAL: "TOPIC_MODAL",
+};
 
 export const MIC_STATUS = {
   GRANTED: "granted",
@@ -17,16 +24,37 @@ export const MIC_STATUS = {
   DENIED: "denied",
 };
 
+export const VOTE_SELECT = {
+  YES: "yes",
+  NO: "no",
+  ONGOING: "ongoing",
+};
+
+export const SINGLE_CALL: CallInfo = {
+  TYPE: "single",
+  TOTAL_NUM: 2,
+  OPPONENT_NUM: 1,
+};
+
+export const GROUP_CALL: CallInfo = {
+  TYPE: "group",
+  TOTAL_NUM: 4,
+  OPPONENT_NUM: 3,
+};
+
 export const TOPIC_LIST = [
-  "shopping",
-  "business",
-  "travel",
-  "sports",
-  "home",
-  "music",
-  "food",
-  "hobbies",
-  "42",
+  "Shopping",
+  "Travel",
+  "Sports",
+  "Music",
+  "Food",
+  "Hobbies",
+  "",
+  "",
+  "",
+  // "Business",
+  // "Home",
+  // "42",
 ];
 
 export const ICE_SERVER = [
