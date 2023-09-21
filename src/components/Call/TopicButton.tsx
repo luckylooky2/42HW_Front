@@ -5,7 +5,7 @@ import WaitToast from "@components/Call/WaitToast";
 import { SocketContext } from "@contexts/SocketProvider";
 import { StreamContext } from "@contexts/StreamProvider";
 import { AuthContext } from "@contexts/AuthProvider";
-import { COUNT, MILLISECOND } from "@utils/constant";
+import { COUNT, MILLISECOND, SINGLE_CALL } from "@utils/constant";
 
 interface Props {
   text: string;
@@ -19,23 +19,34 @@ const TopicButton: FC<Props> = ({ text, img, setVoteId }) => {
   const { myInfo } = useContext(AuthContext);
 
   const chooseContents = useCallback(() => {
-    socket?.emit("chooseContents", {
-      contents: text,
-      roomName: streamInfo.roomName,
-      requester: myInfo?.nickname,
-    });
-    const id = toast.info(<WaitToast />, {
-      autoClose: COUNT.VOTE * MILLISECOND,
-    });
-    setVoteId(id);
+    socket?.emit(
+      "chooseContents",
+      {
+        contents: text,
+        roomName: streamInfo.roomName,
+        requester: myInfo?.nickname,
+        voteTime: COUNT.VOTE * MILLISECOND,
+      },
+      (result: boolean) => {
+        if (result) {
+          const id = toast.info(<WaitToast callType={SINGLE_CALL} />, {
+            autoClose: (COUNT.VOTE - COUNT.DIFF) * MILLISECOND,
+          });
+          setVoteId(id);
+        } else toast.warning("이미 투표가 진행중입니다!");
+      }
+    );
   }, []);
 
   return (
     <div className="mx-auto flex items-center">
-      <div className="">
+      <div>
         <button
-          className="w-16 h-16 rounded-full flex justify-center items-center bg-orange-100 hover:bg-orange-300"
+          className={`w-16 h-16 rounded-full flex justify-center items-center ${
+            text === "" ? "bg-gray-100" : "bg-orange-100 hover:bg-orange-300"
+          }`}
           onClick={chooseContents}
+          disabled={text === ""}
         >
           <img className="w-8 h-8" src={img} alt="hang-up" />
         </button>
