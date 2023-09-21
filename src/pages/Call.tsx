@@ -9,9 +9,16 @@ import Timer from "@components/Call/Timer";
 import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
 import InitialScreen from "@components/Call/InitialScreen";
 import TopicSelect from "@components/Call/TopicSelect";
-import { SCREEN, ICE_SERVER, COUNT, MILLISECOND } from "@utils/constant";
+import {
+  SCREEN,
+  ICE_SERVER,
+  COUNT,
+  MILLISECOND,
+  SINGLE_CALL,
+} from "@utils/constant";
 import { toast, Id } from "react-toastify";
 import VoteToast from "@components/Call/VoteToast";
+import TopicModal from "@components/Call/TopicModal";
 
 const Call = () => {
   const navigate = useNavigate();
@@ -20,10 +27,12 @@ const Call = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [screen, setScreen] = useState(SCREEN.INIT);
   const [voteId, setVoteId] = useState<Id>(0);
+  const [contents, setContents] = useState<any>([]);
   const { myInfo } = useContext(AuthContext);
   const { streamInfo, dispatch } = useContext(StreamContext);
   const { socket } = useContext(SocketContext);
   const opponentVideo = useRef<HTMLVideoElement>(null);
+  const timeoutId = useRef<any>(0);
   const peerRef = useRef<Peer.Instance>(
     streamInfo.stream &&
       new Peer({
@@ -67,7 +76,7 @@ const Call = () => {
           "상대방이 연결을 종료하였습니다. 메인 화면으로 돌아갑니다."
         );
         setOpponentStatus(false);
-        setTimeout(() => {
+        timeoutId.current = setTimeout(() => {
           hangUp();
         }, COUNT.HANG_UP * MILLISECOND);
       });
@@ -85,12 +94,20 @@ const Call = () => {
   useEffect(() => {
     socket?.on("vote", onVote);
     socket?.on("voteResult", onVoteResult);
+    socket?.on("voteFail", onVoteFail);
 
     return () => {
       socket?.off("vote", onVote);
       socket?.off("voteResult", onVoteResult);
+      socket?.off("voteFail", onVoteFail);
     };
   }, [voteId]);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutId.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (peer === null) {
@@ -158,8 +175,9 @@ const Call = () => {
         <VoteToast
           contentsName={data.contentsName}
           requester={data.requester}
+          callType={SINGLE_CALL}
         />,
-        { autoClose: COUNT.VOTE * MILLISECOND }
+        { autoClose: (COUNT.VOTE - COUNT.DIFF) * MILLISECOND }
       );
       setVoteId(id);
     },
@@ -172,14 +190,18 @@ const Call = () => {
       toast.update(voteId, {
         type: data.result ? toast.TYPE.SUCCESS : toast.TYPE.ERROR,
         render: data.result ? "성공" : "실패",
-        autoClose: COUNT.READY * MILLISECOND,
+        autoClose: COUNT.DEFAULT * MILLISECOND,
         isLoading: false,
       });
+      // 컨텐츠 업데이트
+      setScreen(SCREEN.TOPIC_MODAL);
     },
     [voteId]
   );
 
-  // TODO : 한 명이라도 시간 초과가 되었을 때, 백엔드에서 새로운 소켓 이벤트 호출
+  const onVoteFail = useCallback(() => {
+    toast.error("실패");
+  }, []);
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
