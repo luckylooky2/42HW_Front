@@ -35,7 +35,8 @@ function App() {
           closeOnClick={false}
           pauseOnHover={false}
           pauseOnFocusLoss={false}
-          autoClose={COUNT.READY * MILLISECOND}
+          autoClose={COUNT.DEFAULT * MILLISECOND}
+          style={{ maxWidth: "500px", width: "100vw" }}
         />
       </div>
     </div>
