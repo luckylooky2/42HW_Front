@@ -19,6 +19,7 @@ body {
   background-color: gainsboro;
   display: flex;
   align-items: center;
+  overscroll-behavior-x: none;
 }
 
 #root {
