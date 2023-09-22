@@ -33,13 +33,11 @@ export const VOTE_SELECT = {
 export const SINGLE_CALL: CallInfo = {
   TYPE: "single",
   TOTAL_NUM: 2,
-  OPPONENT_NUM: 1,
 };
 
 export const GROUP_CALL: CallInfo = {
   TYPE: "group",
   TOTAL_NUM: 4,
-  OPPONENT_NUM: 3,
 };
 
 export const TOPIC_LIST = [
