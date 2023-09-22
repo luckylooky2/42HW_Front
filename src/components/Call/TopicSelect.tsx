@@ -29,7 +29,7 @@ const TopicSelect: FC<Props> = ({ isOpen, setIsOpen, setVoteId }) => {
     >
       {topicList.map((v, i) => (
         <TopicButton
-          key={`topic-button-${v}`}
+          key={`topic-button-${v}-${i}`}
           text={v}
           img="game.svg"
           setVoteId={setVoteId}
