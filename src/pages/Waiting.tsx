@@ -8,6 +8,7 @@ import { StreamContext, StreamActionType } from "@contexts/StreamProvider";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { COUNT, MILLISECOND } from "@utils/constant";
+import { OpponentInfo } from "@typings/Call";
 
 const Waiting = () => {
   const navigate = useNavigate();
@@ -27,18 +28,12 @@ const Waiting = () => {
     if (socket) {
       socket.on(
         "matching",
-        (data: {
-          initiator: boolean;
-          opponentNickname: string;
-          roomName: string;
-        }) => {
+        (data: { opponent: OpponentInfo[]; roomName: string }) => {
           console.log("matching");
-          console.log(data);
           dispatch({
             type: StreamActionType.SET_MATCHING,
             payload: {
-              initiator: data.initiator,
-              opponentNickname: data.opponentNickname,
+              opponent: data.opponent,
               roomName: data.roomName,
             },
           });
@@ -56,7 +51,11 @@ const Waiting = () => {
   }, [socket, streamInfo]);
 
   useEffect(() => {
-    if (socket) socket.emit("registerSingle", { nickname: myInfo?.nickname });
+    if (socket)
+      socket.emit("register", {
+        nickname: myInfo?.nickname,
+        type: streamInfo.roomType,
+      });
   }, []);
 
   useEffect(() => {
