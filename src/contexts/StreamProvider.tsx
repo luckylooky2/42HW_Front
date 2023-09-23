@@ -1,4 +1,5 @@
 import React, { createContext, FC, useMemo, useReducer } from "react";
+import { OpponentInfo } from "@typings/Call";
 
 interface Props {
   children: React.ReactNode;
@@ -6,22 +7,23 @@ interface Props {
 
 interface Stream {
   stream: MediaStream | null;
-  initiator: boolean;
   roomName: string | null;
-  opponentNickname: string | null;
+  roomType: string | null;
+  opponent: OpponentInfo[] | null;
 }
 
 export const StreamActionType = {
   SET_STREAM: "SET_STREAM",
   SET_MATCHING: "SET_MATCHING",
+  SET_ROOMTYPE: "SET_ROOMTYPE",
   DEL_ALL: "DEL_ALL",
 };
 
 const initialStreamState: Stream = {
   stream: null,
-  initiator: false,
   roomName: null,
-  opponentNickname: null,
+  roomType: null,
+  opponent: null,
 };
 
 export const StreamContext = createContext<{
@@ -45,16 +47,20 @@ const streamReducer = (
     case StreamActionType.SET_MATCHING:
       return {
         ...state,
-        initiator: action.payload.initiator,
         roomName: action.payload.roomName,
-        opponentNickname: action.payload.opponentNickname,
+        opponent: action.payload.opponent,
       };
     case StreamActionType.DEL_ALL:
       return {
         stream: null,
-        initiator: false,
         roomName: null,
-        opponentNickname: null,
+        roomType: null,
+        opponent: null,
+      };
+    case StreamActionType.SET_ROOMTYPE:
+      return {
+        ...state,
+        roomType: action.payload,
       };
     default:
       return state;
