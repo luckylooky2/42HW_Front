@@ -1,4 +1,4 @@
-import { StreamContext } from "@contexts/StreamProvider";
+import { CallContext } from "@contexts/CallProvider";
 import { useState, useEffect, useContext, FC } from "react";
 
 interface Props {
@@ -6,15 +6,14 @@ interface Props {
 }
 
 const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
-  const { streamInfo } = useContext(StreamContext);
+  const { callInfo } = useContext(CallContext);
   const [value, setValue] = useState(0);
 
   useEffect(() => {
     const audioContext = new AudioContext();
     const analyser = audioContext.createAnalyser();
     const microphone =
-      streamInfo.stream &&
-      audioContext.createMediaStreamSource(streamInfo.stream);
+      callInfo.stream && audioContext.createMediaStreamSource(callInfo.stream);
 
     microphone && microphone.connect(analyser);
     // destination 기본 값은 스피커. 스피커에 현재 audio context를 연결

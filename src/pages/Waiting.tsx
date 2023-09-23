@@ -4,17 +4,17 @@ import Loading from "@utils/Loading";
 import BasicButton from "@utils/BasicButton";
 import { SocketContext } from "@contexts/SocketProvider";
 import { AuthContext } from "@contexts/AuthProvider";
-import { StreamContext, StreamActionType } from "@contexts/StreamProvider";
+import { CallContext, CallActionType } from "@contexts/CallProvider";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { COUNT, MILLISECOND } from "@utils/constant";
-import { OpponentInfo } from "@typings/Call";
+import { OpponentInfo } from "@typings/front";
 
 const Waiting = () => {
   const navigate = useNavigate();
   const { myInfo } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
-  const { streamInfo, dispatch } = useContext(StreamContext);
+  const { callInfo, dispatch } = useContext(CallContext);
 
   useEffect(() => {
     if (myInfo === null) {
@@ -22,7 +22,7 @@ const Waiting = () => {
       navigate("/main");
     }
   }, []);
-  console.log(streamInfo.stream);
+  console.log(callInfo.stream);
 
   useEffect(() => {
     if (socket) {
@@ -31,7 +31,7 @@ const Waiting = () => {
         (data: { opponent: OpponentInfo[]; roomName: string }) => {
           console.log("matching");
           dispatch({
-            type: StreamActionType.SET_MATCHING,
+            type: CallActionType.SET_MATCHING,
             payload: {
               opponent: data.opponent,
               roomName: data.roomName,
@@ -48,13 +48,13 @@ const Waiting = () => {
     return () => {
       socket?.off("matching");
     };
-  }, [socket, streamInfo]);
+  }, [socket, callInfo]);
 
   useEffect(() => {
     if (socket)
       socket.emit("register", {
         nickname: myInfo?.nickname,
-        type: streamInfo.roomType,
+        type: callInfo.roomType,
       });
   }, []);
 
@@ -67,15 +67,15 @@ const Waiting = () => {
   }, []);
 
   const cancelWaiting = useCallback(() => {
-    dispatch({ type: StreamActionType.DEL_ALL });
+    dispatch({ type: CallActionType.DEL_ALL });
     stopMicrophone();
     navigate("/main");
-  }, [streamInfo]);
+  }, [callInfo]);
 
   const stopMicrophone = useCallback(() => {
-    const tracks = streamInfo.stream?.getAudioTracks();
+    const tracks = callInfo.stream?.getAudioTracks();
     if (tracks) tracks[0].stop();
-  }, [streamInfo]);
+  }, [callInfo]);
 
   const preventClose = useCallback((e: BeforeUnloadEvent) => {
     e.preventDefault();

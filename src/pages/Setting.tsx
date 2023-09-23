@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { SocketContext } from "@contexts/SocketProvider";
 import { AuthContext } from "@contexts/AuthProvider";
-import { StreamContext, StreamActionType } from "@contexts/StreamProvider";
+import { CallContext, CallActionType } from "@contexts/CallProvider";
 import { toast } from "react-toastify";
 import BasicButton from "@utils/BasicButton";
 import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
@@ -14,7 +14,7 @@ const Setting = () => {
   const [micStatus, setMicStatus] = useState(MIC_STATUS.DENIED);
   const { myInfo } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
-  const { streamInfo, dispatch } = useContext(StreamContext);
+  const { callInfo, dispatch } = useContext(CallContext);
   const streamArray = useRef<MediaStream[]>([]);
 
   useEffect(() => {
@@ -47,8 +47,8 @@ const Setting = () => {
         track.stop();
       });
     });
-    dispatch({ type: StreamActionType.DEL_ALL });
-  }, [streamInfo]);
+    dispatch({ type: CallActionType.DEL_ALL });
+  }, [callInfo]);
 
   const stopPrevStreams = useCallback(() => {
     streamArray.current
@@ -58,7 +58,7 @@ const Setting = () => {
           track.stop();
         });
       });
-  }, [streamInfo]);
+  }, [callInfo]);
 
   const getUserMedia = useCallback(async () => {
     if (myInfo == null || socket === null) return;
@@ -71,12 +71,12 @@ const Setting = () => {
       });
 
       console.log(newStream);
-      dispatch({ type: StreamActionType.SET_STREAM, payload: newStream });
+      dispatch({ type: CallActionType.SET_STREAM, payload: newStream });
       setIsDone(true);
       streamArray.current = [...streamArray.current, newStream];
     } catch (e) {
       toast.error("마이크 권한을 허용해 주세요!");
-      dispatch({ type: StreamActionType.DEL_ALL });
+      dispatch({ type: CallActionType.DEL_ALL });
       setIsDone(false);
     }
   }, []);

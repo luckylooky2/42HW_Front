@@ -3,7 +3,7 @@ import { toast, Id } from "react-toastify";
 import WaitToast from "@components/Call/WaitToast";
 
 import { SocketContext } from "@contexts/SocketProvider";
-import { StreamContext } from "@contexts/StreamProvider";
+import { CallContext } from "@contexts/CallProvider";
 import { AuthContext } from "@contexts/AuthProvider";
 import { COUNT, MILLISECOND, SINGLE_CALL } from "@utils/constant";
 
@@ -15,7 +15,7 @@ interface Props {
 
 const TopicButton: FC<Props> = ({ text, img, setVoteId }) => {
   const { socket } = useContext(SocketContext);
-  const { streamInfo } = useContext(StreamContext);
+  const { callInfo } = useContext(CallContext);
   const { myInfo } = useContext(AuthContext);
 
   const chooseContents = useCallback(() => {
@@ -23,7 +23,7 @@ const TopicButton: FC<Props> = ({ text, img, setVoteId }) => {
       "chooseContents",
       {
         contents: text,
-        roomName: streamInfo.roomName,
+        roomName: callInfo.roomName,
         requester: myInfo?.nickname,
         voteTime: COUNT.VOTE * MILLISECOND,
       },

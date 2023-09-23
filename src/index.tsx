@@ -8,7 +8,7 @@ import { BrowserRouter } from "react-router-dom";
 import { API_URL } from "@utils/constant";
 import AuthProvider from "@contexts/AuthProvider";
 import SocketProvider from "@contexts/SocketProvider";
-import StreamProvider from "@contexts/StreamProvider";
+import CallProvider from "@contexts/CallProvider";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
@@ -44,9 +44,9 @@ root.render(
   <BrowserRouter>
     <AuthProvider>
       <SocketProvider>
-        <StreamProvider>
+        <CallProvider>
           <App />
-        </StreamProvider>
+        </CallProvider>
       </SocketProvider>
     </AuthProvider>
   </BrowserRouter>

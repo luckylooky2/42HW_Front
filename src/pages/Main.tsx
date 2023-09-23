@@ -9,7 +9,7 @@ import ProfileModal from "@components/Main/ProfileModal/ProfileModal";
 import "@styles/Main.css";
 import { SocketContext } from "@contexts/SocketProvider";
 import { io } from "socket.io-client";
-import { StreamActionType, StreamContext } from "@contexts/StreamProvider";
+import { CallActionType, CallContext } from "@contexts/CallProvider";
 
 const Main = () => {
   const [isOpen, setIsOpen] = useState<boolean | null>(null);
@@ -17,7 +17,7 @@ const Main = () => {
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
   const { socket, setSocket } = useContext(SocketContext);
-  const { dispatch } = useContext(StreamContext);
+  const { dispatch } = useContext(CallContext);
 
   const connectSocket = useCallback(
     (nickname: string) => {
@@ -46,7 +46,7 @@ const Main = () => {
   const joinSingleChat = useCallback(() => {
     console.log("1:1 chat");
     dispatch({
-      type: StreamActionType.SET_ROOMTYPE,
+      type: CallActionType.SET_ROOMTYPE,
       payload: SINGLE_CALL.TYPE,
     });
     navigate("/setting");
@@ -55,7 +55,7 @@ const Main = () => {
   const joinGroupChat = useCallback(() => {
     console.log("group chat");
     dispatch({
-      type: StreamActionType.SET_ROOMTYPE,
+      type: CallActionType.SET_ROOMTYPE,
       payload: GROUP_CALL.TYPE,
     });
     navigate("/setting");

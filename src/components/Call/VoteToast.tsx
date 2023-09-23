@@ -1,23 +1,23 @@
 import { FC, useState, useCallback, useContext } from "react";
 import { SocketContext } from "@contexts/SocketProvider";
-import { StreamContext } from "@contexts/StreamProvider";
-import { CallInfo } from "@typings/Call";
+import { CallContext } from "@contexts/CallProvider";
+import { CallType } from "@typings/front";
 import VoteStatus from "@components/Call/VoteStatusBoard";
 
 interface Props {
   contentsName: string;
   requester: string;
-  callType: CallInfo;
+  callType: CallType;
 }
 
 const VoteToast: FC<Props> = ({ contentsName, requester, callType }) => {
   const { socket } = useContext(SocketContext);
-  const { streamInfo } = useContext(StreamContext);
+  const { callInfo } = useContext(CallContext);
   const [isVoted, setIsVoted] = useState<boolean | null>(null);
 
   const voteAccept = useCallback(() => {
     socket?.emit("voteAccept", {
-      roomName: streamInfo.roomName,
+      roomName: callInfo.roomName,
       contents: contentsName,
     });
     setIsVoted(true);
@@ -25,7 +25,7 @@ const VoteToast: FC<Props> = ({ contentsName, requester, callType }) => {
 
   const voteReject = useCallback(() => {
     socket?.emit("voteReject", {
-      roomName: streamInfo.roomName,
+      roomName: callInfo.roomName,
       contents: contentsName,
     });
     setIsVoted(false);

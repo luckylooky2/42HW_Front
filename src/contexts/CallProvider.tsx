@@ -1,63 +1,56 @@
 import React, { createContext, FC, useMemo, useReducer } from "react";
-import { OpponentInfo } from "@typings/Call";
+import { CallInfo } from "@typings/front";
 
 interface Props {
   children: React.ReactNode;
 }
 
-interface Stream {
-  stream: MediaStream | null;
-  roomName: string | null;
-  roomType: string | null;
-  opponent: OpponentInfo[] | null;
-}
-
-export const StreamActionType = {
+export const CallActionType = {
   SET_STREAM: "SET_STREAM",
   SET_MATCHING: "SET_MATCHING",
   SET_ROOMTYPE: "SET_ROOMTYPE",
   DEL_ALL: "DEL_ALL",
 };
 
-const initialStreamState: Stream = {
+const initialCallState: CallInfo = {
   stream: null,
   roomName: null,
   roomType: null,
   opponent: null,
 };
 
-export const StreamContext = createContext<{
-  streamInfo: Stream;
+export const CallContext = createContext<{
+  callInfo: CallInfo;
   dispatch: React.Dispatch<{
     type: string;
     payload?: any;
   }>;
 }>({
-  streamInfo: initialStreamState,
+  callInfo: initialCallState,
   dispatch: () => {},
 });
 
-const streamReducer = (
-  state: Stream,
+const callReducer = (
+  state: CallInfo,
   action: { type: string; payload?: any }
-): Stream => {
+): CallInfo => {
   switch (action.type) {
-    case StreamActionType.SET_STREAM:
+    case CallActionType.SET_STREAM:
       return { ...state, stream: action.payload };
-    case StreamActionType.SET_MATCHING:
+    case CallActionType.SET_MATCHING:
       return {
         ...state,
         roomName: action.payload.roomName,
         opponent: action.payload.opponent,
       };
-    case StreamActionType.DEL_ALL:
+    case CallActionType.DEL_ALL:
       return {
         stream: null,
         roomName: null,
         roomType: null,
         opponent: null,
       };
-    case StreamActionType.SET_ROOMTYPE:
+    case CallActionType.SET_ROOMTYPE:
       return {
         ...state,
         roomType: action.payload,
@@ -67,13 +60,11 @@ const streamReducer = (
   }
 };
 
-const StreamProvider: FC<Props> = ({ children }) => {
-  const [streamInfo, dispatch] = useReducer(streamReducer, initialStreamState);
-  const value = useMemo(() => ({ streamInfo, dispatch }), [streamInfo]);
+const CallProvider: FC<Props> = ({ children }) => {
+  const [callInfo, dispatch] = useReducer(callReducer, initialCallState);
+  const value = useMemo(() => ({ callInfo, dispatch }), [callInfo]);
 
-  return (
-    <StreamContext.Provider value={value}>{children}</StreamContext.Provider>
-  );
+  return <CallContext.Provider value={value}>{children}</CallContext.Provider>;
 };
 
-export default StreamProvider;
+export default CallProvider;

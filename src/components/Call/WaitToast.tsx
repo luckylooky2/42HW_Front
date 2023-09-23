@@ -1,9 +1,9 @@
 import { FC } from "react";
-import { CallInfo } from "@typings/Call";
+import { CallType } from "@typings/front";
 import VoteStatusBoard from "./VoteStatusBoard";
 
 interface Props {
-  callType: CallInfo;
+  callType: CallType;
 }
 
 const WaitToast: FC<Props> = ({ callType }) => {

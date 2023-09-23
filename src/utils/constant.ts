@@ -1,4 +1,4 @@
-import { CallInfo } from "@typings/Call";
+import { CallType } from "@typings/front";
 
 export const API_URL = process.env.REACT_APP_API_URL;
 export const FRONT_URL = process.env.REACT_APP_FRONT_URL;
@@ -30,12 +30,12 @@ export const VOTE_SELECT = {
   ONGOING: "ongoing",
 };
 
-export const SINGLE_CALL: CallInfo = {
+export const SINGLE_CALL: CallType = {
   TYPE: "single",
   TOTAL_NUM: 2,
 };
 
-export const GROUP_CALL: CallInfo = {
+export const GROUP_CALL: CallType = {
   TYPE: "group",
   TOTAL_NUM: 4,
 };

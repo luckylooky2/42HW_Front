@@ -1,5 +1,5 @@
 import { SocketContext } from "@contexts/SocketProvider";
-import { StreamActionType, StreamContext } from "@contexts/StreamProvider";
+import { CallActionType, CallContext } from "@contexts/CallProvider";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Peer from "simple-peer";
 import { useNavigate } from "react-router";
@@ -28,26 +28,26 @@ const Call = () => {
   const [screen, setScreen] = useState(SCREEN.INIT);
   const [voteId, setVoteId] = useState<Id>(0);
   const [contents, setContents] = useState<any>([]);
-  const { streamInfo, dispatch } = useContext(StreamContext);
+  const { callInfo, dispatch } = useContext(CallContext);
   const { socket } = useContext(SocketContext);
-  const videos = new Array(streamInfo.opponent?.length).fill(
+  const videos = new Array(callInfo.opponent?.length).fill(
     useRef<HTMLVideoElement>(null)
   );
   const timeoutId = useRef<any>(0);
   const peerRef = useRef<Peer.Instance[]>([]);
   const peer = peerRef.current;
   const totalNum =
-    streamInfo.roomType === SINGLE_CALL.TYPE
+    callInfo.roomType === SINGLE_CALL.TYPE
       ? SINGLE_CALL.TOTAL_NUM - 1
       : GROUP_CALL.TOTAL_NUM - 2;
 
   useEffect(() => {
-    console.log(totalNum, streamInfo.opponent);
+    console.log(totalNum, callInfo.opponent);
     for (let i = 0; i < totalNum; i++) {
       peer[i] = new Peer({
-        initiator: streamInfo.opponent![i].initiator,
+        initiator: callInfo.opponent![i].initiator,
         trickle: true,
-        stream: streamInfo.stream!,
+        stream: callInfo.stream!,
         config: { iceServers: ICE_SERVER },
       });
     }
@@ -61,9 +61,9 @@ const Call = () => {
           console.log("signal emit");
           socket?.emit("joinSingle", {
             signal: data,
-            opponentNickname: streamInfo.opponent![i].opponentNickname,
-            roomName: streamInfo.roomName,
-            peerIndex: streamInfo.opponent![i].peerIndex,
+            opponentNickname: callInfo.opponent![i].opponentNickname,
+            roomName: callInfo.roomName,
+            peerIndex: callInfo.opponent![i].peerIndex,
           });
         });
 
@@ -147,10 +147,10 @@ const Call = () => {
   }, []);
 
   const muteToggle = useCallback(() => {
-    const tracks = streamInfo.stream?.getAudioTracks();
+    const tracks = callInfo.stream?.getAudioTracks();
     if (tracks) tracks[0].enabled = !tracks[0].enabled;
     setIsMuted((prev) => !prev);
-  }, [streamInfo]);
+  }, [callInfo]);
 
   const hangUp = useCallback(() => {
     for (let i = 0; i < totalNum; i++) peer[i]?.destroy();
@@ -160,13 +160,13 @@ const Call = () => {
     stopMicrophone();
     setIsMuted(true);
     navigate("/");
-  }, [streamInfo]);
+  }, [callInfo]);
 
   const stopMicrophone = useCallback(() => {
-    const tracks = streamInfo.stream?.getAudioTracks();
+    const tracks = callInfo.stream?.getAudioTracks();
     if (tracks) tracks[0].stop();
-    dispatch({ type: StreamActionType.DEL_ALL });
-  }, [streamInfo]);
+    dispatch({ type: CallActionType.DEL_ALL });
+  }, [callInfo]);
 
   const openTopicSelect = useCallback(() => {
     setScreen(SCREEN.TOPIC_SELECT);
@@ -217,7 +217,7 @@ const Call = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="h-[15%] flex flex-col justify-evenly">
-        {streamInfo.opponent?.map((v, i) => (
+        {callInfo.opponent?.map((v, i) => (
           <video
             width={1}
             height={1}
@@ -228,7 +228,7 @@ const Call = () => {
           />
         ))}
         <div className="text-4xl">
-          {streamInfo.opponent!.map((v) => v.opponentNickname).join(" ")}
+          {callInfo.opponent!.map((v) => v.opponentNickname).join(" ")}
         </div>
         <Timer opponentStatus={opponentStatus} />
       </div>
