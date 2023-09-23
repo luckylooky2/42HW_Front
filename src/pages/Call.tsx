@@ -1,4 +1,3 @@
-import { AuthContext } from "@contexts/AuthProvider";
 import { SocketContext } from "@contexts/SocketProvider";
 import { StreamActionType, StreamContext } from "@contexts/StreamProvider";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
@@ -15,6 +14,7 @@ import {
   COUNT,
   MILLISECOND,
   SINGLE_CALL,
+  GROUP_CALL,
 } from "@utils/constant";
 import { toast, Id } from "react-toastify";
 import VoteToast from "@components/Call/VoteToast";
@@ -28,60 +28,68 @@ const Call = () => {
   const [screen, setScreen] = useState(SCREEN.INIT);
   const [voteId, setVoteId] = useState<Id>(0);
   const [contents, setContents] = useState<any>([]);
-  const { myInfo } = useContext(AuthContext);
   const { streamInfo, dispatch } = useContext(StreamContext);
   const { socket } = useContext(SocketContext);
-  const opponentVideo = useRef<HTMLVideoElement>(null);
-  const timeoutId = useRef<any>(0);
-  const peerRef = useRef<Peer.Instance>(
-    streamInfo.stream &&
-      new Peer({
-        initiator: streamInfo.initiator,
-        trickle: true,
-        stream: streamInfo.stream,
-        config: { iceServers: ICE_SERVER },
-      })
+  const videos = new Array(streamInfo.opponent?.length).fill(
+    useRef<HTMLVideoElement>(null)
   );
+  const timeoutId = useRef<any>(0);
+  const peerRef = useRef<Peer.Instance[]>([]);
   const peer = peerRef.current;
+  const totalNum =
+    streamInfo.roomType === SINGLE_CALL.TYPE
+      ? SINGLE_CALL.TOTAL_NUM - 1
+      : GROUP_CALL.TOTAL_NUM - 2;
+
+  useEffect(() => {
+    console.log(totalNum, streamInfo.opponent);
+    for (let i = 0; i < totalNum; i++) {
+      peer[i] = new Peer({
+        initiator: streamInfo.opponent![i].initiator,
+        trickle: true,
+        stream: streamInfo.stream!,
+        config: { iceServers: ICE_SERVER },
+      });
+    }
+  }, []);
 
   // TODO : 좌우 반전, 마이크 mute
   useEffect(() => {
     if (peer) {
-      peer.on("signal", (data) => {
-        socket?.emit("joinSingle", {
-          signal: data,
-          name: myInfo?.nickname,
-          roomName: streamInfo.roomName,
+      for (let i = 0; i < totalNum; i++) {
+        peer[i].on("signal", (data) => {
+          console.log("signal emit");
+          socket?.emit("joinSingle", {
+            signal: data,
+            opponentNickname: streamInfo.opponent![i].opponentNickname,
+            roomName: streamInfo.roomName,
+            peerIndex: streamInfo.opponent![i].peerIndex,
+          });
         });
-      });
 
-      peer.on("stream", (currentStream) => {
-        if (opponentVideo.current)
-          //   // if ("srcObject" in opponentVideo.current)
-          opponentVideo.current.srcObject = currentStream;
-        // else
-        // opponentVideo.current.src =
-        // window.URL.createObjectURL(currentStream);
-      });
+        peer[i].on("stream", (currentStream) => {
+          videos[i].current!.srcObject = currentStream;
+        });
 
-      peer.on("error", (err) => {
-        console.log(err);
-        setOpponentStatus(false);
-        console.log("opponent left");
-      });
+        peer[i].on("error", (err) => {
+          console.log(err);
+          setOpponentStatus(false);
+          console.log("opponent left");
+        });
 
-      peer.on("close", () => {
-        console.log("Peer 연결이 종료되었습니다.");
-        toast.error(
-          "상대방이 연결을 종료하였습니다. 메인 화면으로 돌아갑니다."
-        );
-        setOpponentStatus(false);
-        timeoutId.current = setTimeout(() => {
-          hangUp();
-        }, COUNT.HANG_UP * MILLISECOND);
-      });
+        peer[i].on("close", () => {
+          console.log("Peer 연결이 종료되었습니다.");
+          toast.error(
+            "상대방이 연결을 종료하였습니다. 메인 화면으로 돌아갑니다."
+          );
+          setOpponentStatus(false);
+          timeoutId.current = setTimeout(() => {
+            hangUp();
+          }, COUNT.HANG_UP * MILLISECOND);
+        });
 
-      peer.on("data", (data) => console.log(data));
+        peer[i].on("data", (data) => console.log(data));
+      }
 
       socket?.on("peerConnection", onPeerConnection);
     }
@@ -90,6 +98,15 @@ const Call = () => {
       socket?.off("peerConnection", onPeerConnection);
     };
   }, [socket]);
+
+  const onPeerConnection = useCallback(
+    (data: { signal: Peer.SignalData; peerIndex: number }) => {
+      if (peer) {
+        peer[data.peerIndex].signal(data.signal);
+      }
+    },
+    [socket]
+  );
 
   useEffect(() => {
     socket?.on("vote", onVote);
@@ -136,8 +153,8 @@ const Call = () => {
   }, [streamInfo]);
 
   const hangUp = useCallback(() => {
-    peer?.destroy();
-    peer?.removeAllListeners();
+    for (let i = 0; i < totalNum; i++) peer[i]?.destroy();
+    for (let i = 0; i < totalNum; i++) peer[i]?.removeAllListeners();
     socket?.emit("leaveRoom", {});
     console.log("hang up");
     stopMicrophone();
@@ -161,13 +178,6 @@ const Call = () => {
       setScreen(SCREEN.INIT);
     }, 300);
   }, []);
-
-  const onPeerConnection = useCallback(
-    (data: { signal: Peer.SignalData }) => {
-      if (peer) peer.signal(data.signal);
-    },
-    [socket]
-  );
 
   const onVote = useCallback(
     (data: { contentsName: string; requester: string }) => {
@@ -194,6 +204,7 @@ const Call = () => {
         isLoading: false,
       });
       // 컨텐츠 업데이트
+      setContents(data.contents);
       setScreen(SCREEN.TOPIC_MODAL);
     },
     [voteId]
@@ -206,15 +217,19 @@ const Call = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="h-[15%] flex flex-col justify-evenly">
-        <video
-          width={1}
-          height={1}
-          playsInline
-          autoPlay
-          muted={false}
-          ref={opponentVideo}
-        />
-        <div className="text-4xl">{streamInfo.opponentNickname}</div>
+        {streamInfo.opponent?.map((v, i) => (
+          <video
+            width={1}
+            height={1}
+            playsInline
+            autoPlay
+            muted={false}
+            ref={videos[i]}
+          />
+        ))}
+        <div className="text-4xl">
+          {streamInfo.opponent!.map((v) => v.opponentNickname).join(" ")}
+        </div>
         <Timer opponentStatus={opponentStatus} />
       </div>
       <div className="h-[65%] w-full flex flex-col justify-center">
@@ -227,6 +242,7 @@ const Call = () => {
               setVoteId={setVoteId}
             />
           )}
+          {screen === SCREEN.TOPIC_MODAL && <TopicModal contents={contents} />}
         </div>
         <div className="grid grid-cols-3 max-w-[300px] h-[25%] w-full mx-auto">
           <CallButton
@@ -241,7 +257,7 @@ const Call = () => {
           />
           <CallButton
             onClick={() => {
-              peer?.send("hello");
+              // peer?.send("hello");
             }}
             text="game"
             img="game.svg"
@@ -251,7 +267,7 @@ const Call = () => {
             onClick={muteToggle}
             clicked={isMuted}
             text={isMuted ? "mute off" : "mute"}
-            img={isMuted ? "mute-off.svg" : "mute.svg"}
+            img={isMuted ? "mute.svg" : "mute-off.svg"}
             children={<MicrophoneSoundChecker />}
           />
         </div>
