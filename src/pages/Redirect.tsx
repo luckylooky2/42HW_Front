@@ -12,6 +12,7 @@ const Redirect = () => {
     if (Object.keys(params).length !== 0) {
       localStorage.setItem("at", params.token as string);
       axios.defaults.headers.common["Authorization"] = `Bearer ${params.token}`;
+      localStorage.setItem("isLogin", "true");
       navigate("/main");
     } else navigate("/login");
   }, []);
