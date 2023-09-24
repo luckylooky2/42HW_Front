@@ -41,34 +41,35 @@ const Call = () => {
       ? SINGLE_CALL.TOTAL_NUM - 1
       : GROUP_CALL.TOTAL_NUM - 2;
 
+  // /call로 접근하였을 때 잘 login 화면으로 가는지?
   useEffect(() => {
-    console.log(totalNum, callInfo.opponent);
-    for (let i = 0; i < totalNum; i++) {
-      peer[i] = new Peer({
-        initiator: callInfo.opponent![i].initiator,
-        trickle: true,
-        stream: callInfo.stream!,
-        config: { iceServers: ICE_SERVER },
-      });
-    }
+    if (callInfo.opponent && callInfo.stream)
+      for (let i = 0; i < totalNum; i++) {
+        peer[i] = new Peer({
+          initiator: callInfo.opponent[i].initiator,
+          trickle: true,
+          stream: callInfo.stream,
+          config: { iceServers: ICE_SERVER },
+        });
+      }
   }, []);
 
   // TODO : 좌우 반전, 마이크 mute
   useEffect(() => {
-    if (peer) {
+    if (peer && callInfo.opponent) {
       for (let i = 0; i < totalNum; i++) {
         peer[i].on("signal", (data) => {
-          console.log("signal emit");
-          socket?.emit("joinSingle", {
-            signal: data,
-            opponentNickname: callInfo.opponent![i].opponentNickname,
-            roomName: callInfo.roomName,
-            peerIndex: callInfo.opponent![i].peerIndex,
-          });
+          if (callInfo.opponent)
+            socket?.emit("joinSingle", {
+              signal: data,
+              opponentNickname: callInfo.opponent[i].opponentNickname,
+              roomName: callInfo.roomName,
+              peerIndex: callInfo.opponent[i].peerIndex,
+            });
         });
 
         peer[i].on("stream", (currentStream) => {
-          videos[i].current!.srcObject = currentStream;
+          videos[i].current.srcObject = currentStream;
         });
 
         peer[i].on("error", (err) => {
@@ -228,7 +229,7 @@ const Call = () => {
           />
         ))}
         <div className="text-4xl">
-          {callInfo.opponent!.map((v) => v.opponentNickname).join(" ")}
+          {callInfo.opponent?.map((v) => v.opponentNickname).join(" ")}
         </div>
         <Timer opponentStatus={opponentStatus} />
       </div>
