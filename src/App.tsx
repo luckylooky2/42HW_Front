@@ -7,6 +7,7 @@ import MainRouter from "@utils/MainRouter";
 import { ToastContainer } from "react-toastify";
 import * as process from "process";
 import { COUNT, MILLISECOND } from "@utils/constant";
+import Redirect from "@pages/Redirect";
 
 (window as any).global = window;
 (window as any).process = process;
@@ -23,6 +24,7 @@ function App() {
             path="/"
             element={<Login login={login} setLogin={setLogin} />}
           />
+          <Route path="/redirect" element={<Redirect />} />
           <Route path="*" element={<MainRouter setLogin={setLogin} />} />
         </Routes>
         <ToastContainer

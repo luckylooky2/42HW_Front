@@ -67,7 +67,6 @@ const Main = () => {
 
   useEffect(() => {
     getMyInfo();
-    localStorage.setItem("isLogin", "true");
   }, []);
 
   return isLoading ? (
