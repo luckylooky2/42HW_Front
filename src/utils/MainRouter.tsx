@@ -1,7 +1,6 @@
 import React, { Dispatch, FC, useLayoutEffect, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router";
 import Main from "@pages/Main";
-import Redirect from "@pages/Redirect";
 import Waiting from "@pages/Waiting";
 import Call from "@pages/Call";
 import Setting from "@pages/Setting";
@@ -34,7 +33,6 @@ const MainRouter: FC<Props> = ({ setLogin }) => {
 
   return (
     <Routes>
-      <Route path="/redirect" Component={Redirect} />
       <Route path="/main" Component={Main} />
       <Route path="/setting" Component={Setting} />
       <Route path="/waiting" Component={Waiting} />
