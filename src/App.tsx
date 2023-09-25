@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Routes, Route } from "react-router";
 // 동적 import 추가하기
 import Login from "@pages/Login";
-import Redirect from "@pages/Redirect";
 
 import MainRouter from "@utils/MainRouter";
 import { ToastContainer } from "react-toastify";
@@ -24,7 +23,6 @@ function App() {
             path="/"
             element={<Login login={login} setLogin={setLogin} />}
           />
-          <Route path="/redirect" Component={Redirect} />
           <Route path="*" element={<MainRouter setLogin={setLogin} />} />
         </Routes>
         <ToastContainer
