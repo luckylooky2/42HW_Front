@@ -30,16 +30,20 @@ const Call = () => {
   const [contents, setContents] = useState<any>([]);
   const { callInfo, dispatch } = useContext(CallContext);
   const { socket } = useContext(SocketContext);
-  const videos = new Array(callInfo.opponent?.length).fill(
-    useRef<HTMLVideoElement>(null)
-  );
+  const videos = [
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+    useRef<HTMLVideoElement>(null),
+  ];
   const timeoutId = useRef<any>(0);
   const peerRef = useRef<Peer.Instance[]>([]);
   const peer = peerRef.current;
   const totalNum =
     callInfo.roomType === SINGLE_CALL.TYPE
       ? SINGLE_CALL.TOTAL_NUM - 1
-      : GROUP_CALL.TOTAL_NUM - 2;
+      : GROUP_CALL.TOTAL_NUM - 1;
+  const callType =
+    callInfo.roomType === SINGLE_CALL.TYPE ? SINGLE_CALL : GROUP_CALL;
 
   // /call로 접근하였을 때 잘 login 화면으로 가는지?
   useEffect(() => {
@@ -69,7 +73,7 @@ const Call = () => {
         });
 
         peer[i].on("stream", (currentStream) => {
-          videos[i].current.srcObject = currentStream;
+          videos[i].current!.srcObject = currentStream;
         });
 
         peer[i].on("error", (err) => {
@@ -186,7 +190,7 @@ const Call = () => {
         <VoteToast
           contentsName={data.contentsName}
           requester={data.requester}
-          callType={SINGLE_CALL}
+          callType={callType}
         />,
         { autoClose: (COUNT.VOTE - COUNT.DIFF) * MILLISECOND }
       );
@@ -204,9 +208,10 @@ const Call = () => {
         autoClose: COUNT.DEFAULT * MILLISECOND,
         isLoading: false,
       });
-      // 컨텐츠 업데이트
-      setContents(data.contents);
-      setScreen(SCREEN.TOPIC_MODAL);
+      if (data.result) {
+        setContents(data.contents);
+        setScreen(SCREEN.TOPIC_MODAL);
+      }
     },
     [voteId]
   );
@@ -220,6 +225,7 @@ const Call = () => {
       <div className="h-[15%] flex flex-col justify-evenly">
         {callInfo.opponent?.map((v, i) => (
           <video
+            key={`opponentVideo-${v}-${i}`}
             width={1}
             height={1}
             playsInline
