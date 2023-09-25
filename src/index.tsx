@@ -11,6 +11,7 @@ import SocketProvider from "@contexts/SocketProvider";
 import CallProvider from "@contexts/CallProvider";
 import axios from "axios";
 
+// TODO : axios interceptor 사용하기
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL =
   //   process.env.NODE_ENV === "production"
@@ -18,20 +19,20 @@ axios.defaults.baseURL =
   // :
   API_URL;
 
-// 토큰이 있으면 꺼내서 axios에 저장
-function loadUserData() {
-  try {
-    const token = localStorage.getItem("at");
-    // 없으면 일단 저장하지 않음
-    if (!token) return;
+// // 토큰이 있으면 꺼내서 axios에 저장
+// function loadUserData() {
+//   try {
+//     const token = localStorage.getItem("at");
+//     // 없으면 일단 저장하지 않음
+//     if (!token) return;
 
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } catch (e) {
-    console.log("localStorage is not working");
-  }
-}
+//     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+//   } catch (e) {
+//     console.log("localStorage is not working");
+//   }
+// }
 
-loadUserData();
+// loadUserData();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
