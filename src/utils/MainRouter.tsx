@@ -15,7 +15,7 @@ const MainRouter: FC<Props> = ({ setLogin }) => {
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
-    const cookie = getCookie("at");
+    const cookie = getCookie("login");
     const isLogin = localStorage.getItem("isLogin");
     if (!(isLogin === "true" && cookie)) {
       alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
@@ -23,7 +23,7 @@ const MainRouter: FC<Props> = ({ setLogin }) => {
   }, []);
 
   useEffect(() => {
-    const cookie = getCookie("at");
+    const cookie = getCookie("login");
     const isLogin = localStorage.getItem("isLogin");
     if (!(isLogin === "true" && cookie)) {
       setLogin(true);

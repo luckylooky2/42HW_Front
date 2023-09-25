@@ -16,7 +16,7 @@ const Login: FC<Props> = ({ login, setLogin }) => {
   }, []);
 
   useEffect(() => {
-    const cookie = getCookie("at");
+    const cookie = getCookie("login");
     const isLogin = localStorage.getItem("isLogin");
     if (isLogin === "true" && cookie) navigate("/main");
     else setLogin(true);
