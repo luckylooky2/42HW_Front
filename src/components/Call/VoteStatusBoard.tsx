@@ -20,19 +20,21 @@ const VoteStatusBoard: FC<Props> = ({ totalNum }) => {
   );
   const indexRef = useRef<number>(1);
 
-  const onSomeoneAccept = useCallback(() => {
-    const copy = voteStatus.map((v) => v);
-    copy[indexRef.current] = VOTE_SELECT.YES;
-    indexRef.current++;
-    setVoteStatus(copy);
-  }, [voteStatus]);
+  const onSomeoneAccept = () => {
+    setVoteStatus((prev) => {
+      const copy = prev.map((v) => v);
+      copy[indexRef.current++] = VOTE_SELECT.YES;
+      return copy;
+    });
+  };
 
-  const onSomeoneReject = useCallback(() => {
-    const copy = voteStatus.map((v) => v);
-    copy[indexRef.current] = VOTE_SELECT.NO;
-    indexRef.current++;
-    setVoteStatus(copy);
-  }, [voteStatus]);
+  const onSomeoneReject = () => {
+    setVoteStatus((prev) => {
+      const copy = prev.map((v) => v);
+      copy[indexRef.current++] = VOTE_SELECT.NO;
+      return copy;
+    });
+  };
 
   useEffect(() => {
     socket?.on("someoneAccept", onSomeoneAccept);
