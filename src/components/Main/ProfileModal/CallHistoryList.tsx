@@ -1,23 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { ICallHistory } from "@typings/db";
-import { useNavigate } from "react-router";
 import { API_URL } from "@utils/constant";
 import axios from "axios";
 import CallHistory from "@components/Main/ProfileModal/CallHistory";
 
 const CallHistoryList = () => {
   const [callHistory, setCallHistory] = useState<ICallHistory[]>([]);
-  const navigate = useNavigate();
 
   const getCallHistory = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_URL}/call/callHistory`);
-
-      setCallHistory(response.data);
-    } catch (e) {
-      alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
-      navigate("/");
-    }
+    const response = await axios.get(`${API_URL}/call/callHistory`);
+    setCallHistory(response.data);
   }, []);
 
   useEffect(() => {
