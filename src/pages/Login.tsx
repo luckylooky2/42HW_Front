@@ -1,16 +1,12 @@
-import React, { useCallback, useEffect, FC, Dispatch } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { API_URL } from "@utils/constant";
 import { useNavigate } from "react-router";
 import Loading from "@utils/Loading";
 import { getCookie } from "@utils/getCookie";
 
-interface Props {
-  login: boolean;
-  setLogin: Dispatch<React.SetStateAction<boolean>>;
-}
-
-const Login: FC<Props> = ({ login, setLogin }) => {
+const Login = () => {
   const navigate = useNavigate();
+  const [login, setLogin] = useState(false);
   const clickLogin = useCallback(() => {
     window.location.href = `${API_URL}/auth/login`;
   }, []);
@@ -54,5 +50,3 @@ const Login: FC<Props> = ({ login, setLogin }) => {
 };
 
 export default Login;
-
-// TODO : 로그인 페이지에 추가
