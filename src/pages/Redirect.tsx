@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import Loading from "@utils/Loading";
-import { getCookie } from "@utils/getCookie";
+import { getCookie } from "@utils/manageCookie";
 
 const Redirect = () => {
   const navigate = useNavigate();
