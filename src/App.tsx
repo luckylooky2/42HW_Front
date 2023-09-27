@@ -2,12 +2,14 @@ import React from "react";
 import { Routes, Route } from "react-router";
 // 동적 import 추가하기
 import Login from "@pages/Login";
-
 import MainRouter from "@utils/MainRouter";
 import { ToastContainer } from "react-toastify";
 import * as process from "process";
 import { COUNT, MILLISECOND } from "@utils/constant";
 import Redirect from "@pages/Redirect";
+import i18n from "./i18n";
+
+console.log(i18n);
 
 (window as any).global = window;
 (window as any).process = process;

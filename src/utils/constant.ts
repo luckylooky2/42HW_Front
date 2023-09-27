@@ -24,6 +24,16 @@ export const MIC_STATUS = {
   DENIED: "denied",
 };
 
+export const LANG = {
+  EN: "en",
+  KR: "kr",
+};
+
+export const LANGLIST = {
+  EN: ["English", "Korean"],
+  KR: ["영어", "한국어"],
+};
+
 export const VOTE_SELECT = {
   YES: "yes",
   NO: "no",
@@ -47,7 +57,7 @@ export const TOPIC_LIST = [
   "Music",
   "Food",
   "Hobbies",
-  "",
+  "Random",
   "",
   "",
   // "Business",
