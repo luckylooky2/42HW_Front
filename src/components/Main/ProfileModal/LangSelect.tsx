@@ -1,7 +1,30 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import i18n from "i18n";
+import { LANG, LANGLIST } from "@utils/constant";
 
 const LangSelect = () => {
-  const [systemLang, setSystemLang] = useState("");
+  const [langList, setLangList] = useState<string[]>([]);
+
+  useEffect(() => {
+    const curr = localStorage.getItem("lang") === LANG.KR ? LANG.KR : LANG.EN;
+    setLangList(curr === LANG.KR ? LANGLIST.KR : LANGLIST.EN);
+  }, []);
+
+  const setSystemLanguage = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const target = e.target as HTMLSelectElement;
+      if (target.value === "한국어" || target.value === "Korean") {
+        localStorage.setItem("lang", LANG.KR);
+        i18n.changeLanguage(LANG.KR).then().catch();
+        setLangList(LANGLIST.KR);
+      } else {
+        localStorage.setItem("lang", LANG.EN);
+        i18n.changeLanguage(LANG.EN).then().catch();
+        setLangList(LANGLIST.EN);
+      }
+    },
+    []
+  );
 
   return (
     <div className="flex flex-col h-[30%] justify-between">
@@ -22,9 +45,12 @@ const LangSelect = () => {
             <span>시스템 언어 : </span>
             <select
               className="w-20"
-              onChange={(e) => setSystemLang(e.target.value)}
+              value={
+                localStorage.getItem("lang") === LANG.KR ? "한국어" : "영어"
+              }
+              onChange={setSystemLanguage}
             >
-              {["한국어", "영어"].map((v, i) => (
+              {langList.map((v, i) => (
                 <option key={`시스템 언어-${i}`}>{v}</option>
               ))}
             </select>
