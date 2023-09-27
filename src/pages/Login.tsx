@@ -2,10 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import { API_URL } from "@utils/constant";
 import { useNavigate } from "react-router";
 import Loading from "@utils/Loading";
-import { getCookie } from "@utils/getCookie";
+import { getCookie } from "@utils/manageCookie";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [login, setLogin] = useState(false);
   const clickLogin = useCallback(() => {
     window.location.href = `${API_URL}/auth/login`;
@@ -22,8 +24,8 @@ const Login = () => {
     <div className="flex flex-col h-full justify-center	relative">
       <div className="px-10 h-1/4">
         <div className="text-4xl my-4">Hello World</div>
-        <div>Have fun playing games </div>
-        <div>with learning English!</div>
+        <div>{t("greeting1")}</div>
+        <div>{t("greeting2")}</div>
       </div>
       <div className="pt-8 h-1/3">
         <img className="mx-auto" src="login-image.svg" alt="login" />
