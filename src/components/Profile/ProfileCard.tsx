@@ -1,14 +1,11 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { API_URL } from "@utils/constant";
 import axios from "axios";
 import { IUser } from "@typings/db";
 
-interface Props {
-  isOpen: boolean | null;
-}
-
-const ProfileCard: FC<Props> = ({ isOpen }) => {
+const ProfileCard = () => {
   const [myInfo, setMyInfo] = useState<IUser | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const getMyInfo = useCallback(async () => {
     const response = await axios.get(`${API_URL}/users`);
@@ -17,6 +14,10 @@ const ProfileCard: FC<Props> = ({ isOpen }) => {
 
   useEffect(() => {
     getMyInfo();
+
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 100);
   }, []);
 
   // undefined를 리턴할 수 없음

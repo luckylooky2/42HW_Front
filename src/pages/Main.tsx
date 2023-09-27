@@ -1,18 +1,16 @@
-import { useEffect, useContext, useCallback, useState } from "react";
+import { useEffect, useContext, useCallback } from "react";
 import { AuthContext } from "@contexts/AuthProvider";
 import { API_URL, GROUP_CALL, SINGLE_CALL } from "@utils/constant";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import Loading from "@utils/Loading";
 import ChatButton from "@components/Main/ChatButton";
-import ProfileModal from "@components/Main/ProfileModal/ProfileModal";
 import "@styles/Main.css";
 import { SocketContext } from "@contexts/SocketProvider";
 import { io } from "socket.io-client";
 import { CallActionType, CallContext } from "@contexts/CallProvider";
 
 const Main = () => {
-  const [isOpen, setIsOpen] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
@@ -22,7 +20,6 @@ const Main = () => {
   const connectSocket = useCallback(
     (nickname: string) => {
       if (socket === null) {
-        // TODO : useSocket 만들기
         const socket = io(`${API_URL}`);
         console.log(socket);
         setSocket(socket);
@@ -57,7 +54,7 @@ const Main = () => {
   }, []);
 
   const openModal = useCallback(() => {
-    setIsOpen(true);
+    navigate("/profile");
   }, []);
 
   useEffect(() => {
@@ -86,7 +83,6 @@ const Main = () => {
         css="rounded-t-3xl bg-orange-100 shadow-[inset_0_0.2em_rgba(221,221,221,1)] hover:bg-orange-200"
         onClick={joinGroupChat}
       />
-      <ProfileModal isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 };
