@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react";
+import { useCallback } from "react";
 import ProfileCard from "@components/Profile/ProfileCard";
 import LangSelect from "@components/Profile/LangSelect";
 import CallHistoryList from "@components/Profile/CallHistoryList";
@@ -7,12 +7,7 @@ import { useNavigate } from "react-router";
 import { deleteCookie } from "@utils/manageCookie";
 import { useTranslation } from "react-i18next";
 
-interface Props {
-  isOpen: boolean | null;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
+const Profile = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -40,7 +35,7 @@ const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
       </div>
       <div className="h-[90%] w-full p-4">
         <div className="h-[100%] w-full flex flex-col justify-around">
-          <ProfileCard isOpen={isOpen} />
+          <ProfileCard />
           <div className="h-[70%] flex flex-col justify-evenly">
             <LangSelect />
             <CallHistoryList />
@@ -53,4 +48,4 @@ const ProfileModal: FC<Props> = ({ isOpen, setIsOpen }) => {
     </>
   );
 };
-export default ProfileModal;
+export default Profile;
