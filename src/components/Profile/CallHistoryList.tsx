@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ICallHistory } from "@typings/db";
 import { API_URL } from "@utils/constant";
 import axios from "axios";
-import CallHistory from "@components/Main/ProfileModal/CallHistory";
+import CallHistory from "@components/Profile/CallHistory";
 
 const CallHistoryList = () => {
   const [callHistory, setCallHistory] = useState<ICallHistory[]>([]);
