@@ -5,7 +5,8 @@ import Waiting from "@pages/Waiting";
 import Call from "@pages/Call";
 import Setting from "@pages/Setting";
 import NotFound from "@pages/NotFound";
-import { getCookie } from "@utils/getCookie";
+import { getCookie } from "@utils/manageCookie";
+import Profile from "@pages/Profile";
 
 const MainRouter = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +24,7 @@ const MainRouter = () => {
   return (
     <Routes>
       <Route path="/main" Component={Main} />
+      <Route path="/profile" Component={Profile} />
       <Route path="/setting" Component={Setting} />
       <Route path="/waiting" Component={Waiting} />
       <Route path="/call" Component={Call} />
