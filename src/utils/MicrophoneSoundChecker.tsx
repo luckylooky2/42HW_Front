@@ -1,5 +1,5 @@
 import { CallContext } from "@contexts/CallProvider";
-import { useState, useEffect, useContext, FC } from "react";
+import { useState, useEffect, useContext, FC, useRef } from "react";
 
 interface Props {
   isDone?: boolean;
@@ -8,6 +8,7 @@ interface Props {
 const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
   const { callInfo } = useContext(CallContext);
   const [value, setValue] = useState(0);
+  const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const audioContext = new AudioContext();
@@ -46,7 +47,34 @@ const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
     };
   }, [isDone]);
 
-  return <div className="text-center">{value}</div>;
+  useEffect(() => {
+    if (divRef && divRef.current)
+      divRef.current.style.width = `${value > 100 ? 100 : value}%`;
+  }, [value]);
+
+  return (
+    <div className="flex justify-center">
+      <div className="w-[40px] h-[10px] bg-gray-300 relative">
+        <div
+          style={{
+            width: "100%",
+            height: "10px",
+            backgroundImage:
+              "linear-gradient(90deg, white 25%, transparent 25%, transparent 50%, white 50%, white 75%, transparent 75%, transparent)",
+            backgroundSize: "9px 9px",
+            position: "absolute",
+            top: "50%",
+            transform: "translateY(-50%)",
+          }}
+        ></div>
+        <div
+          className="h-full bg-green-500"
+          ref={divRef}
+          style={{ transition: "width 0.1s" }}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default MicrophoneSoundChecker;
