@@ -9,9 +9,11 @@ import "@styles/Main.css";
 import { SocketContext } from "@contexts/SocketProvider";
 import { io } from "socket.io-client";
 import { CallActionType, CallContext } from "@contexts/CallProvider";
+import { useTranslation } from "react-i18next";
 
 const Main = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
   const { socket, setSocket } = useContext(SocketContext);
@@ -66,7 +68,7 @@ const Main = () => {
   ) : (
     <div className="flex flex-col h-full justify-center items-center relative overflow-hidden">
       <ChatButton
-        value="1:1 chat"
+        value={t("singleCall")}
         css="hover:bg-gray-100"
         onClick={joinSingleChat}
       />
@@ -79,7 +81,7 @@ const Main = () => {
         />
       </button>
       <ChatButton
-        value="Group chat"
+        value={t("groupCall")}
         css="rounded-t-3xl bg-orange-100 shadow-[inset_0_0.2em_rgba(221,221,221,1)] hover:bg-orange-200"
         onClick={joinGroupChat}
       />
