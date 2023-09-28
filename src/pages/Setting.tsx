@@ -6,11 +6,13 @@ import { CallContext, CallActionType } from "@contexts/CallProvider";
 import { toast } from "react-toastify";
 import BasicButton from "@utils/BasicButton";
 import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
-import { MIC_STATUS } from "@utils/constant";
+import { MIC_STATUS, SINGLE_CALL } from "@utils/constant";
 import Loading from "@utils/Loading";
+import { useTranslation } from "react-i18next";
 
 const Setting = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isDone, setIsDone] = useState(false);
   const [micStatus, setMicStatus] = useState(MIC_STATUS.DENIED);
   const { myInfo } = useContext(AuthContext);
@@ -97,6 +99,10 @@ const Setting = () => {
     <Loading />
   ) : (
     <div className="flex flex-col w-full h-full justify-center items-center">
+      <div>
+        {t(callInfo.roomType === SINGLE_CALL.TYPE ? "singleCall" : "groupCall")}
+      </div>
+      <div>음성 통화를 위해 마이크 권한을 허용으로 설정해 주세요!</div>
       <div className="h-[50%]">
         <MicrophoneSoundChecker isDone={isDone} />
       </div>

@@ -9,9 +9,12 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { COUNT, MILLISECOND } from "@utils/constant";
 import { OpponentInfo } from "@typings/front";
+import { useTranslation } from "react-i18next";
+import { SINGLE_CALL } from "@utils/constant";
 
 const Waiting = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [matched, setMatched] = useState(false);
   const { myInfo } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
@@ -90,15 +93,22 @@ const Waiting = () => {
   return myInfo === null ? (
     <Loading />
   ) : (
-    <Loading text={"상대방을 찾는 중입니다."}>
-      <div className="my-auto">
-        <BasicButton
-          onClick={cancelWaiting}
-          text="매칭 취소하기"
-          disabled={matched}
-        />
-      </div>
-    </Loading>
+    <>
+      <Loading text={"상대방을 찾는 중입니다."}>
+        <div>
+          {t(
+            callInfo.roomType === SINGLE_CALL.TYPE ? "singleCall" : "groupCall"
+          )}
+        </div>
+        <div className="my-auto">
+          <BasicButton
+            onClick={cancelWaiting}
+            text="매칭 취소하기"
+            disabled={matched}
+          />
+        </div>
+      </Loading>
+    </>
   );
 };
 
