@@ -25,7 +25,9 @@ const Loading: FC<Props> = ({ children, text }) => {
           cssOverride={pulseLoaderCss}
         />
       </div>
-      <div className="flex justify-center h-1/6">{children}</div>
+      <div className="flex justify-center h-1/6 flex-col items-center">
+        {children}
+      </div>
     </div>
   );
 };
