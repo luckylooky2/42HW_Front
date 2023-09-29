@@ -23,7 +23,7 @@ import Loading from "@utils/Loading";
 
 const Call = () => {
   const navigate = useNavigate();
-  const [opponentStatus, setOpponentStatus] = useState(true);
+  const [opponentStatus, setOpponentStatus] = useState<boolean[]>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [screen, setScreen] = useState(SCREEN.INIT);
@@ -48,6 +48,7 @@ const Call = () => {
 
   // /call로 접근하였을 때 잘 login 화면으로 가는지?
   useEffect(() => {
+    const status = [];
     if (callInfo.opponent && callInfo.stream)
       for (let i = 0; i < totalNum; i++) {
         peer[i] = new Peer({
@@ -56,7 +57,9 @@ const Call = () => {
           stream: callInfo.stream,
           config: { iceServers: ICE_SERVER },
         });
+        status.push(true);
       }
+    setOpponentStatus(status);
   }, []);
 
   // TODO : 좌우 반전, 마이크 mute
@@ -79,19 +82,35 @@ const Call = () => {
 
         peer[i].on("error", (err) => {
           console.log(err);
-          setOpponentStatus(false);
+          setOpponentStatus((prev) => {
+            const copy = prev.map((v) => v);
+            copy[i] = false;
+            return copy;
+          });
           console.log("opponent left");
         });
 
         peer[i].on("close", () => {
           console.log("Peer 연결이 종료되었습니다.");
-          toast.error(
-            "상대방이 연결을 종료하였습니다. 메인 화면으로 돌아갑니다."
-          );
-          setOpponentStatus(false);
-          timeoutId.current = setTimeout(() => {
-            hangUp();
-          }, COUNT.HANG_UP * MILLISECOND);
+          setOpponentStatus((prev) => {
+            const copy = prev.map((v) => v);
+            copy[i] = false;
+            let closed = true;
+            for (let i = 0; i < copy.length; i++) {
+              if (copy[i]) {
+                closed = false;
+                break;
+              }
+            }
+            if (closed) {
+              toast.error("통화가 종료되었습니다. 메인 화면으로 돌아갑니다.");
+              dispatch({ type: CallActionType.DEL_ALL });
+              timeoutId.current = setTimeout(() => {
+                hangUp();
+              }, COUNT.HANG_UP * MILLISECOND);
+            }
+            return copy;
+          });
         });
 
         peer[i].on("data", (data) => console.log(data));
@@ -172,7 +191,6 @@ const Call = () => {
   const stopMicrophone = useCallback(() => {
     const tracks = callInfo.stream?.getAudioTracks();
     if (tracks) tracks[0].stop();
-    dispatch({ type: CallActionType.DEL_ALL });
   }, [callInfo]);
 
   const openTopicSelect = useCallback(() => {
@@ -222,7 +240,7 @@ const Call = () => {
     toast.error("실패");
   }, []);
 
-  return callInfo.roomName === null ? (
+  return socket === null ? (
     <Loading />
   ) : (
     <div className="w-full h-full flex flex-col items-center justify-center">
@@ -238,10 +256,14 @@ const Call = () => {
             ref={videos[i]}
           />
         ))}
-        <div className="text-4xl">
-          {callInfo.opponent?.map((v) => v.opponentNickname).join(" ")}
+        <div className={callType === SINGLE_CALL ? "text-4xl" : "text-xl"}>
+          {callInfo.opponent?.map((v, i) => (
+            <div key={`opponent-${v}-${i}`}>
+              {(opponentStatus[i] ? "🟢" : "🔴") + " " + v.opponentNickname}
+            </div>
+          ))}
         </div>
-        <Timer opponentStatus={opponentStatus} />
+        <Timer />
       </div>
       <div className="h-[65%] w-full flex flex-col justify-center">
         <div className="h-[75%] w-[95%] overflow mx-auto">
