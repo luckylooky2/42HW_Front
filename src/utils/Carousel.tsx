@@ -1,3 +1,4 @@
+import { dir } from "console";
 import { FC, useState, useEffect, useCallback } from "react";
 
 interface Props {
@@ -5,12 +6,16 @@ interface Props {
   isMouseEnter: boolean;
 }
 
+let touchStartX: number;
+let touchEndX: number;
+
 const Carousel: FC<Props> = ({ carouselList, isMouseEnter }) => {
   const [currList, setCurrList] = useState<string[]>();
   const [currIndex, setCurrIndex] = useState(0);
   const [carouselTransition, setCarouselTransition] = useState(
     "transform 200ms ease-in-out"
   );
+  const [translateX, setTranslateX] = useState(0);
 
   useEffect(() => {
     if (carouselList.length !== 0) {
@@ -23,12 +28,15 @@ const Carousel: FC<Props> = ({ carouselList, isMouseEnter }) => {
     }
   }, [carouselList]);
 
-  const moveToNthSlide = useCallback((index: number) => {
-    setTimeout(() => {
-      setCarouselTransition("");
-      setCurrIndex(index);
-    }, 200);
-  }, []);
+  const moveToNthSlide = useCallback(
+    (index: number) => {
+      setTimeout(() => {
+        setCarouselTransition("");
+        setCurrIndex(index);
+      }, 200);
+    },
+    [currIndex, carouselTransition]
+  );
 
   const handleSwipe = useCallback(
     (direction: number) => {
@@ -38,10 +46,9 @@ const Carousel: FC<Props> = ({ carouselList, isMouseEnter }) => {
       else if (newIndex === 0) moveToNthSlide(carouselList.length);
 
       setCurrIndex((prev) => prev + direction);
-
       setCarouselTransition("transform 200ms ease-in-out");
     },
-    [currIndex]
+    [currIndex, carouselTransition]
   );
 
   const onClickDot = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -49,12 +56,49 @@ const Carousel: FC<Props> = ({ carouselList, isMouseEnter }) => {
     setCurrIndex(parseInt(target.value, 10));
   }, []);
 
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      touchEndX = e.touches[0].clientX;
+      const diff = touchStartX - touchEndX;
+      // 화면 크기에 비례해야 함
+      setTranslateX(diff / 256);
+      setCarouselTransition("");
+    },
+    [currIndex, carouselTransition]
+  );
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      touchEndX = e.changedTouches[0].clientX;
+      handleSwipeByTouch();
+      setTranslateX(0);
+    },
+    [currIndex]
+  );
+
+  // 의존성 배열 설정하니 해결됨
+  const handleSwipeByTouch = useCallback(() => {
+    const touchDiff = touchStartX - touchEndX;
+    if (touchDiff > 10) handleSwipe(1);
+    else if (touchDiff < -10) handleSwipe(-1);
+  }, [currIndex, carouselTransition]);
+
   return (
     <div
       className="flex items-center justify-center w-full h-full"
       id="container"
     >
-      <div className="h-full w-full px-0 overflow-hidden" id="wrapper">
+      <div
+        className="h-full w-full px-0 overflow-hidden"
+        id="wrapper"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         <ul className="flex w-full h-[90%]" id="carousel">
           {isMouseEnter && (
             <div className="flex justify-center">
@@ -78,17 +122,25 @@ const Carousel: FC<Props> = ({ carouselList, isMouseEnter }) => {
           )}
           {currList?.map((v: any, i) => (
             <li
-              className="flex-none object-contain flex flex-col items-center justify-center w-full bg-gray-100 overflow-hidden rounded-lg"
-              key={`${v}-${i}`}
+              className="flex-none object-contain w-full px-2"
+              key={`carouselList-${v}-${i}`}
               id="item"
               style={{
-                transform: `translateX(-${currIndex * 100}%)`,
+                transform: `translateX(-${(currIndex + translateX) * 100}%)`,
                 transition: `${carouselTransition}`,
               }}
             >
-              <div>{`[${v.category}]`}</div>
-              <div className="overflow-auto p-2 text-center">
-                {`Q${i}. ${v.question}`}
+              <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center overflow-hidden rounded-lg">
+                <div>{`[${v.category}]`}</div>
+                <div className="overflow-auto p-2 text-center">
+                  {`Q${
+                    i === 0
+                      ? carouselList.length
+                      : i === carouselList.length + 1
+                      ? 1
+                      : i
+                  }. ${v.question}`}
+                </div>
               </div>
             </li>
           ))}
@@ -97,7 +149,7 @@ const Carousel: FC<Props> = ({ carouselList, isMouseEnter }) => {
           {carouselList.map((v, i) => (
             <button
               type="button"
-              key={`${v}-${i}`}
+              key={`carouselDot-${v}-${i}`}
               value={i + 1}
               onClick={onClickDot}
               className={`w-2 h-2 mx-0.5 rounded-md bg-gray-${
