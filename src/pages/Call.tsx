@@ -200,9 +200,11 @@ const Call = () => {
   const closeTopicSelect = useCallback(() => {
     setIsOpen(false);
     setTimeout(() => {
-      setScreen(SCREEN.INIT);
-    }, 300);
-  }, []);
+      if (!contents.length) {
+        setScreen(SCREEN.INIT);
+      } else setScreen(SCREEN.TOPIC_MODAL);
+    }, 200);
+  }, [contents]);
 
   const onVote = useCallback(
     (data: { contentsName: string; requester: string }) => {
@@ -221,15 +223,19 @@ const Call = () => {
 
   const onVoteResult = useCallback(
     // TODO : contents type 지정하기
+    // TODO : 찬성 반대 몇 표인지 나타내기
     (data: { result: boolean; contents: any }) => {
       toast.update(voteId, {
         type: data.result ? toast.TYPE.SUCCESS : toast.TYPE.ERROR,
-        render: data.result ? "성공" : "실패",
+        render: data.result
+          ? "투표가 가결되었습니다."
+          : "투표가 부결되었습니다.",
         autoClose: COUNT.DEFAULT * MILLISECOND,
         isLoading: false,
       });
       if (data.result) {
         setContents(data.contents);
+        setIsOpen(false);
         setScreen(SCREEN.TOPIC_MODAL);
       }
     },
@@ -237,7 +243,7 @@ const Call = () => {
   );
 
   const onVoteFail = useCallback(() => {
-    toast.error("실패");
+    toast.error("시간 초과로 투표가 부결되었습니다.");
   }, []);
 
   return socket === null ? (
