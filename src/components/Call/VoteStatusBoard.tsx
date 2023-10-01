@@ -20,21 +20,21 @@ const VoteStatusBoard: FC<Props> = ({ totalNum }) => {
   );
   const indexRef = useRef<number>(1);
 
-  const onSomeoneAccept = () => {
+  const onSomeoneAccept = useCallback(() => {
     setVoteStatus((prev) => {
       const copy = prev.map((v) => v);
       copy[indexRef.current++] = VOTE_SELECT.YES;
       return copy;
     });
-  };
+  }, [voteStatus]);
 
-  const onSomeoneReject = () => {
+  const onSomeoneReject = useCallback(() => {
     setVoteStatus((prev) => {
       const copy = prev.map((v) => v);
       copy[indexRef.current++] = VOTE_SELECT.NO;
       return copy;
     });
-  };
+  }, [voteStatus]);
 
   useEffect(() => {
     socket?.on("someoneAccept", onSomeoneAccept);
@@ -48,7 +48,7 @@ const VoteStatusBoard: FC<Props> = ({ totalNum }) => {
   return (
     <div className={`grid grid-cols-${totalNum} w-full my-1 mx-auto`}>
       {voteStatus.map((v, i) => (
-        <div className="p-[2px]">
+        <div key={`voteBlock-${v}-${i}`} className="p-[2px]">
           <div
             className={`h-[20px] bg-${
               v === VOTE_SELECT.ONGOING
