@@ -15,7 +15,7 @@ const TopicSelect: FC<Props> = ({ isOpen, setIsOpen, setVoteId }) => {
   useEffect(() => {
     const id = setTimeout(() => {
       setIsOpen(true);
-    }, 100);
+    }, 50);
 
     return () => {
       clearTimeout(id);
