@@ -7,14 +7,17 @@ import BasicButton from "@utils/BasicButton";
 import { deleteCookie } from "@utils/manageCookie";
 import Header from "@utils/Header";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
+import { API_URL } from "@utils/constant";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const logout = useCallback(() => {
-    deleteCookie("login");
-    window.location.href = "/";
+  const logout = useCallback(async () => {
+    await axios.get(`${API_URL}/auth/logout`);
+    // deleteCookie("login");
+    // window.location.href = "/";
   }, []);
 
   const closeModal = useCallback(() => {
