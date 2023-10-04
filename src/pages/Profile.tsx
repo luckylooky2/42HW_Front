@@ -14,7 +14,6 @@ const Profile = () => {
 
   const logout = useCallback(() => {
     deleteCookie("login");
-    localStorage.removeItem("isLogin");
     window.location.href = "/";
   }, []);
 

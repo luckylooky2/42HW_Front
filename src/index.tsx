@@ -10,6 +10,7 @@ import AuthProvider from "@contexts/AuthProvider";
 import SocketProvider from "@contexts/SocketProvider";
 import CallProvider from "@contexts/CallProvider";
 import axios from "axios";
+import { deleteCookie } from "@utils/manageCookie";
 
 // TODO : axios interceptor 사용하기
 axios.defaults.withCredentials = true;
@@ -25,7 +26,7 @@ axios.interceptors.response.use(
   },
   function (error) {
     alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
-    localStorage.removeItem("isLogin");
+    deleteCookie("login");
     window.location.href = "/";
     return new Promise(() => {});
   }

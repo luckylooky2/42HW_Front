@@ -19,8 +19,7 @@ const Login = () => {
 
   useEffect(() => {
     const cookie = getCookie("login");
-    const isLogin = localStorage.getItem("isLogin");
-    if (isLogin === "true" && cookie) navigate("/main");
+    if (cookie) navigate("/main");
     else setLogin(true);
   }, []);
 

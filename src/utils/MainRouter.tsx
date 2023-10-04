@@ -7,16 +7,18 @@ import Setting from "@pages/Setting";
 import NotFound from "@pages/NotFound";
 import { getCookie } from "@utils/manageCookie";
 import Profile from "@pages/Profile";
+import { deleteCookie } from "@utils/manageCookie";
 
 const MainRouter = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useLayoutEffect(() => {
     const cookie = getCookie("login");
-    const isLogin = localStorage.getItem("isLogin");
-    if (!(isLogin === "true" && cookie)) {
+    if (!cookie) {
       alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
-      localStorage.removeItem("isLogin");
+      // isLogin이 로그인을 판단했던 것처럼 똑같이 login 쿠키가 로그인을 판단
+      // 여기서 delete를 해주지 않으면, 액세스 토큰만 지워진 경우 로그인이 되었다고 판단하여 무한 라우팅됨
+      deleteCookie("login");
       window.location.href = "/";
     } else setIsLoading(false);
   }, []);
