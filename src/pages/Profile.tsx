@@ -16,8 +16,8 @@ const Profile = () => {
 
   const logout = useCallback(async () => {
     await axios.get(`${API_URL}/auth/logout`);
-    // deleteCookie("login");
-    // window.location.href = "/";
+    alert("로그아웃 되었습니다.");
+    window.location.href = "/";
   }, []);
 
   const closeModal = useCallback(() => {
