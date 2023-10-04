@@ -6,7 +6,6 @@ import MainRouter from "@utils/MainRouter";
 import { ToastContainer } from "react-toastify";
 import * as process from "process";
 import { COUNT, MILLISECOND } from "@utils/constant";
-import Redirect from "@pages/Redirect";
 import i18n from "./i18n";
 
 console.log(i18n);
@@ -21,7 +20,6 @@ function App() {
       <div className="h-[100%]">
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/redirect" element={<Redirect />} />
           <Route path="*" element={<MainRouter />} />
         </Routes>
         <ToastContainer
