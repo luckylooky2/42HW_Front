@@ -22,12 +22,12 @@ const Setting = () => {
 
   useEffect(() => {
     // 잘못된 접근했을 때
-    if (myInfo === null) {
+    if (myInfo === null || socket === null) {
       stopAllStreams();
       navigate("/main");
     }
     getUserMedia();
-  }, [micStatus]);
+  }, [micStatus, socket]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -95,7 +95,7 @@ const Setting = () => {
     navigate("/waiting");
   }, []);
 
-  return myInfo === null ? (
+  return socket === null ? (
     <Loading />
   ) : (
     <div className="flex flex-col w-full h-full justify-center items-center">
