@@ -1,4 +1,3 @@
-import { dir } from "console";
 import { FC, useState, useEffect, useCallback } from "react";
 
 interface Props {
