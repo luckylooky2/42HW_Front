@@ -30,7 +30,7 @@ const Call = () => {
   const [voteId, setVoteId] = useState<Id>(0);
   const [contents, setContents] = useState<any>([]);
   const { callInfo, dispatch } = useContext(CallContext);
-  const { socket } = useContext(SocketContext);
+  const { socket, setSocket } = useContext(SocketContext);
   const videos = [
     useRef<HTMLVideoElement>(null),
     useRef<HTMLVideoElement>(null),
@@ -60,6 +60,7 @@ const Call = () => {
         status.push(true);
       }
     setOpponentStatus(status);
+    dispatch({ type: CallActionType.SET_CURRNUM, payload: totalNum + 1 });
   }, []);
 
   // TODO : 좌우 반전, 마이크 mute
@@ -80,6 +81,7 @@ const Call = () => {
           videos[i].current!.srcObject = currentStream;
         });
 
+        // TODO : error 예외 처리
         peer[i].on("error", (err) => {
           console.log(err);
           setOpponentStatus((prev) => {
@@ -92,25 +94,6 @@ const Call = () => {
 
         peer[i].on("close", () => {
           console.log("Peer 연결이 종료되었습니다.");
-          setOpponentStatus((prev) => {
-            const copy = prev.map((v) => v);
-            copy[i] = false;
-            let closed = true;
-            for (let i = 0; i < copy.length; i++) {
-              if (copy[i]) {
-                closed = false;
-                break;
-              }
-            }
-            if (closed) {
-              toast.error("통화가 종료되었습니다. 메인 화면으로 돌아갑니다.");
-              dispatch({ type: CallActionType.DEL_ALL });
-              timeoutId.current = setTimeout(() => {
-                hangUp();
-              }, COUNT.HANG_UP * MILLISECOND);
-            }
-            return copy;
-          });
         });
 
         peer[i].on("data", (data) => console.log(data));
@@ -137,13 +120,15 @@ const Call = () => {
     socket?.on("vote", onVote);
     socket?.on("voteResult", onVoteResult);
     socket?.on("voteFail", onVoteFail);
+    socket?.on("socketDisconnect", onSocketDisconnect);
 
     return () => {
       socket?.off("vote", onVote);
       socket?.off("voteResult", onVoteResult);
       socket?.off("voteFail", onVoteFail);
+      socket?.off("socketDisconnect", onSocketDisconnect);
     };
-  }, [voteId]);
+  }, [voteId, callInfo]);
 
   useEffect(() => {
     return () => {
@@ -164,6 +149,10 @@ const Call = () => {
     return () => {
       window.removeEventListener("beforeunload", preventClose);
       stopMicrophone();
+      // 뒤로가기, 새로고침, 정상 종료(종료 버튼 및 강제 종료)
+      socket?.disconnect();
+      setSocket(null);
+      dispatch({ type: CallActionType.DEL_ALL });
     };
   }, []);
 
@@ -178,10 +167,10 @@ const Call = () => {
     setIsMuted((prev) => !prev);
   }, [callInfo]);
 
+  // 정상 종료(종료 버튼 및 강제 종료)
   const hangUp = useCallback(() => {
     for (let i = 0; i < totalNum; i++) peer[i]?.destroy();
     for (let i = 0; i < totalNum; i++) peer[i]?.removeAllListeners();
-    socket?.emit("leaveRoom", {});
     console.log("hang up");
     stopMicrophone();
     setIsMuted(true);
@@ -212,13 +201,12 @@ const Call = () => {
         <VoteToast
           contentsName={data.contentsName}
           requester={data.requester}
-          callType={callType}
         />,
         { autoClose: (COUNT.VOTE - COUNT.DIFF) * MILLISECOND }
       );
       setVoteId(id);
     },
-    [socket]
+    [socket, opponentStatus]
   );
 
   const onVoteResult = useCallback(
@@ -245,6 +233,47 @@ const Call = () => {
   const onVoteFail = useCallback(() => {
     toast.error("시간 초과로 투표가 부결되었습니다.");
   }, []);
+
+  const onSocketDisconnect = useCallback(
+    (data: { nickname: string }) => {
+      let target = 0;
+
+      if (callInfo.opponent)
+        callInfo.opponent.forEach((v, i) => {
+          if (v.opponentNickname === data.nickname) target = i;
+        });
+
+      dispatch({
+        type: CallActionType.SET_CURRNUM,
+        payload: callInfo.currNum! - 1,
+      });
+
+      setOpponentStatus((prev) => {
+        const copy = prev.map((v) => v);
+        copy[target] = false;
+        let closed = true;
+        for (let i = 0; i < copy.length; i++) {
+          if (copy[i]) {
+            closed = false;
+            break;
+          }
+        }
+        if (closed) {
+          // 혼자 남은 경우 종료
+          toast.error("통화가 종료되었습니다.");
+          dispatch({ type: CallActionType.SET_CURRNUM, payload: 1 });
+          timeoutId.current = setTimeout(() => {
+            dispatch({ type: CallActionType.DEL_ALL });
+            socket?.disconnect();
+            setSocket(null);
+            hangUp();
+          }, COUNT.HANG_UP * MILLISECOND);
+        }
+        return copy;
+      });
+    },
+    [callInfo, opponentStatus, socket]
+  );
 
   return socket === null ? (
     <Loading />
