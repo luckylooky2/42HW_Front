@@ -5,7 +5,7 @@ import WaitToast from "@components/Call/WaitToast";
 import { SocketContext } from "@contexts/SocketProvider";
 import { CallContext } from "@contexts/CallProvider";
 import { AuthContext } from "@contexts/AuthProvider";
-import { COUNT, MILLISECOND, SINGLE_CALL, GROUP_CALL } from "@utils/constant";
+import { COUNT, MILLISECOND } from "@utils/constant";
 
 interface Props {
   text: string;
@@ -17,8 +17,6 @@ const TopicButton: FC<Props> = ({ text, img, setVoteId }) => {
   const { socket } = useContext(SocketContext);
   const { callInfo } = useContext(CallContext);
   const { myInfo } = useContext(AuthContext);
-  const callType =
-    callInfo.roomType === SINGLE_CALL.TYPE ? SINGLE_CALL : GROUP_CALL;
 
   const chooseContents = useCallback(() => {
     socket?.emit(
@@ -31,7 +29,7 @@ const TopicButton: FC<Props> = ({ text, img, setVoteId }) => {
       },
       (result: boolean) => {
         if (result) {
-          const id = toast.info(<WaitToast callType={callType} />, {
+          const id = toast.info(<WaitToast />, {
             autoClose: (COUNT.VOTE - COUNT.DIFF) * MILLISECOND,
           });
           setVoteId(id);
