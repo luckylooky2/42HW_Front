@@ -3,21 +3,57 @@
   "name": "helloworld",
   "icons": [
     {
-      "src": "earth.svg",
-      "sizes": "48x48 72x72 96x96 128x128 256x256",
-      "type": "image/svg+xml",
+      "src": "icons8-globe-showing-asia-australia-emoji-16.png",
+      "sizes": "16x16",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "earth.svg",
-      "type": "image/svg+xml",
-      "sizes": "192x192",
+      "src": "icons8-globe-showing-asia-australia-emoji-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "earth.svg",
-      "type": "image/svg+xml",
-      "sizes": "512x512",
+      "src": "icons8-globe-showing-asia-australia-emoji-57.png",
+      "sizes": "57x57",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons8-globe-showing-asia-australia-emoji-60.png",
+      "sizes": "60x60",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons8-globe-showing-asia-australia-emoji-60.png",
+      "sizes": "60x60",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons8-globe-showing-asia-australia-emoji-70.png",
+      "sizes": "70x70",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons8-globe-showing-asia-australia-emoji-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons8-globe-showing-asia-australia-emoji-76.png",
+      "sizes": "76x76",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons8-globe-showing-asia-australia-emoji-96.png",
+      "sizes": "48x48 96x96 128x128 192x192 256x256 512x512",
+      "type": "image/png",
       "purpose": "any"
     }
   ],
