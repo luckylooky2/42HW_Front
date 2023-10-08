@@ -1,19 +1,19 @@
-export const en = {
-  translation: {
-    greeting1: "Have fun playing games",
-    greeting2: "with learning English!",
-    profile: "Profile",
-    singleCall: "1:1 call",
-    groupCall: "Group call",
-  },
+import MainKr from "./ko/Main.kr.json";
+import LoginKr from "./ko/Login.kr.json";
+import ProfileKr from "./ko/Profile.kr.json";
+
+import MainEn from "./en/Main.en.json";
+import LoginEn from "./en/Login.en.json";
+import ProfileEN from "./en/Profile.en.json";
+
+export const translationKr = {
+  login: LoginKr,
+  main: MainKr,
+  profile: ProfileKr,
 };
 
-export const kr = {
-  translation: {
-    greeting1: "다양한 컨텐츠와 함께",
-    greeting2: "영어를 즐기세요!",
-    profile: "프로필",
-    singleCall: "1:1 통화",
-    groupCall: "그룹 통화",
-  },
+export const translationEn = {
+  login: LoginEn,
+  main: MainEn,
+  profile: ProfileEN,
 };
