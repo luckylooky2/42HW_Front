@@ -25,7 +25,10 @@ const Profile = () => {
 
   return (
     <>
-      <Header onClick={closeModal} title={t("profile")} />
+      <Header
+        onClick={closeModal}
+        title={t("header", { keyPrefix: "profile" })}
+      />
       <div className="h-[90%] w-full p-4">
         <div className="h-[100%] w-full flex flex-col justify-around">
           <ProfileCard />

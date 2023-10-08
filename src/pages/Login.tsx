@@ -27,8 +27,8 @@ const Login = () => {
     <div className="flex flex-col h-full justify-center	relative">
       <div className="px-10 h-1/4">
         <div className="text-4xl my-4">Hello World</div>
-        <div>{t("greeting1")}</div>
-        <div>{t("greeting2")}</div>
+        <div>{t("greeting1", { keyPrefix: "login" })}</div>
+        <div>{t("greeting2", { keyPrefix: "login" })}</div>
       </div>
       <div className="pt-8 h-1/3">
         <img className="mx-auto" src="login-image.svg" alt="login" />

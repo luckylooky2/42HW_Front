@@ -68,7 +68,7 @@ const Main = () => {
   ) : (
     <div className="flex flex-col h-full justify-center items-center relative overflow-hidden">
       <ChatButton
-        value={t("singleCall")}
+        value={t("singleCall", { keyPrefix: "main" })}
         css="hover:bg-gray-100"
         onClick={joinSingleChat}
       />
@@ -81,7 +81,7 @@ const Main = () => {
         />
       </button>
       <ChatButton
-        value={t("groupCall")}
+        value={t("groupCall", { keyPrefix: "main" })}
         css="rounded-t-3xl bg-orange-100 shadow-[inset_0_0.2em_rgba(221,221,221,1)] hover:bg-orange-200"
         onClick={joinGroupChat}
       />
