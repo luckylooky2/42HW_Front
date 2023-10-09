@@ -1,3 +1,15 @@
 {
-  "header": "프로필"
+  "header": "프로필",
+  "logout": "로그아웃",
+  "language": {
+    "title": "언어 설정",
+    "speak": "말할 언어",
+    "system": "시스템 언어",
+    "list": ["영어", "한국어"],
+    "default": "한국어"
+  },
+  "history": {
+    "title": "통화 내역",
+    "empty": "통화 내역이 존재하지 않습니다 :("
+  }
 }

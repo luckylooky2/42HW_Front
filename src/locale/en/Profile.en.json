@@ -1,3 +1,15 @@
 {
-  "header": "Profile"
+  "header": "Profile",
+  "logout": "Sign out",
+  "language": {
+    "title": "Language Preference",
+    "speak": "Language to speak",
+    "system": "System Language",
+    "list": ["English", "Korean"],
+    "default": "English"
+  },
+  "history": {
+    "title": "Call History",
+    "empty": "Call history does not exist :("
+  }
 }

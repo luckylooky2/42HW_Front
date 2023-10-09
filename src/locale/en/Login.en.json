@@ -1,1 +1,5 @@
-{ "greeting1": "Have fun playing games", "greeting2": "with learning English!" }
+{
+  "greeting1": "Have fun playing games",
+  "greeting2": "with learning English!",
+  "login": "Sign in with 42"
+}
