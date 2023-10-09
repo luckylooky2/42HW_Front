@@ -29,11 +29,6 @@ export const LANG = {
   KR: "kr",
 };
 
-export const LANGLIST = {
-  EN: ["English", "Korean"],
-  KR: ["영어", "한국어"],
-};
-
 export const VOTE_SELECT = {
   YES: "yes",
   NO: "no",
