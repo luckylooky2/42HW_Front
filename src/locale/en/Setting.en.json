@@ -1,0 +1,9 @@
+{
+  "info": {
+    "permission": "Please set microphone permission to Allow for voice calls!"
+  },
+  "button": {
+    "next": "Start Matching",
+    "back": "Back"
+  }
+}
