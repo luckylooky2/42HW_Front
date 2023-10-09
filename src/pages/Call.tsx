@@ -15,13 +15,17 @@ import {
   MILLISECOND,
   SINGLE_CALL,
   GROUP_CALL,
+  TRANSLATION,
+  PAGE,
 } from "@utils/constant";
 import { toast, Id } from "react-toastify";
 import VoteToast from "@components/Call/VoteToast";
 import TopicModal from "@components/Call/TopicModal";
 import Loading from "@utils/Loading";
+import { useTranslation } from "react-i18next";
 
 const Call = () => {
+  const { t } = useTranslation(TRANSLATION, { keyPrefix: PAGE.CALL });
   const navigate = useNavigate();
   const [opponentStatus, setOpponentStatus] = useState<boolean[]>([]);
   const [isMuted, setIsMuted] = useState(false);

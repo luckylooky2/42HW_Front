@@ -76,3 +76,15 @@ export const ICE_SERVER = [
     credential: process.env.REACT_APP_TURN_PASSWORD,
   },
 ];
+
+export const PAGE = {
+  CALL: "call",
+  LOGIN: "login",
+  MAIN: "main",
+  NOTFOUND: "notfound",
+  PROFILE: "profile",
+  SETTING: "setting",
+  WAITING: "waiting",
+};
+
+export const TRANSLATION = "translation";

@@ -7,12 +7,11 @@ import BasicButton from "@utils/BasicButton";
 import Header from "@utils/Header";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-import { API_URL } from "@utils/constant";
+import { API_URL, PAGE, TRANSLATION } from "@utils/constant";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation("translation", { keyPrefix: "profile" });
-
+  const { t } = useTranslation(TRANSLATION, { keyPrefix: PAGE.PROFILE });
   const logout = useCallback(async () => {
     await axios.get(`${API_URL}/auth/logout`);
     alert("로그아웃 되었습니다.");

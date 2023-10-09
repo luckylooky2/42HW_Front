@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { API_URL } from "@utils/constant";
+import { API_URL, PAGE, TRANSLATION } from "@utils/constant";
 import { useNavigate } from "react-router";
 import Loading from "@utils/Loading";
 import { getCookie } from "@utils/manageCookie";
@@ -8,7 +8,7 @@ import { PulseLoader } from "react-spinners";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation("translation", { keyPrefix: "login" });
+  const { t } = useTranslation(TRANSLATION, { keyPrefix: PAGE.LOGIN });
   const [login, setLogin] = useState(false);
   const [loading, setLoading] = useState(false);
 

@@ -7,14 +7,14 @@ import { AuthContext } from "@contexts/AuthProvider";
 import { CallContext, CallActionType } from "@contexts/CallProvider";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { COUNT, MILLISECOND } from "@utils/constant";
+import { COUNT, MILLISECOND, PAGE, TRANSLATION } from "@utils/constant";
 import { OpponentInfo } from "@typings/front";
 import { useTranslation } from "react-i18next";
 import { SINGLE_CALL } from "@utils/constant";
 
 const Waiting = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation(TRANSLATION);
   const [matched, setMatched] = useState(false);
   const { myInfo } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
@@ -94,16 +94,19 @@ const Waiting = () => {
     <Loading />
   ) : (
     <>
-      <Loading text={"상대방을 찾는 중입니다."}>
+      <Loading text={t(`${PAGE.WAITING}.info`)}>
         <div>
           {t(
-            callInfo.roomType === SINGLE_CALL.TYPE ? "singleCall" : "groupCall"
+            `${PAGE.MAIN}.` +
+              (callInfo.roomType === SINGLE_CALL.TYPE
+                ? "singleCall"
+                : "groupCall")
           )}
         </div>
         <div className="my-auto">
           <BasicButton
             onClick={cancelWaiting}
-            text="매칭 취소하기"
+            text={t(`${PAGE.WAITING}.cancel`)}
             disabled={matched}
           />
         </div>

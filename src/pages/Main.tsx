@@ -1,6 +1,12 @@
 import { useEffect, useContext, useCallback } from "react";
 import { AuthContext } from "@contexts/AuthProvider";
-import { API_URL, GROUP_CALL, SINGLE_CALL } from "@utils/constant";
+import {
+  API_URL,
+  GROUP_CALL,
+  PAGE,
+  SINGLE_CALL,
+  TRANSLATION,
+} from "@utils/constant";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import Loading from "@utils/Loading";
@@ -13,7 +19,7 @@ import { useTranslation } from "react-i18next";
 
 const Main = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation("translation", { keyPrefix: "main" });
+  const { t } = useTranslation(TRANSLATION, { keyPrefix: PAGE.MAIN });
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
   const { socket, setSocket } = useContext(SocketContext);
