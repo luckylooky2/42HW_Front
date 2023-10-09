@@ -12,7 +12,7 @@ i18n
     },
     lng: localStorage.getItem("lang") === LANG.KR ? LANG.KR : LANG.EN, // 기본 언어
     fallbackLng: LANG.EN,
-    keySeparator: true,
+    keySeparator: ".",
     interpolation: {
       escapeValue: false,
     },
