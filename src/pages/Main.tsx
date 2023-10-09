@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 
 const Main = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation", { keyPrefix: "main" });
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
   const { socket, setSocket } = useContext(SocketContext);
@@ -68,7 +68,7 @@ const Main = () => {
   ) : (
     <div className="flex flex-col h-full justify-center items-center relative overflow-hidden">
       <ChatButton
-        value={t("singleCall", { keyPrefix: "main" })}
+        value={t("singleCall")}
         css="hover:bg-gray-100"
         onClick={joinSingleChat}
       />
@@ -81,7 +81,7 @@ const Main = () => {
         />
       </button>
       <ChatButton
-        value={t("groupCall", { keyPrefix: "main" })}
+        value={t("groupCall")}
         css="rounded-t-3xl bg-orange-100 shadow-[inset_0_0.2em_rgba(221,221,221,1)] hover:bg-orange-200"
         onClick={joinGroupChat}
       />

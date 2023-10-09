@@ -3,8 +3,10 @@ import { ICallHistory } from "@typings/db";
 import { API_URL } from "@utils/constant";
 import axios from "axios";
 import CallHistory from "@components/Profile/CallHistory";
+import { useTranslation } from "react-i18next";
 
 const CallHistoryList = () => {
+  const { t } = useTranslation("translation", { keyPrefix: "profile" });
   const [callHistory, setCallHistory] = useState<ICallHistory[]>([]);
 
   const getCallHistory = useCallback(async () => {
@@ -18,11 +20,11 @@ const CallHistoryList = () => {
 
   return (
     <div className="flex flex-col h-[60%] justify-between">
-      <div className="h-[8%] text-xl">대화 내역</div>
+      <div className="h-[8%] text-xl">{t("history.title")}</div>
       <div className="h-[85%] overflow-auto bg-gray-200 rounded-md p-2 m-1 px-2">
         {callHistory.length === 0 ? (
           <div className="h-full flex justify-center items-center text-gray-500">
-            대화 내역이 존재하지 않습니다!
+            {t("history.empty")}
           </div>
         ) : (
           callHistory.map((v) => (

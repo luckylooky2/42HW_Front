@@ -1,53 +1,59 @@
 import { useCallback, useEffect, useState } from "react";
 import i18n from "i18n";
-import { LANG, LANGLIST } from "@utils/constant";
+import { LANG } from "@utils/constant";
+import { useTranslation } from "react-i18next";
 
 const LangSelect = () => {
+  const { t } = useTranslation("translation", { keyPrefix: "profile" });
   const [langList, setLangList] = useState<string[]>([]);
 
   useEffect(() => {
-    const curr = localStorage.getItem("lang") === LANG.KR ? LANG.KR : LANG.EN;
-    setLangList(curr === LANG.KR ? LANGLIST.KR : LANGLIST.EN);
+    setLangList(t("language.list", { returnObjects: true }));
   }, []);
 
   const setSystemLanguage = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const target = e.target as HTMLSelectElement;
-      if (target.value === "한국어" || target.value === "Korean") {
-        localStorage.setItem("lang", LANG.KR);
-        i18n.changeLanguage(LANG.KR).then().catch();
-        setLangList(LANGLIST.KR);
-      } else {
-        localStorage.setItem("lang", LANG.EN);
-        i18n.changeLanguage(LANG.EN).then().catch();
-        setLangList(LANGLIST.EN);
+      let selectedLang: string;
+      switch (target.value) {
+        case "한국어":
+        case "Korean":
+          selectedLang = LANG.KR;
+          break;
+        case "영어":
+        case "English":
+          selectedLang = LANG.EN;
+          break;
+        default:
+          selectedLang = LANG.EN;
       }
+      localStorage.setItem("lang", selectedLang);
+      i18n.changeLanguage(selectedLang).then().catch();
+      setLangList(t("language.list", { returnObjects: true }));
     },
     []
   );
 
   return (
     <div className="flex flex-col h-[30%] justify-between">
-      <div className="h-[20%] text-xl">언어 설정</div>
+      <div className="h-[20%] text-xl">{t("language.title")}</div>
       <div className="flex flex-col h-[70%] w-full">
         <div className="flex items-center bg-gray-200 rounded-md h-8 mx-1 my-0.5 px-5">
           <div>
-            <span>배울 언어 : </span>
+            <span>{t("language.speak")} : </span>
             <select className="w-20" disabled>
-              {["영어"].map((v, i) => (
-                <option key={`배울 언어-${i}`}>{v}</option>
+              {langList.map((v, i) => (
+                <option key={`langToSpeak-${i}`}>{v}</option>
               ))}
             </select>
           </div>
         </div>
         <div className="flex items-center bg-gray-200 rounded-md h-8 mx-1 my-0.5 px-5">
           <div>
-            <span>시스템 언어 : </span>
+            <span>{t("language.system")} : </span>
             <select
               className="w-20"
-              value={
-                localStorage.getItem("lang") === LANG.KR ? "한국어" : "영어"
-              }
+              value={t("language.default")}
               onChange={setSystemLanguage}
             >
               {langList.map((v, i) => (
