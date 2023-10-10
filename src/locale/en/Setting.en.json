@@ -3,7 +3,7 @@
     "permission": "Please set microphone permission to Allow for voice calls!"
   },
   "button": {
-    "next": "Start Matching",
+    "start": "Start",
     "back": "Back"
   }
 }

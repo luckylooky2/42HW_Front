@@ -114,7 +114,7 @@ const Setting = () => {
       <div className="h-[10%]">
         <BasicButton
           onClick={goToWaiting}
-          text={t(`${PAGE.SETTING}.button.next`)}
+          text={t(`${PAGE.SETTING}.button.start`)}
           disabled={micStatus !== MIC_STATUS.GRANTED}
         />
         <BasicButton
