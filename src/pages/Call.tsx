@@ -202,7 +202,10 @@ const Call = () => {
           contentsName={data.contentsName}
           requester={data.requester}
         />,
-        { autoClose: (COUNT.VOTE - COUNT.DIFF) * MILLISECOND }
+        {
+          autoClose: (COUNT.VOTE - COUNT.DIFF) * MILLISECOND,
+          hideProgressBar: false,
+        }
       );
       setVoteId(id);
     },
@@ -220,6 +223,7 @@ const Call = () => {
           : "투표가 부결되었습니다.",
         autoClose: COUNT.DEFAULT * MILLISECOND,
         isLoading: false,
+        hideProgressBar: true,
       });
       if (data.result) {
         setContents(data.contents);
