@@ -45,8 +45,6 @@ const Call = () => {
     callInfo.roomType === SINGLE_CALL.TYPE
       ? SINGLE_CALL.TOTAL_NUM - 1
       : GROUP_CALL.TOTAL_NUM - 1;
-  const callType =
-    callInfo.roomType === SINGLE_CALL.TYPE ? SINGLE_CALL : GROUP_CALL;
 
   // /call로 접근하였을 때 잘 login 화면으로 가는지?
   useEffect(() => {
@@ -336,7 +334,11 @@ const Call = () => {
         >
           <div
             style={{
-              transform: `translateX(${OPPONENT_LIST.PADDING}px)`,
+              transform: `translateX(${
+                callInfo.roomType === SINGLE_CALL.TYPE
+                  ? 0
+                  : OPPONENT_LIST.PADDING
+              }px)`,
               whiteSpace: "nowrap",
               willChange: "transform",
             }}
