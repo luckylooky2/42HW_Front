@@ -81,3 +81,8 @@ export const ICE_SERVER = [
     credential: process.env.REACT_APP_TURN_PASSWORD,
   },
 ];
+
+export const OPPONENT_LIST = {
+  BOX_WIDTH: 280,
+  PADDING: 20,
+};

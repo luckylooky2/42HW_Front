@@ -15,6 +15,7 @@ import {
   MILLISECOND,
   SINGLE_CALL,
   GROUP_CALL,
+  OPPONENT_LIST,
 } from "@utils/constant";
 import { toast, Id } from "react-toastify";
 import VoteToast from "@components/Call/VoteToast";
@@ -39,6 +40,7 @@ const Call = () => {
   const timeoutId = useRef<any>(0);
   const peerRef = useRef<Peer.Instance[]>([]);
   const peer = peerRef.current;
+  const nameListRef = useRef<HTMLDivElement>(null);
   const totalNum =
     callInfo.roomType === SINGLE_CALL.TYPE
       ? SINGLE_CALL.TOTAL_NUM - 1
@@ -154,6 +156,40 @@ const Call = () => {
       setSocket(null);
       dispatch({ type: CallActionType.DEL_ALL });
     };
+  }, []);
+
+  useEffect(() => {
+    let fullLength = 0;
+    if (nameListRef.current) {
+      let spans = nameListRef.current.firstElementChild;
+      while (spans !== null) {
+        if (spans instanceof HTMLElement) fullLength += spans.offsetWidth;
+        spans = spans.nextElementSibling;
+      }
+      if (fullLength >= OPPONENT_LIST.BOX_WIDTH)
+        if (nameListRef.current.parentElement) {
+          const animation = document.createElement("style");
+          animation.type = "text/css";
+          animation.innerHTML = `
+              @keyframes slide-left {
+                from {
+                  transform: translateX(0px);
+                  transform: translateX(${OPPONENT_LIST.PADDING}px);
+                }
+                to {
+                  transform: translateX(-${
+                    fullLength + OPPONENT_LIST.PADDING - OPPONENT_LIST.BOX_WIDTH
+                  }px);
+                }
+              }
+              .animated {
+                animation: slide-left 10s linear infinite
+              }
+            `;
+          document.head.appendChild(animation);
+          nameListRef.current.parentElement.classList.add("animated");
+        }
+    }
   }, []);
 
   const preventClose = useCallback((e: BeforeUnloadEvent) => {
@@ -295,12 +331,29 @@ const Call = () => {
             ref={videos[i]}
           />
         ))}
-        <div className={callType === SINGLE_CALL ? "text-4xl" : "text-xl"}>
-          {callInfo.opponent?.map((v, i) => (
-            <div key={`opponent-${v}-${i}`}>
-              {(opponentStatus[i] ? "🟢" : "🔴") + " " + v.opponentNickname}
+        <div
+          className={`w-[${OPPONENT_LIST.BOX_WIDTH}px] h-full mx-auto overflow-hidden`}
+        >
+          <div
+            style={{
+              transform: `translateX(${OPPONENT_LIST.PADDING}px)`,
+              whiteSpace: "nowrap",
+              willChange: "transform",
+            }}
+          >
+            <div className="text-center" ref={nameListRef}>
+              {callInfo.opponent?.map((v, i) => (
+                <span
+                  key={`opponent-${v}-${i}`}
+                  className={`text-4xl ${
+                    opponentStatus[i] ? "text-black" : "text-gray-300"
+                  }`}
+                >
+                  {" " + v.opponentNickname + " "}
+                </span>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
         <Timer />
       </div>
