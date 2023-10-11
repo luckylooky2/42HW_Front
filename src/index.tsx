@@ -40,17 +40,17 @@ const root = ReactDOM.createRoot(
 // AuthProvider는 BrowserRouter 안에 존재해야 함
 // Uncaught Error: useNavigate() may be used only in the context of a <Router> component.
 root.render(
-  // <React.StrictMode>
-  <BrowserRouter>
-    <AuthProvider>
-      <SocketProvider>
-        <CallProvider>
-          <App />
-        </CallProvider>
-      </SocketProvider>
-    </AuthProvider>
-  </BrowserRouter>
-  // {/* </React.StrictMode> */}
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <SocketProvider>
+          <CallProvider>
+            <App />
+          </CallProvider>
+        </SocketProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change
