@@ -50,11 +50,19 @@ const Setting = () => {
   const pollMicAvailable = async () => {
     const permissionName = "microphone" as PermissionName;
     const result = await navigator.permissions.query({ name: permissionName });
-    console.log(result.state);
     if (prevStatus.current !== result.state) {
       if (result.state === MIC_STATUS.DENIED)
         toast.error("마이크 권한을 허용해 주세요!");
       setMicStatus(result.state);
+    }
+    const agent = window.navigator.userAgent.toLowerCase();
+    if (agent.indexOf("chrome") === -1) {
+      if (
+        prevStatus.current === MIC_STATUS.DENIED &&
+        (result.state === MIC_STATUS.GRANTED ||
+          result.state === MIC_STATUS.PROMPT)
+      )
+        toast.warning("새로고침이 필요합니다!");
     }
     prevStatus.current = result.state;
   };
@@ -88,7 +96,6 @@ const Setting = () => {
         audio: true,
       });
 
-      console.log(newStream);
       dispatch({ type: CallActionType.SET_STREAM, payload: newStream });
       setIsDone(true);
       streamArray.current = [...streamArray.current, newStream];
