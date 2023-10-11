@@ -35,7 +35,7 @@ body {
   src: url("./font/IBM_Plex_Sans_KR/IBMPlexSansKR-Regular.ttf");
 }
 
-@media (max-height: 900px) {
+@media (min-height: 900px) {
   body {
     position: absolute;
   }
