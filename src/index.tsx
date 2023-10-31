@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import "./index.css";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
@@ -11,6 +10,8 @@ import SocketProvider from "@contexts/SocketProvider";
 import CallProvider from "@contexts/CallProvider";
 import axios from "axios";
 import { deleteCookie } from "@utils/manageCookie";
+import "./tailwind.css";
+import "./index.css";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL =
