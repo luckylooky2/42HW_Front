@@ -46,20 +46,42 @@ const VoteStatusBoard: FC<Props> = ({ totalNum }) => {
     };
   }, []);
 
+  const deterGridCols = (num: Number | null) => {
+    switch (num) {
+      case null:
+        return "";
+      case 2:
+        return "grid-cols-2";
+      case 3:
+        return "grid-cols-3";
+      case 4:
+        return "grid-cols-4";
+    }
+  };
+
+  const deterColor = (color: string) => {
+    switch (color) {
+      case VOTE_SELECT.ONGOING:
+        return "bg-gray-500";
+      case VOTE_SELECT.YES:
+        return "bg-green-500";
+      case VOTE_SELECT.NO:
+        return "bg-red-500";
+    }
+  };
+
+  console.log();
+
   return (
     <div
-      className={`grid grid-cols-${totalNumRef.current} w-full my-1 mx-auto`}
+      className={`grid ${deterGridCols(
+        totalNumRef.current
+      )} w-full my-1 mx-auto`}
     >
       {voteStatus.map((v, i) => (
         <div key={`voteBlock-${v}-${i}`} className="p-[2px]">
           <div
-            className={`h-[20px] bg-${
-              v === VOTE_SELECT.ONGOING
-                ? "gray"
-                : v === VOTE_SELECT.YES
-                ? "green"
-                : "red"
-            }-500`}
+            className={`h-[20px]  ${deterColor(v)}`}
             key={`voteToast + ${v} + ${i}`}
           />
         </div>

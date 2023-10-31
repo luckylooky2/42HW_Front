@@ -317,6 +317,12 @@ const Call = () => {
     [callInfo, opponentStatus, socket]
   );
 
+  const deterPadding = (roomType: string | null) => {
+    if (roomType === null) return "";
+    else if (roomType === SINGLE_CALL.TYPE) return "translateX(0px)";
+    else return `translateX(${OPPONENT_LIST.PADDING}px)`;
+  };
+
   return socket === null ? (
     <Loading />
   ) : (
@@ -333,16 +339,10 @@ const Call = () => {
             ref={videos[i]}
           />
         ))}
-        <div
-          className={`w-[${OPPONENT_LIST.BOX_WIDTH}px] h-full mx-auto overflow-hidden`}
-        >
+        <div className="w-[280px] h-full mx-auto overflow-hidden">
           <div
             style={{
-              transform: `translateX(${
-                callInfo.roomType === SINGLE_CALL.TYPE
-                  ? 0
-                  : OPPONENT_LIST.PADDING
-              }px)`,
+              transform: deterPadding(callInfo.roomType),
               whiteSpace: "nowrap",
               willChange: "transform",
             }}
