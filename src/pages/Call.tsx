@@ -317,10 +317,8 @@ const Call = () => {
     [callInfo, opponentStatus, socket]
   );
 
-  const deterPadding = (roomType: string | null) => {
-    if (roomType === null) return "";
-    else if (roomType === SINGLE_CALL.TYPE) return "translateX(0px)";
-    else return `translateX(${OPPONENT_LIST.PADDING}px)`;
+  const determineWidth = (width: number) => {
+    if (width === OPPONENT_LIST.BOX_WIDTH) return "w-[280px]";
   };
 
   return socket === null ? (
@@ -339,10 +337,18 @@ const Call = () => {
             ref={videos[i]}
           />
         ))}
-        <div className="w-[280px] h-full mx-auto overflow-hidden">
+        <div
+          className={`${determineWidth(
+            OPPONENT_LIST.BOX_WIDTH
+          )} h-full mx-auto overflow-hidden`}
+        >
           <div
             style={{
-              transform: deterPadding(callInfo.roomType),
+              transform: `translateX(${
+                callInfo.roomType === SINGLE_CALL.TYPE
+                  ? 0
+                  : OPPONENT_LIST.PADDING
+              }px)`,
               whiteSpace: "nowrap",
               willChange: "transform",
             }}
