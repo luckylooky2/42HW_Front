@@ -46,7 +46,7 @@ const VoteStatusBoard: FC<Props> = ({ totalNum }) => {
     };
   }, []);
 
-  const determineGridCols = (num: Number | null) => {
+  const setGridCols = (num: Number | null) => {
     switch (num) {
       case null:
         return "";
@@ -59,7 +59,7 @@ const VoteStatusBoard: FC<Props> = ({ totalNum }) => {
     }
   };
 
-  const determineColor = (select: string) => {
+  const setVoteBlockColor = (select: string) => {
     switch (select) {
       case VOTE_SELECT.ONGOING:
         return "bg-gray-500";
@@ -70,21 +70,15 @@ const VoteStatusBoard: FC<Props> = ({ totalNum }) => {
     }
   };
 
-  console.log();
-
   return (
     <div
-      className={`grid ${determineGridCols(
-        totalNumRef.current
-      )} w-full my-1 mx-auto`}
+      className={`grid ${setGridCols(totalNumRef.current)} w-full my-1 mx-auto`}
     >
       {voteStatus.map((v, i) => (
-        <div key={`voteBlock-${v}-${i}`} className="p-[2px]">
-          <div
-            className={`h-[20px]  ${determineColor(v)}`}
-            key={`voteToast + ${v} + ${i}`}
-          />
-        </div>
+        <div
+          key={`voteBlock-${v}-${i}`}
+          className={`mx-[2px] h-[20px] ${setVoteBlockColor(v)}`}
+        />
       ))}
     </div>
   );
