@@ -52,9 +52,18 @@ const Login = () => {
       </div>
       <footer className="h-[5%] text-center text-gray-500 flex justify-center items-center absolute bottom-0 w-full">
         <div className="py-auto">
-          <small className="italic">Copyright &copy; 2023 Mozila</small>
+          <small>
+            <a
+              href="https://github.com/42HelloWorld/42HW_Front/issues/new"
+              target="_blank"
+            >
+              버그 제보하기
+            </a>
+          </small>
           <small> | </small>
-          <small>문의하기</small>
+          <small>
+            <a href="mailto:chanhyle@student.42seoul.kr">문의하기</a>
+          </small>
         </div>
       </footer>
     </div>
