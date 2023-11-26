@@ -26,7 +26,7 @@ export const MIC_STATUS = {
 
 export const LANG = {
   EN: "en",
-  KR: "kr",
+  KO: "ko",
 };
 
 export const VOTE_SELECT = {

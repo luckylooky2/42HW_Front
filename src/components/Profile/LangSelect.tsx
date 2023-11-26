@@ -18,7 +18,7 @@ const LangSelect = () => {
       switch (target.value) {
         case "한국어":
         case "Korean":
-          selectedLang = LANG.KR;
+          selectedLang = LANG.KO;
           break;
         case "영어":
         case "English":

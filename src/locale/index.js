@@ -1,9 +1,9 @@
-import MainKr from "./ko/Main.kr.json";
-import LoginKr from "./ko/Login.kr.json";
-import ProfileKr from "./ko/Profile.kr.json";
-import SettingKr from "./ko/Setting.kr.json";
-import WaitingKr from "./ko/Waiting.kr.json";
-import CallKr from "./ko/Call.kr.json";
+import MainKo from "./ko/Main.ko.json";
+import LoginKo from "./ko/Login.ko.json";
+import ProfileKo from "./ko/Profile.ko.json";
+import SettingKo from "./ko/Setting.ko.json";
+import WaitingKo from "./ko/Waiting.ko.json";
+import CallKo from "./ko/Call.ko.json";
 
 import MainEn from "./en/Main.en.json";
 import LoginEn from "./en/Login.en.json";
@@ -12,13 +12,13 @@ import SettingEn from "./en/Setting.en.json";
 import WaitingEn from "./en/Waiting.en.json";
 import CallEn from "./en/Call.en.json";
 
-export const translationKr = {
-  login: LoginKr,
-  main: MainKr,
-  profile: ProfileKr,
-  setting: SettingKr,
-  waiting: WaitingKr,
-  call: CallKr,
+export const translationKo = {
+  login: LoginKo,
+  main: MainKo,
+  profile: ProfileKo,
+  setting: SettingKo,
+  waiting: WaitingKo,
+  call: CallKo,
 };
 
 export const translationEn = {
