@@ -56,6 +56,7 @@ const Login = () => {
             <a
               href="https://github.com/42HelloWorld/42HW_Front/issues/new"
               target="_blank"
+              rel="noreferrer"
             >
               버그 제보하기
             </a>
