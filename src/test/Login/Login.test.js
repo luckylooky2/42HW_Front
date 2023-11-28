@@ -35,33 +35,52 @@ const mockTranslation = () => ({
   },
 });
 const sampleCookie = "2yea8f3dzsof43";
-const mockUseState = (initValue) => [initValue, jest.fn()];
+const mockUseState = (initState) => [initState, jest.fn()];
 
 describe("Login Component", () => {
   it("로그인 버튼 클릭 시 리다이렉션 및 로딩 상태 확인", () => {
     useNavigate.mockReturnValue(mockNavigate);
     useTranslation.mockReturnValue(mockTranslation());
-    useState.mockReturnValueOnce(mockUseState(true));
 
     delete window.location;
     window.location = { href: "" };
 
     const setState = jest.fn();
-    jest
+    const spy = jest
       .spyOn(React, "useState")
+      .mockImplementationOnce(() => [true, setState])
       .mockImplementationOnce((initState) => [initState, setState]);
 
     render(<Login />);
 
-    fireEvent.click(screen.getByText(translationKo.login.login));
+    const loginButton = screen.getByText(translationKo.login.login);
+    fireEvent.click(loginButton);
 
     expect(setState).toHaveBeenCalledWith(true);
     expect(window.location.href).toBe(`${API_URL}/auth/login`);
+
+    spy.mockRestore(); // 감시된 함수 복구
   });
 
-  it("컴포넌트 초기 렌더링 시 로그인 상태 확인", () => {});
+  it("컴포넌트 초기 렌더링 시, 로그인 쿠키가 없는 경우 로그인 화면 렌더링", () => {
+    useNavigate.mockReturnValue(mockNavigate);
+    useTranslation.mockReturnValue(mockTranslation());
+    getCookie.mockReturnValue(null);
 
-  it("쿠키가 있는 경우 navigate 함수 호출 확인", () => {
+    const setState = jest.fn();
+    const spy = jest
+      .spyOn(React, "useState")
+      .mockImplementationOnce((initState) => [initState, setState])
+      .mockImplementationOnce((initState) => [initState, setState]);
+
+    render(<Login />);
+
+    expect(setState).toHaveBeenCalledWith(true);
+
+    spy.mockRestore();
+  });
+
+  it("컴포넌트 초기 렌더링 시, 로그인 쿠키가 있는 경우 navigate 함수 호출 확인", () => {
     useNavigate.mockReturnValue(mockNavigate);
     useTranslation.mockReturnValue(mockTranslation());
     getCookie.mockReturnValue(sampleCookie);
@@ -81,11 +100,61 @@ describe("Login Component", () => {
 
     render(<Login />);
 
-    expect(screen.getByText(translationKo.login.greeting1)).toBeInTheDocument();
-    expect(screen.getByText(translationKo.login.greeting2)).toBeInTheDocument();
-    expect(screen.getByText(translationKo.login.login)).toBeInTheDocument();
+    const greeting1Text = screen.getByText(translationKo.login.greeting1);
+    const greeting2Text = screen.getByText(translationKo.login.greeting2);
+    const loginText = screen.getByText(translationKo.login.login);
+
+    expect(greeting1Text).toBeInTheDocument();
+    expect(greeting2Text).toBeInTheDocument();
+    expect(loginText).toBeInTheDocument();
   });
 
-  it("로딩 중일 때 스피너 렌더링 확인", () => {});
-  it("버그 제보하기와 문의하기 링크 확인", () => {});
+  it("로딩 중일 때 스피너 렌더링 확인", () => {
+    useNavigate.mockReturnValue(mockNavigate);
+    useTranslation.mockReturnValue(mockTranslation());
+    getCookie.mockReturnValue(sampleCookie);
+
+    const setState = jest.fn();
+    const spy = jest
+      .spyOn(React, "useState")
+      .mockImplementationOnce((initState) => [initState, setState])
+      .mockImplementationOnce(() => [true, setState]);
+
+    render(<Login />);
+
+    const spinnerElement = screen.getByTestId("loader");
+    expect(spinnerElement).toBeInTheDocument();
+
+    spy.mockRestore();
+  });
+
+  it("버그 제보하기와 문의하기 링크 확인", () => {
+    useNavigate.mockReturnValue(mockNavigate);
+    useTranslation.mockReturnValue(mockTranslation());
+    getCookie.mockReturnValue(null);
+
+    const setState = jest.fn();
+    const spy = jest
+      .spyOn(React, "useState")
+      .mockImplementationOnce(() => [true, setState])
+      .mockImplementationOnce((initState) => [initState, setState]);
+
+    render(<Login />);
+
+    const bugReportLink = screen.getByText("버그 제보하기");
+    const contactLink = screen.getByText("문의하기");
+
+    // window.open 함수는 jest에서 직접적으로 mocking 하기가 어려울 수 있음
+    expect(bugReportLink).toHaveAttribute(
+      "href",
+      "https://github.com/42HelloWorld/42HW_Front/issues/new"
+    );
+    expect(bugReportLink).toHaveAttribute("target", "_blank");
+    expect(contactLink).toHaveAttribute(
+      "href",
+      "mailto:chanhyle@student.42seoul.kr"
+    );
+
+    spy.mockRestore();
+  });
 });
