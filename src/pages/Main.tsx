@@ -61,7 +61,7 @@ const Main = () => {
     navigate("/setting");
   }, []);
 
-  const openModal = useCallback(() => {
+  const navigateProfile = useCallback(() => {
     navigate("/profile");
   }, []);
 
@@ -78,7 +78,7 @@ const Main = () => {
         css="hover:bg-gray-100"
         onClick={joinSingleChat}
       />
-      <button className="absolute" onClick={openModal}>
+      <button className="absolute" onClick={navigateProfile}>
         <img
           draggable="false"
           className="mx-auto w-[150px] h-[150px] rounded-[100%] bg-[#ffffff]"
