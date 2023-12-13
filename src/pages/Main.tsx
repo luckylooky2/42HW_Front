@@ -29,7 +29,7 @@ const Main = () => {
     (nickname: string) => {
       if (socket === null) {
         const socket = io(`${API_URL}`);
-        console.log(socket);
+        // console.log(socket);
         setSocket(socket);
       }
     },
