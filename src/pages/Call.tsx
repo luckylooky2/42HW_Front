@@ -71,14 +71,18 @@ const Call = () => {
   useEffect(() => {
     if (peer && callInfo.opponent) {
       for (let i = 0; i < totalNum; i++) {
+        // 1. Initiator -> Signal Server 전송: Initiator일 때만?
+        // 4. Receiver -> Signal Server
         peer[i].on("signal", (data) => {
-          if (callInfo.opponent)
+          if (callInfo.opponent) {
             socket?.emit("joinSingle", {
               signal: data,
               opponentNickname: callInfo.opponent[i].opponentNickname,
               roomName: callInfo.roomName,
+              // 내가 상대방 Peer 배열의 몇 번째 인덱스인가?
               peerIndex: callInfo.opponent[i].peerIndex,
             });
+          }
         });
 
         peer[i].on("stream", (currentStream) => {
@@ -111,9 +115,13 @@ const Call = () => {
     };
   }, [socket]);
 
+  // 2. Signal Server -> Receiver
+  // 5. Signal Server -> Initiator
   const onPeerConnection = useCallback(
     (data: { signal: Peer.SignalData; peerIndex: number }) => {
       if (peer) {
+        // 3. Receiver: offer 처리, answer 생성 및 시그널 발생시켜 Signal Server로 전송
+        // 6. Initiator answer 생성
         peer[data.peerIndex].signal(data.signal);
       }
     },
