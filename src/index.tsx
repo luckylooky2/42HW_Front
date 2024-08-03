@@ -9,7 +9,7 @@ import AuthProvider from "@contexts/AuthProvider";
 import SocketProvider from "@contexts/SocketProvider";
 import CallProvider from "@contexts/CallProvider";
 import axios from "axios";
-import { deleteCookie } from "@utils/manageCookie";
+import { getCookie, deleteCookie } from "@utils/manageCookie";
 import "./tailwind.css";
 import "./index.css";
 
@@ -20,15 +20,29 @@ axios.defaults.baseURL =
   // :
   API_URL;
 
+// at는 확인할 수 없고, login만 확인 가능
+axios.interceptors.request.use(
+  function (request) {
+    const cookies = getCookie("login");
+    if (!cookies) {
+      alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
+      window.location.href = "/";
+    }
+    return request;
+  },
+  function (error) {
+    return error;
+  }
+);
+
+// login은 반드시 있다는 가정(즉, at가 없거나 만료되었을 때)
 axios.interceptors.response.use(
   function (response) {
     return response;
   },
   function (error) {
-    // if (error.code === "403")
-    // else if (error.code === "400")
-    alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
     deleteCookie("login");
+    alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
     window.location.href = "/";
     return new Promise(() => {});
   }
