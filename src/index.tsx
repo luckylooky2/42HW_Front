@@ -15,7 +15,7 @@ import "./index.css";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL =
-  //   process.env.NODE_ENV === "production"
+  //   import.meta.env.NODE_ENV === "production"
   // ? "https://sleact.nodebird.com"
   // :
   API_URL;

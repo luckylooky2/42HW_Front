@@ -1,7 +1,7 @@
 import { CallType } from "@typings/front";
 
-export const API_URL = process.env.REACT_APP_API_URL;
-export const FRONT_URL = process.env.REACT_APP_FRONT_URL;
+export const API_URL = import.meta.env.VITE_API_URL;
+export const FRONT_URL = import.meta.env.VITE_FRONT_URL;
 
 export const COUNT = {
   DEFAULT: 1.5,
@@ -71,9 +71,9 @@ export const ICE_SERVER = [
     ],
   },
   {
-    urls: `turn:${process.env.REACT_APP_TURN_URL}`,
-    username: process.env.REACT_APP_TURN_USERNAME,
-    credential: process.env.REACT_APP_TURN_PASSWORD,
+    urls: `turn:${import.meta.env.VITE_TURN_URL}`,
+    username: import.meta.env.VITE_TURN_USERNAME,
+    credential: import.meta.env.VITE_TURN_PASSWORD,
   },
 ];
 
