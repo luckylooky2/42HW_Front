@@ -1,4 +1,11 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  MutableRefObject,
+} from "react";
 import { useNavigate } from "react-router";
 import { SocketContext } from "@contexts/SocketProvider";
 import { AuthContext } from "@contexts/AuthProvider";
@@ -18,13 +25,13 @@ const Setting = () => {
   const { myInfo } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
   const { callInfo, dispatch } = useContext(CallContext);
-  const streamArray = useRef<MediaStream[]>([]);
+  const streamRef = useRef<MediaStream>(new MediaStream());
   const prevStatus = useRef<string>(MIC_STATUS.PROMPT);
 
   useEffect(() => {
     // 잘못된 접근했을 때
     if (myInfo === null || socket === null) {
-      stopAllStreams();
+      // stopAllStreams();
       navigate("/main");
     }
   }, []);
@@ -50,6 +57,7 @@ const Setting = () => {
   const pollMicAvailable = async () => {
     const permissionName = "microphone" as PermissionName;
     const result = await navigator.permissions.query({ name: permissionName });
+    console.log(result, isDone);
     if (prevStatus.current !== result.state) {
       if (result.state === MIC_STATUS.DENIED)
         toast.error("마이크 권한을 허용해 주세요!");
@@ -67,26 +75,27 @@ const Setting = () => {
     prevStatus.current = result.state;
   };
 
-  const stopAllStreams = useCallback(() => {
-    streamArray.current.forEach((stream) => {
-      stream.getTracks().forEach((track) => {
-        track.stop();
-      });
-    });
-    dispatch({ type: CallActionType.DEL_ALL });
-  }, [callInfo]);
+  // const stopAllStreams = useCallback(() => {
+  //   streamArray.current.forEach((stream) => {
+  //     stream.getTracks().forEach((track) => {
+  //       track.stop();
+  //     });
+  //   });
+  //   dispatch({ type: CallActionType.DEL_ALL });
+  // }, [callInfo]);
 
-  const stopPrevStreams = useCallback(() => {
-    streamArray.current
-      .filter((v, i) => i !== streamArray.current.length - 1)
-      .forEach((stream) => {
-        stream.getTracks().forEach((track) => {
-          track.stop();
-        });
-      });
-  }, [callInfo]);
+  // const stopPrevStreams = useCallback(() => {
+  //   streamArray.current
+  //     .filter((v, i) => i !== streamArray.current.length - 1)
+  //     .forEach((stream) => {
+  //       stream.getTracks().forEach((track) => {
+  //         track.stop();
+  //       });
+  //     });
+  // }, [callInfo]);
 
   const getUserMedia = useCallback(async () => {
+    console.log("getUserMedia");
     if (myInfo == null || socket === null) return;
 
     let newStream;
@@ -98,8 +107,15 @@ const Setting = () => {
 
       dispatch({ type: CallActionType.SET_STREAM, payload: newStream });
       setIsDone(true);
-      streamArray.current = [...streamArray.current, newStream];
+      streamRef.current.getTracks().forEach((track) => {
+        track.stop();
+      });
+      streamRef.current = newStream;
+      // streamArray.current = [...streamArray.current, newStream];
+      console.log(streamRef.current);
     } catch (e) {
+      // granted 인데 DOMException: Permission denied by system(Arc), NotAllowedError: The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission.(Safari)이 뜨는 경우도 있음
+      console.log(e);
       // 크롬에서는 괜찮은데, 사파리에서는 granted라도 prompt 창이 떠야 연결이 됨
       // granted 가지고만 판단하면 안 됨
       // sarafi에서는 몇 번 하면, 세션에 저장되어 프롬프트가 뜨지 않음
@@ -111,12 +127,17 @@ const Setting = () => {
   }, [isDone, micStatus]);
 
   const goToMain = useCallback(() => {
-    stopAllStreams();
+    // stopAllStreams();
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => {
+        track.stop();
+      });
+    }
     navigate("/main");
   }, []);
 
   const goToWaiting = useCallback(() => {
-    stopPrevStreams();
+    // stopPrevStreams();
     navigate("/waiting");
   }, []);
 
