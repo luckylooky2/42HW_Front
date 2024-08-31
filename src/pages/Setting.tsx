@@ -27,6 +27,14 @@ const Setting = () => {
   const { callInfo, dispatch } = useContext(CallContext);
   const streamRef = useRef<MediaStream>(new MediaStream());
   const prevStatus = useRef<string>(MIC_STATUS.PROMPT);
+  const [audioInputList, setAudioInputList] = useState<MediaDeviceInfo[]>([]);
+  const [audioOutputList, setAudioOutputList] = useState<MediaDeviceInfo[]>([]);
+  const [currInputDeviceId, setCurrInputDeviceId] =
+    useState("마이크를 선택해 주세요.");
+  const [currOutputDeviceId, setCurrOutputDeviceId] =
+    useState("스피커를 선택해 주세요.");
+
+  console.log(callInfo.deviceId, currInputDeviceId);
 
   useEffect(() => {
     // 잘못된 접근했을 때
@@ -36,28 +44,55 @@ const Setting = () => {
     }
   }, []);
 
+  const findTargetIndex = (
+    arr: MediaDeviceInfo[],
+    target: string | null
+  ): number => {
+    let targetIndex = 0;
+
+    for (let i = 0; i < arr.length; i++) {
+      const { deviceId } = arr[i];
+      if (target === deviceId) {
+        targetIndex = i;
+      }
+    }
+    return targetIndex;
+  };
+
   // 크롬에서는 원래 거부되었을 경우 : denied
   // 사파리에서는 : denied -> prompt로 바뀜
   useEffect(() => {
-    getUserMedia();
+    getDeviceList();
   }, [micStatus, socket]);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      pollMicAvailable();
-    }, 300);
+    if (audioInputList.length) {
+      const targetIndex = findTargetIndex(audioInputList, callInfo.deviceId);
+      setCurrInputDeviceId(audioInputList[targetIndex].deviceId);
+      getUserMedia(audioInputList[targetIndex].deviceId);
+    }
 
-    return () => {
-      clearInterval(id);
-    };
-  }, []);
+    if (audioOutputList.length) {
+      setCurrOutputDeviceId(audioOutputList[0].deviceId);
+    }
+  }, [audioInputList]);
+
+  // useEffect(() => {
+  //   const id = setInterval(() => {
+  //     pollMicAvailable();
+  //   }, 300);
+
+  //   return () => {
+  //     clearInterval(id);
+  //   };
+  // }, []);
 
   // denied/granted와 allow/not allow는 다른 상태
   // safari는 2단계를 거침, chrome은 granted => allow, denied => not allow 같음
   const pollMicAvailable = async () => {
     const permissionName = "microphone" as PermissionName;
     const result = await navigator.permissions.query({ name: permissionName });
-    console.log(result, isDone);
+    // console.log(result, isDone);
     if (prevStatus.current !== result.state) {
       if (result.state === MIC_STATUS.DENIED)
         toast.error("마이크 권한을 허용해 주세요!");
@@ -94,37 +129,62 @@ const Setting = () => {
   //     });
   // }, [callInfo]);
 
-  const getUserMedia = useCallback(async () => {
-    console.log("getUserMedia");
-    if (myInfo == null || socket === null) return;
+  const getUserMedia = useCallback(
+    async (deviceId: string | undefined = undefined) => {
+      if (myInfo == null || socket === null) return;
 
-    let newStream;
+      let newStream;
+      try {
+        newStream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: { deviceId: { exact: deviceId } },
+        });
+
+        dispatch({
+          type: CallActionType.SET_STREAM,
+          payload: { stream: newStream, deviceId: deviceId },
+        });
+        setIsDone(true);
+
+        streamRef.current.getAudioTracks().forEach((track) => {
+          track.stop();
+        });
+
+        streamRef.current = newStream;
+        // pollMicAvailable();
+        // streamArray.current = [...streamArray.current, newStream];
+        // console.log(streamRef.current);
+      } catch (e) {
+        // granted 인데 DOMException: Permission denied by system(Arc), NotAllowedError: The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission.(Safari)이 뜨는 경우도 있음
+        console.log("getUserMedia", e);
+        // 크롬에서는 괜찮은데, 사파리에서는 granted라도 prompt 창이 떠야 연결이 됨
+        // granted 가지고만 판단하면 안 됨
+        // sarafi에서는 몇 번 하면, 세션에 저장되어 프롬프트가 뜨지 않음
+        // INFO : 설정을 변경한 후 꼭 새로고침을 해주세요
+        // INFO : safari에서 계속해서 마이크가 켜지지 않는 경우에는 창을 껐다 켜주세요
+        dispatch({ type: CallActionType.SET_STREAM, payload: null });
+        setIsDone(false);
+      }
+    },
+    [isDone, micStatus, audioInputList]
+  );
+
+  const getDeviceList = useCallback(async () => {
     try {
-      newStream = await navigator.mediaDevices.getUserMedia({
-        video: false,
-        audio: true,
-      });
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const filteredValid = devices.filter(
+        (v) => v.deviceId !== "" && v.deviceId !== "default"
+      );
+      console.log(filteredValid);
+      const inputs = filteredValid.filter((v) => v.kind === "audioinput");
+      const outputs = filteredValid.filter((v) => v.kind === "audiooutput");
 
-      dispatch({ type: CallActionType.SET_STREAM, payload: newStream });
-      setIsDone(true);
-      streamRef.current.getTracks().forEach((track) => {
-        track.stop();
-      });
-      streamRef.current = newStream;
-      // streamArray.current = [...streamArray.current, newStream];
-      console.log(streamRef.current);
+      setAudioInputList(inputs);
+      setAudioOutputList(outputs);
     } catch (e) {
-      // granted 인데 DOMException: Permission denied by system(Arc), NotAllowedError: The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission.(Safari)이 뜨는 경우도 있음
-      console.log(e);
-      // 크롬에서는 괜찮은데, 사파리에서는 granted라도 prompt 창이 떠야 연결이 됨
-      // granted 가지고만 판단하면 안 됨
-      // sarafi에서는 몇 번 하면, 세션에 저장되어 프롬프트가 뜨지 않음
-      // INFO : 설정을 변경한 후 꼭 새로고침을 해주세요
-      // INFO : safari에서 계속해서 마이크가 켜지지 않는 경우에는 창을 껐다 켜주세요
-      dispatch({ type: CallActionType.SET_STREAM, payload: null });
-      setIsDone(false);
+      console.log("enumerateDevices", e);
     }
-  }, [isDone, micStatus]);
+  }, [audioInputList]);
 
   const goToMain = useCallback(() => {
     // stopAllStreams();
@@ -133,11 +193,20 @@ const Setting = () => {
         track.stop();
       });
     }
+    dispatch({
+      type: CallActionType.DEL_ALL,
+    });
+
     navigate("/main");
   }, []);
 
   const goToWaiting = useCallback(() => {
     // stopPrevStreams();
+
+    if (!streamRef.current.active) {
+      toast.error("마이크가 연결되지 않았습니다.");
+      return;
+    }
     navigate("/waiting");
   }, []);
 
@@ -154,14 +223,67 @@ const Setting = () => {
         )}
       </div>
       <div>{t(`${PAGE.SETTING}.info.permission`)}</div>
-      <div className="h-[50%]">
-        <MicrophoneSoundChecker isDone={isDone} />
+      <div className="h-[50%] flex flex-col justify-center items-center gap-2">
+        <MicrophoneSoundChecker
+          isDone={isDone}
+          outputDeviceId={currOutputDeviceId}
+        />
+        <div>
+          <label>마이크: </label>
+          <select
+            onInput={({ target }) => {
+              const deviceId = target.value;
+              const targetIndex = findTargetIndex(audioInputList, deviceId);
+              console.log(targetIndex);
+              setCurrInputDeviceId(audioInputList[targetIndex].deviceId);
+              getUserMedia(deviceId);
+            }}
+            value={currInputDeviceId}
+          >
+            {audioInputList.length === 0 && (
+              <option>마이크를 연결해주세요</option>
+            )}
+            {audioInputList.map((audio) => (
+              <option key={audio.label} value={audio.deviceId}>
+                {audio.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>스피커: </label>
+          <select
+            onInput={({ target }) => {
+              const deviceId = target.value;
+              const targetIndex = findTargetIndex(audioOutputList, deviceId);
+              console.log(targetIndex);
+              setCurrOutputDeviceId(audioOutputList[targetIndex].deviceId);
+              console.log(audioOutputList[targetIndex].deviceId);
+              // getUserMedia(deviceId);
+            }}
+            value={currOutputDeviceId}
+          >
+            {audioInputList.length === 0 && (
+              <option>스피커를 연결해주세요</option>
+            )}
+            {audioOutputList.map((audio) => (
+              <option key={audio.label} value={audio.deviceId}>
+                {audio.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <BasicButton
+          onClick={() => callInfo.deviceId && getUserMedia(callInfo.deviceId)}
+          text="재연결"
+        />
+        <BasicButton onClick={getDeviceList} text="마이크 리스트 불러오기" />
       </div>
       <div className="h-[10%]">
         <BasicButton
           onClick={goToWaiting}
           text={t(`${PAGE.SETTING}.button.start`)}
-          disabled={micStatus !== MIC_STATUS.GRANTED || !isDone}
+          // disabled={micStatus !== MIC_STATUS.GRANTED || !isDone}
         />
         <BasicButton
           onClick={goToMain}
