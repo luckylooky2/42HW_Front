@@ -15,6 +15,7 @@ export const CallActionType = {
 
 const initialCallState: CallInfo = {
   stream: null,
+  deviceId: null,
   roomName: null,
   roomType: null,
   opponent: null,
@@ -38,7 +39,11 @@ const callReducer = (
 ): CallInfo => {
   switch (action.type) {
     case CallActionType.SET_STREAM:
-      return { ...state, stream: action.payload };
+      return {
+        ...state,
+        stream: action.payload.stream,
+        deviceId: action.payload.deviceId,
+      };
     case CallActionType.SET_MATCHING:
       return {
         ...state,
@@ -48,6 +53,7 @@ const callReducer = (
     case CallActionType.DEL_ALL:
       return {
         stream: null,
+        deviceId: null,
         roomName: null,
         roomType: null,
         opponent: null,

@@ -11,6 +11,7 @@ export interface OpponentInfo {
 
 export interface CallInfo {
   stream: MediaStream | null;
+  deviceId: string | null;
   roomName: string | null;
   roomType: string | null;
   opponent: OpponentInfo[] | null;
