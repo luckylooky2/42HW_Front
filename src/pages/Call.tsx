@@ -413,7 +413,9 @@ const Call = () => {
             clicked={isMuted}
             text={isMuted ? "mute off" : "mute"}
             img={isMuted ? "mute.svg" : "mute-off.svg"}
-            children={<MicrophoneSoundChecker />}
+            children={
+              <MicrophoneSoundChecker isSmallSize={true} bgColor="lightgray" />
+            }
           />
         </div>
       </div>
