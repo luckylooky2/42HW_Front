@@ -11,6 +11,7 @@ import { COUNT, MILLISECOND, PAGE, TRANSLATION } from "@utils/constant";
 import { OpponentInfo } from "@typings/front";
 import { useTranslation } from "react-i18next";
 import { SINGLE_CALL } from "@utils/constant";
+import Header from "@utils/Header";
 
 const Waiting = () => {
   const navigate = useNavigate();
@@ -71,13 +72,13 @@ const Waiting = () => {
     };
   }, []);
 
-  const cancelWaiting = useCallback(() => {
-    dispatch({ type: CallActionType.DEL_ALL });
+  const backToWaiting = useCallback(() => {
+    // dispatch({ type: CallActionType.DEL_ALL });
     socket?.emit("unregister", {
       nickname: myInfo?.nickname,
     });
-    stopMicrophone();
-    navigate("/main");
+    // stopMicrophone();
+    navigate(-1);
   }, [callInfo]);
 
   const stopMicrophone = useCallback(() => {
@@ -93,25 +94,23 @@ const Waiting = () => {
   return socket === null ? (
     <Loading />
   ) : (
-    <>
+    <Header
+      onClick={backToWaiting}
+      title={`Matching: ${t(
+        `${PAGE.MAIN}.` +
+          (callInfo.roomType === SINGLE_CALL.TYPE ? "singleCall" : "groupCall")
+      )}`}
+    >
       <Loading text={t(`${PAGE.WAITING}.info`)}>
-        <div>
-          {t(
-            `${PAGE.MAIN}.` +
-              (callInfo.roomType === SINGLE_CALL.TYPE
-                ? "singleCall"
-                : "groupCall")
-          )}
-        </div>
         <div className="my-auto">
           <BasicButton
-            onClick={cancelWaiting}
-            text={t(`${PAGE.WAITING}.cancel`)}
+            onClick={backToWaiting}
+            text={t(`${PAGE.WAITING}.back`)}
             disabled={matched}
           />
         </div>
       </Loading>
-    </>
+    </Header>
   );
 };
 
