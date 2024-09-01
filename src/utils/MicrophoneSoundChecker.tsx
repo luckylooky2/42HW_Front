@@ -3,9 +3,17 @@ import { useState, useEffect, useContext, FC, useRef } from "react";
 
 interface Props {
   isDone?: boolean;
+  icon?: boolean;
+  isSmallSize?: boolean;
+  bgColor?: string;
 }
 
-const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
+const MicrophoneSoundChecker: FC<Props> = ({
+  isDone,
+  icon = false,
+  isSmallSize = false,
+  bgColor = "white",
+}) => {
   const { callInfo } = useContext(CallContext);
   const [value, setValue] = useState(0);
   const divRef = useRef<HTMLDivElement>(null);
@@ -18,7 +26,10 @@ const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
 
     microphone && microphone.connect(analyser);
     // destination 기본 값은 스피커. 스피커에 현재 audio context를 연결
-    if (isDone) analyser.connect(audioContext.destination);
+    // 자신의 목소리가 잘 들리는지 확인하는 용도
+    if (isDone) {
+      analyser.connect(audioContext.destination);
+    }
 
     analyser.fftSize = 256; // FFT 크기 설정
     const bufferLength = analyser.frequencyBinCount;
@@ -38,40 +49,40 @@ const MicrophoneSoundChecker: FC<Props> = ({ isDone }) => {
     updateMicrophoneLevel();
 
     return () => {
-      // 마이크 입력 중지
-      if (microphone) {
-        microphone.mediaStream.getTracks().forEach((track) => {
-          track.stop();
-        }); // 마이크 트랙 가져오기
-      }
+      // 이후 통화에서는 자신의 목소리가 들리면 안되기 떄문에 스피커 연결 해제
+      analyser.disconnect();
     };
-  }, [isDone]);
+  }, [isDone, callInfo]);
 
   useEffect(() => {
     if (divRef && divRef.current)
-      divRef.current.style.width = `${value > 100 ? 100 : value}%`;
+      divRef.current.style.width = `${Math.min(100, value)}%`;
   }, [value]);
 
   return (
-    <div className="flex justify-center">
-      <div className="w-[40px] h-[10px] bg-gray-300 relative">
-        <div
-          style={{
-            width: "100%",
-            height: "10px",
-            backgroundImage:
-              "linear-gradient(90deg, white 25%, transparent 25%, transparent 50%, white 50%, white 75%, transparent 75%, transparent)",
-            backgroundSize: "9px 9px",
-            position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-          }}
-        ></div>
-        <div
-          className="h-full bg-green-500"
-          ref={divRef}
-          style={{ transition: "width 0.1s" }}
-        />
+    <div className="flex justify-center gap-2 h-[20px]">
+      {icon && (
+        <img width="20" height="20" src="public/mute-off.svg" alt="mic-check" />
+      )}
+      <div className="flex gap-0.5">
+        {Array.from({ length: 10 })
+          .fill(null)
+          .map((v, i) => {
+            const offset = i + 1;
+            const first = Math.floor(value / 10);
+            return (
+              <div
+                key={i}
+                className={`${
+                  isSmallSize ? "w-[3px] h-[15px]" : "w-[10px]"
+                } rounded-md`}
+                style={{
+                  background: `${offset < first ? "lightgreen" : bgColor}`,
+                  // opacity: `${offset < first ? Math.max(5, offset) * 0.1 : 1}`,
+                }}
+              />
+            );
+          })}
       </div>
     </div>
   );
