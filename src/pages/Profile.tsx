@@ -23,21 +23,18 @@ const Profile = () => {
   }, []);
 
   return (
-    <>
-      <Header onClick={closeModal} title={t("header")} />
-      <div className="h-[90%] w-full p-4">
-        <div className="h-[100%] w-full flex flex-col justify-around">
-          <ProfileCard />
-          <div className="h-[70%] flex flex-col justify-evenly">
-            <LangSelect />
-            <CallHistoryList />
-          </div>
-          <div className="h-[10%] flex items-center justify-center">
-            <BasicButton onClick={logout} text={t("logout")} />
-          </div>
+    <Header onClick={closeModal} title={t("header")}>
+      <div className="h-[100%] w-full flex flex-col justify-around">
+        <ProfileCard />
+        <div className="h-[70%] flex flex-col justify-evenly">
+          <LangSelect />
+          <CallHistoryList />
+        </div>
+        <div className="h-[10%] flex items-center justify-center">
+          <BasicButton onClick={logout} text={t("logout")} />
         </div>
       </div>
-    </>
+    </Header>
   );
 };
 export default Profile;
