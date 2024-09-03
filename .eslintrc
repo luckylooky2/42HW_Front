@@ -1,0 +1,45 @@
+{
+  "root": true,
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "plugins": ["react", "import"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "requireConfigFile": false,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2015,
+    "babelOptions": {
+      "presets": ["@babel/preset-react"]
+    }
+  },
+  "rules": {
+    "no-undef": ["off"],
+    "no-console": ["warn"],
+    "react/react-in-jsx-scope": ["off"],
+    "no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          ["builtin", "external"],
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc" }
+      }
+    ]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
