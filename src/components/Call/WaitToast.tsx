@@ -1,6 +1,7 @@
-import { useContext } from "react";
-import VoteStatusBoard from "./VoteStatusBoard";
 import { CallContext } from "@contexts/CallProvider";
+import { useContext } from "react";
+
+import VoteStatusBoard from "./VoteStatusBoard";
 
 const WaitToast = () => {
   const { callInfo } = useContext(CallContext);

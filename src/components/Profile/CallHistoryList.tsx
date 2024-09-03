@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import CallHistory from "@components/Profile/CallHistory";
 import { ICallHistory } from "@typings/db";
 import { API_URL } from "@utils/constant";
 import axios from "axios";
-import CallHistory from "@components/Profile/CallHistory";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const CallHistoryList = () => {

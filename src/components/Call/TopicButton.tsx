@@ -1,11 +1,10 @@
+import WaitToast from "@components/Call/WaitToast";
+import { AuthContext } from "@contexts/AuthProvider";
+import { CallContext } from "@contexts/CallProvider";
+import { SocketContext } from "@contexts/SocketProvider";
+import { COUNT, MILLISECOND } from "@utils/constant";
 import { useCallback, useContext, FC, SetStateAction } from "react";
 import { toast, Id } from "react-toastify";
-import WaitToast from "@components/Call/WaitToast";
-
-import { SocketContext } from "@contexts/SocketProvider";
-import { CallContext } from "@contexts/CallProvider";
-import { AuthContext } from "@contexts/AuthProvider";
-import { COUNT, MILLISECOND } from "@utils/constant";
 
 interface Props {
   text: string;

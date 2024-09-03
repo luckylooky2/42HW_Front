@@ -1,3 +1,5 @@
+import { SocketContext } from "@contexts/SocketProvider";
+import { VOTE_SELECT } from "@utils/constant";
 import {
   useState,
   useRef,
@@ -6,8 +8,6 @@ import {
   useContext,
   FC,
 } from "react";
-import { VOTE_SELECT } from "@utils/constant";
-import { SocketContext } from "@contexts/SocketProvider";
 
 interface Props {
   totalNum: number | null;

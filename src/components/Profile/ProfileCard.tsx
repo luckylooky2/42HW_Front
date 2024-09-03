@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { IUser } from "@typings/db";
 import { API_URL } from "@utils/constant";
 import axios from "axios";
-import { IUser } from "@typings/db";
+import { useCallback, useEffect, useState } from "react";
 import { BarLoader } from "react-spinners";
 
 const ProfileCard = () => {

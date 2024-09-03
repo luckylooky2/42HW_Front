@@ -1,7 +1,8 @@
-import { SetStateAction, useEffect, FC } from "react";
-import TopicButton from "./TopicButton";
-import { Id } from "react-toastify";
 import { TOPIC_LIST } from "@utils/constant";
+import { SetStateAction, useEffect, FC } from "react";
+import { Id } from "react-toastify";
+
+import TopicButton from "./TopicButton";
 
 interface Props {
   isOpen: boolean;

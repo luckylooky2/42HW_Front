@@ -1,17 +1,17 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router";
-import { SocketContext } from "@contexts/SocketProvider";
 import { AuthContext } from "@contexts/AuthProvider";
-import { toast } from "react-toastify";
-import BasicButton from "@utils/BasicButton";
-import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
-import { PAGE, TRANSLATION } from "@utils/constant";
-import Loading from "@utils/Loading";
-import { useTranslation } from "react-i18next";
-import Header from "@utils/Header";
-import { useStream } from "@hooks/useStream";
+import { SocketContext } from "@contexts/SocketProvider";
 import { useAudioInput } from "@hooks/useAudioInput";
 import { useRoomType } from "@hooks/useRoomType";
+import { useStream } from "@hooks/useStream";
+import BasicButton from "@utils/BasicButton";
+import Header from "@utils/Header";
+import Loading from "@utils/Loading";
+import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
+import { PAGE, TRANSLATION } from "@utils/constant";
+import { useCallback, useContext, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 const Setting = () => {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ const Setting = () => {
     navigate("/waiting");
   }, [stream]);
 
-  const handleInput = ({ target }) => {
+  const handleInput = ({ target }: React.ChangeEvent<HTMLSelectElement>) => {
     const targetDeviceId = target.value;
     getMicrophone(targetDeviceId);
   };

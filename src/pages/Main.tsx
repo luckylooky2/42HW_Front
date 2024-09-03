@@ -1,5 +1,10 @@
-import { useEffect, useContext, useCallback } from "react";
+import ChatButton from "@components/Main/ChatButton";
 import { AuthContext } from "@contexts/AuthProvider";
+import { SocketContext } from "@contexts/SocketProvider";
+import { useRoomType } from "@hooks/useRoomType";
+import { useStream } from "@hooks/useStream";
+import "@styles/Main.css";
+import Loading from "@utils/Loading";
 import {
   API_URL,
   GROUP_CALL,
@@ -7,16 +12,11 @@ import {
   SINGLE_CALL,
   TRANSLATION,
 } from "@utils/constant";
-import { useNavigate } from "react-router";
 import axios from "axios";
-import Loading from "@utils/Loading";
-import ChatButton from "@components/Main/ChatButton";
-import "@styles/Main.css";
-import { SocketContext } from "@contexts/SocketProvider";
-import { io } from "socket.io-client";
+import { useEffect, useContext, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useStream } from "@hooks/useStream";
-import { useRoomType } from "@hooks/useRoomType";
+import { useNavigate } from "react-router";
+import { io } from "socket.io-client";
 
 const Main = () => {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const Main = () => {
   const [_roomType, setRoomType] = useRoomType();
 
   const connectSocket = useCallback(
-    (nickname: string) => {
+    (_nickname: string) => {
       if (socket === null) {
         const socket = io(`${API_URL}`);
         setSocket(socket);

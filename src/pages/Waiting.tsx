@@ -1,17 +1,17 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import Loading from "@utils/Loading";
-import BasicButton from "@utils/BasicButton";
-import { SocketContext } from "@contexts/SocketProvider";
 import { AuthContext } from "@contexts/AuthProvider";
 import { CallContext, CallActionType } from "@contexts/CallProvider";
+import { SocketContext } from "@contexts/SocketProvider";
+import { useRoomType } from "@hooks/useRoomType";
+import { OpponentInfo } from "@typings/front";
+import BasicButton from "@utils/BasicButton";
+import Header from "@utils/Header";
+import Loading from "@utils/Loading";
+import { COUNT, MILLISECOND, PAGE, TRANSLATION } from "@utils/constant";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { COUNT, MILLISECOND, PAGE, TRANSLATION } from "@utils/constant";
-import { OpponentInfo } from "@typings/front";
-import { useTranslation } from "react-i18next";
-import Header from "@utils/Header";
-import { useRoomType } from "@hooks/useRoomType";
 
 const Waiting = () => {
   const navigate = useNavigate();

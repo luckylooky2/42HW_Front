@@ -1,8 +1,8 @@
 import { ICallHistory } from "@typings/db";
-import { FC } from "react";
-import dayjs from "dayjs";
-import { Link } from "react-router-dom";
 import { timeConverter } from "@utils/timeConverter";
+import dayjs from "dayjs";
+import { FC } from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
   callData: ICallHistory;

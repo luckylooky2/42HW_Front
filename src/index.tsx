@@ -1,15 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
-import { API_URL } from "@utils/constant";
 import AuthProvider from "@contexts/AuthProvider";
-import SocketProvider from "@contexts/SocketProvider";
 import CallProvider from "@contexts/CallProvider";
-import axios from "axios";
+import SocketProvider from "@contexts/SocketProvider";
+import { API_URL } from "@utils/constant";
 import { getCookie, deleteCookie } from "@utils/manageCookie";
+import axios from "axios";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import "./tailwind.css";
 import "./index.css";
 

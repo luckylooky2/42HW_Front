@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState, useRef } from "react";
-import dayjs from "dayjs";
-import { timeConverter } from "@utils/timeConverter";
 import { CallContext } from "@contexts/CallProvider";
+import { timeConverter } from "@utils/timeConverter";
+import dayjs from "dayjs";
+import { useContext, useEffect, useState, useRef } from "react";
 
 const Timer = () => {
   const { callInfo } = useContext(CallContext);

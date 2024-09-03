@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { API_URL, PAGE, TRANSLATION } from "@utils/constant";
-import { useNavigate } from "react-router";
 import Loading from "@utils/Loading";
+import { API_URL, PAGE, TRANSLATION } from "@utils/constant";
 import { getCookie } from "@utils/manageCookie";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { PulseLoader } from "react-spinners";
 
 const Login = () => {

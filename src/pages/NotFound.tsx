@@ -1,7 +1,7 @@
 import BasicButton from "@utils/BasicButton";
+import Loading from "@utils/Loading";
 import { FC, useCallback } from "react";
 import { useNavigate } from "react-router";
-import Loading from "@utils/Loading";
 
 interface Props {
   isLoading: boolean;

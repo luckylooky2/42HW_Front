@@ -1,12 +1,13 @@
+import Login from "@pages/Login";
+import MainRouter from "@utils/MainRouter";
+import { COUNT, MILLISECOND } from "@utils/constant";
+import * as process from "process";
 import React, { useEffect, useRef, useCallback } from "react";
 import { Routes, Route } from "react-router";
 // 동적 import 추가하기
-import Login from "@pages/Login";
-import MainRouter from "@utils/MainRouter";
 import { ToastContainer } from "react-toastify";
-import * as process from "process";
-import { COUNT, MILLISECOND } from "@utils/constant";
 import { toast } from "react-toastify";
+
 import "./i18n";
 
 (window as any).global = window;
@@ -77,7 +78,7 @@ function App() {
                   src="./share.svg"
                   alt="install"
                 />{" "}
-                를 클릭하여 "홈 화면에 추가"를 통해 앱을 설치해주세요.
+                를 클릭하여 &quot;홈 화면에 추가&quot;를 통해 앱을 설치해주세요.
               </div>
             ) : (
               <button

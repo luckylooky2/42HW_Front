@@ -1,5 +1,5 @@
-import { useState, useCallback, FC } from "react";
 import Carousel from "@utils/Carousel";
+import { useState, useCallback, FC } from "react";
 
 interface Props {
   contents: any[];

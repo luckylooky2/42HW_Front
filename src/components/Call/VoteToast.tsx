@@ -1,7 +1,7 @@
-import { FC, useState, useCallback, useContext } from "react";
-import { SocketContext } from "@contexts/SocketProvider";
-import { CallContext } from "@contexts/CallProvider";
 import VoteStatus from "@components/Call/VoteStatusBoard";
+import { CallContext } from "@contexts/CallProvider";
+import { SocketContext } from "@contexts/SocketProvider";
+import { FC, useState, useCallback, useContext } from "react";
 
 interface Props {
   contentsName: string;

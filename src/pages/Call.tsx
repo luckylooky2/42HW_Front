@@ -1,13 +1,13 @@
-import { SocketContext } from "@contexts/SocketProvider";
-import { CallActionType, CallContext } from "@contexts/CallProvider";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import Peer from "simple-peer";
-import { useNavigate } from "react-router";
 import CallButton from "@components/Call/CallButton";
-import Timer from "@components/Call/Timer";
-import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
 import InitialScreen from "@components/Call/InitialScreen";
+import Timer from "@components/Call/Timer";
+import TopicModal from "@components/Call/TopicModal";
 import TopicSelect from "@components/Call/TopicSelect";
+import VoteToast from "@components/Call/VoteToast";
+import { CallActionType, CallContext } from "@contexts/CallProvider";
+import { SocketContext } from "@contexts/SocketProvider";
+import Loading from "@utils/Loading";
+import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
 import {
   SCREEN,
   ICE_SERVER,
@@ -19,11 +19,11 @@ import {
   TRANSLATION,
   PAGE,
 } from "@utils/constant";
-import { toast, Id } from "react-toastify";
-import VoteToast from "@components/Call/VoteToast";
-import TopicModal from "@components/Call/TopicModal";
-import Loading from "@utils/Loading";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+import { toast, Id } from "react-toastify";
+import Peer from "simple-peer";
 
 const Call = () => {
   const { t } = useTranslation(TRANSLATION, { keyPrefix: PAGE.CALL });
@@ -413,10 +413,9 @@ const Call = () => {
             clicked={isMuted}
             text={isMuted ? "mute off" : "mute"}
             img={isMuted ? "mute.svg" : "mute-off.svg"}
-            children={
-              <MicrophoneSoundChecker isSmallSize={true} bgColor="lightgray" />
-            }
-          />
+          >
+            <MicrophoneSoundChecker isSmallSize={true} bgColor="lightgray" />
+          </CallButton>
         </div>
       </div>
       <div className="flex justify-center h-[10%]">

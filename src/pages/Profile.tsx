@@ -1,13 +1,13 @@
-import { useNavigate } from "react-router";
-import { useCallback } from "react";
-import ProfileCard from "@components/Profile/ProfileCard";
-import LangSelect from "@components/Profile/LangSelect";
 import CallHistoryList from "@components/Profile/CallHistoryList";
+import LangSelect from "@components/Profile/LangSelect";
+import ProfileCard from "@components/Profile/ProfileCard";
 import BasicButton from "@utils/BasicButton";
 import Header from "@utils/Header";
-import { useTranslation } from "react-i18next";
-import axios from "axios";
 import { API_URL, PAGE, TRANSLATION } from "@utils/constant";
+import axios from "axios";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 
 const Profile = () => {
   const navigate = useNavigate();

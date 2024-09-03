@@ -1,6 +1,6 @@
-import { useContext } from "react";
 import { CallActionType, CallContext } from "@contexts/CallProvider";
 import { CallType, RoomType, SetRoomType } from "@typings/front";
+import { useContext } from "react";
 
 export function useRoomType(): [RoomType, SetRoomType] {
   const { callInfo, dispatch } = useContext(CallContext);

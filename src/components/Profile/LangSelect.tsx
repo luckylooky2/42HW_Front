@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import i18n from "i18n";
 import { LANG } from "@utils/constant";
+import i18n from "i18n";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const LangSelect = () => {

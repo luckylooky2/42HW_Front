@@ -1,5 +1,5 @@
-import React, { createContext, FC, useMemo, useState } from "react";
 import { IUser } from "@typings/db";
+import React, { createContext, FC, useMemo, useState } from "react";
 
 interface Props {
   children: React.ReactNode;
