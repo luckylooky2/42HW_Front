@@ -1,3 +1,6 @@
+export type RoomType = "single" | "group" | null;
+export type SetRoomType = (callType: CallType) => void;
+
 export interface CallType {
   TYPE: string;
   TOTAL_NUM: number;
@@ -13,7 +16,7 @@ export interface CallInfo {
   stream: MediaStream | null;
   deviceId: string | null;
   roomName: string | null;
-  roomType: string | null;
+  roomType: RoomType;
   opponent: OpponentInfo[] | null;
   currNum: number | null;
 }
