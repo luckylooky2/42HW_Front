@@ -9,9 +9,7 @@ export function useAudioInput() {
   const getAudioInputs = async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const excludeDefault = devices
-        .reverse()
-        .filter((v) => v.deviceId !== "default");
+      const excludeDefault = devices.filter((v) => v.deviceId !== "default");
       const inputs = excludeDefault.filter((v) => v.kind === "audioinput");
 
       setAudioInputs(inputs);
