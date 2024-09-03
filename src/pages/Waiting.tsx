@@ -10,8 +10,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { COUNT, MILLISECOND, PAGE, TRANSLATION } from "@utils/constant";
 import { OpponentInfo } from "@typings/front";
 import { useTranslation } from "react-i18next";
-import { SINGLE_CALL } from "@utils/constant";
 import Header from "@utils/Header";
+import { useRoomType } from "@hooks/useRoomType";
 
 const Waiting = () => {
   const navigate = useNavigate();
@@ -20,14 +20,14 @@ const Waiting = () => {
   const { myInfo } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
   const { callInfo, dispatch } = useContext(CallContext);
+  const [roomType] = useRoomType();
 
   useEffect(() => {
     // 잘못된 접근했을 때
     if (myInfo === null || socket === null) {
-      stopMicrophone();
       navigate("/main");
     }
-  }, [socket]);
+  }, [myInfo, socket]);
 
   useEffect(() => {
     if (socket) {
@@ -60,7 +60,7 @@ const Waiting = () => {
     if (socket)
       socket.emit("register", {
         nickname: myInfo?.nickname,
-        type: callInfo.roomType,
+        type: roomType,
       });
   }, []);
 
@@ -77,13 +77,7 @@ const Waiting = () => {
     socket?.emit("unregister", {
       nickname: myInfo?.nickname,
     });
-    // stopMicrophone();
     navigate(-1);
-  }, [callInfo]);
-
-  const stopMicrophone = useCallback(() => {
-    const tracks = callInfo.stream?.getAudioTracks();
-    if (tracks) tracks[0].stop();
   }, [callInfo]);
 
   const preventClose = useCallback((e: BeforeUnloadEvent) => {
@@ -96,10 +90,7 @@ const Waiting = () => {
   ) : (
     <Header
       onClick={backToWaiting}
-      title={`Matching: ${t(
-        `${PAGE.MAIN}.` +
-          (callInfo.roomType === SINGLE_CALL.TYPE ? "singleCall" : "groupCall")
-      )}`}
+      title={`Matching: ${t(`${PAGE.MAIN}.${roomType}Call`)}`}
     >
       <Loading text={t(`${PAGE.WAITING}.info`)}>
         <div className="my-auto">

@@ -14,8 +14,9 @@ import ChatButton from "@components/Main/ChatButton";
 import "@styles/Main.css";
 import { SocketContext } from "@contexts/SocketProvider";
 import { io } from "socket.io-client";
-import { CallActionType, CallContext } from "@contexts/CallProvider";
 import { useTranslation } from "react-i18next";
+import { useStream } from "@hooks/useStream";
+import { useRoomType } from "@hooks/useRoomType";
 
 const Main = () => {
   const navigate = useNavigate();
@@ -23,13 +24,13 @@ const Main = () => {
   const { myInfo, setMyInfo, isLoading, setIsLoading } =
     useContext(AuthContext);
   const { socket, setSocket } = useContext(SocketContext);
-  const { dispatch } = useContext(CallContext);
+  const { disconnectStream } = useStream();
+  const [_roomType, setRoomType] = useRoomType();
 
   const connectSocket = useCallback(
     (nickname: string) => {
       if (socket === null) {
         const socket = io(`${API_URL}`);
-        // console.log(socket);
         setSocket(socket);
       }
     },
@@ -45,19 +46,13 @@ const Main = () => {
 
   const joinSingleChat = useCallback(() => {
     console.log("1:1 chat");
-    dispatch({
-      type: CallActionType.SET_ROOMTYPE,
-      payload: SINGLE_CALL.TYPE,
-    });
+    setRoomType(SINGLE_CALL);
     navigate("/setting");
   }, []);
 
   const joinGroupChat = useCallback(() => {
     console.log("group chat");
-    dispatch({
-      type: CallActionType.SET_ROOMTYPE,
-      payload: GROUP_CALL.TYPE,
-    });
+    setRoomType(GROUP_CALL);
     navigate("/setting");
   }, []);
 
@@ -67,6 +62,7 @@ const Main = () => {
 
   useEffect(() => {
     getMyInfo();
+    disconnectStream();
   }, []);
 
   return isLoading ? (
