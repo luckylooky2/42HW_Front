@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Routes, Route } from "react-router";
-import Main from "@pages/Main";
-import Waiting from "@pages/Waiting";
 import Call from "@pages/Call";
-import Setting from "@pages/Setting";
+import Main from "@pages/Main";
 import NotFound from "@pages/NotFound";
 import Profile from "@pages/Profile";
+import Setting from "@pages/Setting";
+import Waiting from "@pages/Waiting";
+import React, { useState } from "react";
+import { Routes, Route } from "react-router";
 
 const MainRouter = () => {
   const [isLoading] = useState(true);

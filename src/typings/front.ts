@@ -1,5 +1,5 @@
 export type RoomType = "single" | "group" | null;
-export type SetRoomType = (callType: CallType) => void;
+export type SetRoomType = Function;
 
 export interface CallType {
   TYPE: string;
