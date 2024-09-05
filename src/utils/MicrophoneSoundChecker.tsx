@@ -62,7 +62,7 @@ const MicrophoneSoundChecker: FC<Props> = ({
   return (
     <div className="flex justify-center gap-2 h-[20px]">
       {icon && (
-        <img width="20" height="20" src="public/mute-off.svg" alt="mic-check" />
+        <img width="20" height="20" src="mute-off.svg" alt="mic-check" />
       )}
       <div className="flex gap-0.5">
         {Array.from({ length: 10 })

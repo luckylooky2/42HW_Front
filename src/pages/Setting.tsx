@@ -70,7 +70,7 @@ const Setting = () => {
   ) : (
     <Header
       onClick={goToMain}
-      title={`Microphone Setting: ${t(`${PAGE.MAIN}.${roomType}Call`)}`}
+      title={`Mic Setting: ${t(`${PAGE.MAIN}.${roomType}Call`)}`}
     >
       <div className="flex flex-col w-full h-full justify-around items-center">
         <section className="flex flex-col justify-center items-center gap-10">
@@ -100,7 +100,7 @@ const Setting = () => {
                 <img
                   width="15"
                   height="15"
-                  src="public/refresh.png"
+                  src="refresh.png"
                   alt="reList"
                   className="transition-transform duration-500 transform hover:rotate-180"
                 />
