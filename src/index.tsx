@@ -44,7 +44,7 @@ axios.interceptors.response.use(
     deleteCookie("login");
     alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.");
     window.location.href = "/";
-    return new Promise(() => {});
+    return error;
   }
 );
 
