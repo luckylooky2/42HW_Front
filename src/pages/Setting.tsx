@@ -91,7 +91,7 @@ const Setting = () => {
                   )}
                   {audioInputs.map((audio) => (
                     <option key={audio.label} value={audio.deviceId}>
-                      {audio.label}
+                      {audio.label ? audio.label : 'Built-in Microphone'}
                     </option>
                   ))}
                 </select>
