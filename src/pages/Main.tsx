@@ -1,7 +1,7 @@
 import ChatButton from "@components/Main/ChatButton";
-import { AuthContext } from "@contexts/AuthProvider";
-import { SocketContext } from "@contexts/SocketProvider";
+import { useMyInfo } from "@hooks/useMyInfo";
 import { useRoomType } from "@hooks/useRoomType";
+import { useSocket } from "@hooks/useSocket";
 import { useStream } from "@hooks/useStream";
 import "@styles/Main.css";
 import Loading from "@utils/Loading";
@@ -13,45 +13,34 @@ import {
   TRANSLATION,
 } from "@utils/constant";
 import axios from "axios";
-import { useEffect, useContext, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { io } from "socket.io-client";
 
 const Main = () => {
   const navigate = useNavigate();
   const { t } = useTranslation(TRANSLATION, { keyPrefix: PAGE.MAIN });
-  const { myInfo, setMyInfo, isLoading, setIsLoading } =
-    useContext(AuthContext);
-  const { socket, setSocket } = useContext(SocketContext);
+  const { myInfo, setMyInfo, isLoading } = useMyInfo();
+  const { connectSocket } = useSocket();
   const { disconnectStream } = useStream();
   const [_roomType, setRoomType] = useRoomType();
 
-  const connectSocket = useCallback(
-    (_nickname: string) => {
-      if (socket === null) {
-        const socket = io(`${API_URL}`);
-        setSocket(socket);
-      }
-    },
-    [myInfo]
-  );
-
   const getMyInfo = useCallback(async () => {
-    const response = await axios.get(`${API_URL}/users`);
-    setMyInfo(response.data);
-    setIsLoading(false);
-    connectSocket(response.data.nickname);
+    try {
+      const response = await axios.get(`${API_URL}/users`);
+      setMyInfo(response.data);
+      connectSocket();
+    } catch (e) {
+      console.log(e);
+    }
   }, []);
 
   const joinSingleChat = useCallback(() => {
-    console.log("1:1 chat");
     setRoomType(SINGLE_CALL);
     navigate("/setting");
   }, []);
 
   const joinGroupChat = useCallback(() => {
-    console.log("group chat");
     setRoomType(GROUP_CALL);
     navigate("/setting");
   }, []);
@@ -65,9 +54,11 @@ const Main = () => {
     disconnectStream();
   }, []);
 
-  return isLoading ? (
-    <Loading />
-  ) : (
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  return (
     <div className="flex flex-col h-full justify-center items-center relative overflow-hidden">
       <ChatButton
         value={t("singleCall")}
