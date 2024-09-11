@@ -1,6 +1,5 @@
-import { AuthContext } from "@contexts/AuthProvider";
-import { SocketContext } from "@contexts/SocketProvider";
 import { useAudioInput } from "@hooks/useAudioInput";
+import { useMyInfo } from "@hooks/useMyInfo";
 import { useRoomType } from "@hooks/useRoomType";
 import { useStream } from "@hooks/useStream";
 import BasicButton from "@utils/BasicButton";
@@ -8,7 +7,7 @@ import Header from "@utils/Header";
 import Loading from "@utils/Loading";
 import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
 import { PAGE, TRANSLATION } from "@utils/constant";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -16,19 +15,15 @@ import { toast } from "react-toastify";
 const Setting = () => {
   const navigate = useNavigate();
   const { t } = useTranslation(TRANSLATION);
-  const { myInfo } = useContext(AuthContext);
-  const { socket } = useContext(SocketContext);
+  const { isLoading, navigateIfDirectAccess } = useMyInfo();
   const [roomType] = useRoomType();
   const { deviceId, stream, connectStream, disconnectStream } = useStream();
   const { audioInputs, selected, setSelected, refresh, findDeviceIdIndex } =
     useAudioInput();
 
   useEffect(() => {
-    // 잘못된 접근했을 때
-    if (myInfo === null || socket === null) {
-      navigate("/main");
-    }
-  }, [myInfo, socket]);
+    navigateIfDirectAccess();
+  }, []);
 
   // 이전 선택 그대로 유지
   useEffect(() => {
@@ -39,7 +34,7 @@ const Setting = () => {
   }, [audioInputs]);
 
   const getMicrophone = async (deviceId: string) => {
-    if (myInfo == null || socket === null) {
+    if (isLoading) {
       return;
     }
 
@@ -65,9 +60,11 @@ const Setting = () => {
     getMicrophone(targetDeviceId);
   };
 
-  return socket === null ? (
-    <Loading />
-  ) : (
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  return (
     <Header
       onClick={goToMain}
       title={`Mic Setting: ${t(`${PAGE.MAIN}.${roomType}Call`)}`}
@@ -91,7 +88,7 @@ const Setting = () => {
                   )}
                   {audioInputs.map((audio) => (
                     <option key={audio.label} value={audio.deviceId}>
-                      {audio.label ? audio.label : 'Built-in Microphone'}
+                      {audio.label ? audio.label : "Built-in Microphone"}
                     </option>
                   ))}
                 </select>

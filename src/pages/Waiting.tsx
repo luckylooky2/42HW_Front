@@ -1,6 +1,6 @@
-import { AuthContext } from "@contexts/AuthProvider";
 import { CallContext, CallActionType } from "@contexts/CallProvider";
 import { SocketContext } from "@contexts/SocketProvider";
+import { useMyInfo } from "@hooks/useMyInfo";
 import { useRoomType } from "@hooks/useRoomType";
 import { OpponentInfo } from "@typings/front";
 import BasicButton from "@utils/BasicButton";
@@ -17,17 +17,14 @@ const Waiting = () => {
   const navigate = useNavigate();
   const { t } = useTranslation(TRANSLATION);
   const [matched, setMatched] = useState(false);
-  const { myInfo } = useContext(AuthContext);
+  const { myInfo, isLoading, navigateIfDirectAccess } = useMyInfo();
   const { socket } = useContext(SocketContext);
   const { callInfo, dispatch } = useContext(CallContext);
   const [roomType] = useRoomType();
 
   useEffect(() => {
-    // 잘못된 접근했을 때
-    if (myInfo === null || socket === null) {
-      navigate("/main");
-    }
-  }, [myInfo, socket]);
+    navigateIfDirectAccess();
+  }, []);
 
   useEffect(() => {
     if (socket) {
@@ -85,9 +82,11 @@ const Waiting = () => {
     e.returnValue = true;
   }, []);
 
-  return socket === null ? (
-    <Loading />
-  ) : (
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  return (
     <Header
       onClick={backToWaiting}
       title={`Matching: ${t(`${PAGE.MAIN}.${roomType}Call`)}`}
