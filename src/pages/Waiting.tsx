@@ -26,48 +26,48 @@ const Waiting = () => {
     navigateIfDirectAccess();
   }, []);
 
+  // 뒤로 가기의 문제
+  // 1) 통화 종료 알림이 뜨지 않음
+  // 2) 다시 register 됨
   useEffect(() => {
-    if (socket) {
-      socket.on(
-        "matching",
-        (data: { opponent: OpponentInfo[]; roomName: string }) => {
-          console.log("matching");
-          setMatched(true);
-          dispatch({
-            type: CallActionType.SET_MATCHING,
-            payload: {
-              opponent: data.opponent,
-              roomName: data.roomName,
-            },
-          });
-          toast.info("매칭이 완료되었습니다.");
-          setTimeout(() => {
-            navigate("/call");
-          }, COUNT.MATCH * MILLISECOND);
-        }
-      );
+    if (!roomType) {
+      navigate("/main");
     }
+  }, [roomType]);
+
+  useEffect(() => {
+    socket?.on(
+      "matching",
+      (data: { opponent: OpponentInfo[]; roomName: string }) => {
+        console.log("matching");
+        setMatched(true);
+        dispatch({
+          type: CallActionType.SET_MATCHING,
+          payload: {
+            opponent: data.opponent,
+            roomName: data.roomName,
+          },
+        });
+        toast.info("매칭이 완료되었습니다.");
+        setTimeout(() => {
+          navigate("/call");
+        }, COUNT.MATCH * MILLISECOND);
+      }
+    );
 
     return () => {
       socket?.off("matching");
     };
-  }, [socket, callInfo]);
+  }, [socket]);
 
   useEffect(() => {
-    if (socket)
-      socket.emit("register", {
-        nickname: myInfo?.nickname,
-        type: roomType,
-      });
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("beforeunload", preventClose);
-
-    return () => {
-      window.removeEventListener("beforeunload", preventClose);
-    };
-  }, []);
+    // 이전 페이지에서 callInfo를 dispatch한 것이 렌더링 되기 전에 반영이 되지 않음
+    // callInfo가 이 페이지가 렌더링된 다음 변경되어 페이지가 리렌더링됨
+    socket?.emit("register", {
+      nickname: myInfo?.nickname,
+      type: roomType,
+    });
+  }, [socket]);
 
   const backToWaiting = useCallback(() => {
     // dispatch({ type: CallActionType.DEL_ALL });
@@ -76,11 +76,6 @@ const Waiting = () => {
     });
     navigate(-1);
   }, [callInfo]);
-
-  const preventClose = useCallback((e: BeforeUnloadEvent) => {
-    e.preventDefault();
-    e.returnValue = true;
-  }, []);
 
   if (isLoading) {
     return <Loading />;
