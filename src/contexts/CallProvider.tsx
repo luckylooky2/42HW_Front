@@ -6,7 +6,6 @@ interface Props {
 }
 
 export const CallActionType = {
-  SET_STREAM: "SET_STREAM",
   SET_MATCHING: "SET_MATCHING",
   SET_ROOMTYPE: "SET_ROOMTYPE",
   SET_CURRNUM: "SET_CURRNUM",
@@ -14,8 +13,6 @@ export const CallActionType = {
 };
 
 const initialCallState: CallInfo = {
-  stream: null,
-  deviceId: null,
   roomName: null,
   roomType: null,
   opponent: null,
@@ -38,12 +35,6 @@ const callReducer = (
   action: { type: string; payload?: any }
 ): CallInfo => {
   switch (action.type) {
-    case CallActionType.SET_STREAM:
-      return {
-        ...state,
-        stream: action.payload.stream,
-        deviceId: action.payload.deviceId,
-      };
     case CallActionType.SET_MATCHING:
       return {
         ...state,
@@ -52,8 +43,6 @@ const callReducer = (
       };
     case CallActionType.DEL_ALL:
       return {
-        stream: null,
-        deviceId: null,
         roomName: null,
         roomType: null,
         opponent: null,
