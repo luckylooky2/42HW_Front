@@ -13,7 +13,7 @@ const Header: FC<Props> = ({ onClick, title, children }) => {
         className={`h-[10%] flex items-center justify-between bg-orange-100 w-full`}
       >
         <button
-          className="w-[10%] h-full m-2 flex items-center justify-center transition-transform duration-500 transform hover:-translate-x-3"
+          className="w-[10%] h-full m-2 flex items-center justify-center"
           onClick={onClick}
         >
           <img width="25" height="25" src="backward.png" alt="profile_back" />
