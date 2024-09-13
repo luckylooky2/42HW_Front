@@ -13,10 +13,14 @@ export interface OpponentInfo {
 }
 
 export interface CallInfo {
-  stream: MediaStream | null;
-  deviceId: string | null;
   roomName: string | null;
   roomType: RoomType;
   opponent: OpponentInfo[] | null;
   currNum: number | null;
+}
+
+export interface AudioInfo {
+  stream: MediaStream | null;
+  deviceId: string | null;
+  audioList: MediaDeviceInfo[];
 }

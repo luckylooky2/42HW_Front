@@ -1,28 +1,25 @@
-import { CallContext } from "@contexts/CallProvider";
-import { useState, useEffect, useContext, FC, useRef } from "react";
+import { useStream } from "@hooks/useStream";
+import { useState, useEffect, FC, useRef } from "react";
 
 interface Props {
-  stream?: boolean;
   icon?: boolean;
   isSmallSize?: boolean;
   bgColor?: string;
 }
 
 const MicrophoneSoundChecker: FC<Props> = ({
-  stream,
   icon = false,
   isSmallSize = false,
   bgColor = "white",
 }) => {
-  const { callInfo } = useContext(CallContext);
+  const { stream } = useStream();
   const [value, setValue] = useState(0);
   const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const audioContext = new AudioContext();
     const analyser = audioContext.createAnalyser();
-    const microphone =
-      callInfo.stream && audioContext.createMediaStreamSource(callInfo.stream);
+    const microphone = stream && audioContext.createMediaStreamSource(stream);
 
     microphone && microphone.connect(analyser);
     // destination 기본 값은 스피커. 스피커에 현재 audio context를 연결
@@ -52,7 +49,7 @@ const MicrophoneSoundChecker: FC<Props> = ({
       // 이후 통화에서는 자신의 목소리가 들리면 안되기 떄문에 스피커 연결 해제
       analyser.disconnect();
     };
-  }, [stream, callInfo]);
+  }, [stream]);
 
   useEffect(() => {
     if (divRef && divRef.current)
@@ -89,7 +86,3 @@ const MicrophoneSoundChecker: FC<Props> = ({
 };
 
 export default MicrophoneSoundChecker;
-
-MicrophoneSoundChecker.defaultProps = {
-  stream: false,
-};
