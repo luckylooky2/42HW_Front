@@ -1,4 +1,4 @@
-import BasicButton from "@utils/BasicButton";
+import TextButton from "@utils/TextButton";
 import { FC, useCallback } from "react";
 import { useNavigate } from "react-router";
 
@@ -11,7 +11,7 @@ const NotFound: FC = () => {
   return (
     <div className="w-full h-full">
       <div>Page Not Found!</div>
-      <BasicButton text="메인으로 돌아가기" onClick={onBackToMain} />
+      <TextButton text="메인으로 돌아가기" onClick={onBackToMain} />
     </div>
   );
 };

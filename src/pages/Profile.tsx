@@ -1,8 +1,8 @@
 import CallHistoryList from "@components/Profile/CallHistoryList";
 import LangSelect from "@components/Profile/LangSelect";
 import ProfileCard from "@components/Profile/ProfileCard";
-import BasicButton from "@utils/BasicButton";
 import Header from "@utils/Header";
+import TextButton from "@utils/TextButton";
 import { API_URL, PAGE, TRANSLATION } from "@utils/constant";
 import axios from "axios";
 import { useCallback } from "react";
@@ -31,7 +31,7 @@ const Profile = () => {
           <CallHistoryList />
         </div>
         <div className="h-[10%] flex items-center justify-center">
-          <BasicButton onClick={logout} text={t("logout")} />
+          <TextButton onClick={logout} text={t("logout")} />
         </div>
       </div>
     </Header>
