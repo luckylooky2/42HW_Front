@@ -5,8 +5,7 @@ import * as process from "process";
 import React, { useEffect, useRef, useCallback } from "react";
 import { Routes, Route } from "react-router";
 // 동적 import 추가하기
-import { ToastContainer } from "react-toastify";
-import { toast } from "react-toastify";
+import { ToastContainer, toast, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import "./i18n";
@@ -92,7 +91,8 @@ function App() {
           </div>
         </div>,
         {
-          autoClose: false,
+          autoClose: 10000,
+          hideProgressBar: false,
         }
       );
     }
@@ -113,6 +113,7 @@ function App() {
           pauseOnHover={false}
           pauseOnFocusLoss={false}
           autoClose={COUNT.DEFAULT * MILLISECOND}
+          transition={Zoom}
           style={{ maxWidth: "500px", width: "100vw" }}
         />
       </div>
