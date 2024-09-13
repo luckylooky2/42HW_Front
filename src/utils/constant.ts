@@ -92,3 +92,9 @@ export const PAGE = {
 };
 
 export const TRANSLATION = "translation";
+
+export const MATCHSTATUS = {
+  WAITING: 0,
+  MATCHING: 1,
+  COMPLETED: 2,
+};
