@@ -1,3 +1,4 @@
+import AudioProvider from "@contexts/AudioProvider";
 import AuthProvider from "@contexts/AuthProvider";
 import CallProvider from "@contexts/CallProvider";
 import SocketProvider from "@contexts/SocketProvider";
@@ -59,9 +60,11 @@ root.render(
   <BrowserRouter>
     <AuthProvider>
       <SocketProvider>
-        <CallProvider>
-          <App />
-        </CallProvider>
+        <AudioProvider>
+          <CallProvider>
+            <App />
+          </CallProvider>
+        </AudioProvider>
       </SocketProvider>
     </AuthProvider>
   </BrowserRouter>
