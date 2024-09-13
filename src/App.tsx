@@ -7,6 +7,7 @@ import { Routes, Route } from "react-router";
 // 동적 import 추가하기
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import "./i18n";
 
