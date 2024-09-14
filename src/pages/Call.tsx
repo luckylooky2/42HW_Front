@@ -4,8 +4,10 @@ import Timer from "@components/Call/Timer";
 import TopicModal from "@components/Call/TopicModal";
 import TopicSelect from "@components/Call/TopicSelect";
 import VoteToast from "@components/Call/VoteToast";
+import { AudioContext } from "@contexts/AudioProvider";
 import { CallActionType, CallContext } from "@contexts/CallProvider";
-import { SocketContext } from "@contexts/SocketProvider";
+import { useSocket } from "@hooks/useSocket";
+import { useStream } from "@hooks/useStream";
 import Loading from "@utils/Loading";
 import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
 import {
@@ -34,8 +36,10 @@ const Call = () => {
   const [screen, setScreen] = useState(SCREEN.INIT);
   const [voteId, setVoteId] = useState<Id>(0);
   const [contents, setContents] = useState<any>([]);
+  const { audio } = useContext(AudioContext);
   const { callInfo, dispatch } = useContext(CallContext);
-  const { socket, setSocket } = useContext(SocketContext);
+  const { disconnectStream } = useStream();
+  const { socket } = useSocket();
   const videos = [
     useRef<HTMLVideoElement>(null),
     useRef<HTMLVideoElement>(null),
@@ -53,12 +57,12 @@ const Call = () => {
   // /call로 접근하였을 때 잘 login 화면으로 가는지?
   useEffect(() => {
     const status = [];
-    if (callInfo.opponent && callInfo.stream)
+    if (callInfo.opponent && audio.stream)
       for (let i = 0; i < totalNum; i++) {
         peer[i] = new Peer({
           initiator: callInfo.opponent[i].initiator,
           trickle: true,
-          stream: callInfo.stream,
+          stream: audio.stream,
           config: { iceServers: ICE_SERVER },
         });
         status.push(true);
@@ -160,11 +164,7 @@ const Call = () => {
 
     return () => {
       window.removeEventListener("beforeunload", preventClose);
-      stopMicrophone();
-      // 뒤로가기, 새로고침, 정상 종료(종료 버튼 및 강제 종료)
-      socket?.disconnect();
-      setSocket(null);
-      dispatch({ type: CallActionType.DEL_ALL });
+      hangUp();
     };
   }, []);
 
@@ -205,27 +205,39 @@ const Call = () => {
   const preventClose = useCallback((e: BeforeUnloadEvent) => {
     e.preventDefault();
     e.returnValue = true;
+    // return "이 페이지를 벗어나면 데이터가 초기화 됩니다.";
   }, []);
 
   const muteToggle = useCallback(() => {
-    const tracks = callInfo.stream?.getAudioTracks();
+    const tracks = audio.stream?.getAudioTracks();
     if (tracks) tracks[0].enabled = !tracks[0].enabled;
     setIsMuted((prev) => !prev);
   }, [callInfo]);
 
   // 정상 종료(종료 버튼 및 강제 종료)
   const hangUp = useCallback(() => {
-    for (let i = 0; i < totalNum; i++) peer[i]?.destroy();
-    for (let i = 0; i < totalNum; i++) peer[i]?.removeAllListeners();
+    for (let i = 0; i < totalNum; i++) {
+      peer[i]?.destroy();
+    }
+    for (let i = 0; i < totalNum; i++) {
+      peer[i]?.removeAllListeners();
+    }
     console.log("hang up");
-    stopMicrophone();
-    setIsMuted(true);
-    navigate("/");
-  }, [callInfo]);
+    // stopMicrophone();
 
-  const stopMicrophone = useCallback(() => {
-    const tracks = callInfo.stream?.getAudioTracks();
-    if (tracks) tracks[0].stop();
+    // 뒤로가기, 새로고침, 정상 종료(종료 버튼 및 강제 종료)
+    socket?.emit("leaveRoom", { roomName: callInfo.roomName });
+    dispatch({ type: CallActionType.DEL_ALL });
+    toast.error("통화가 종료되었습니다.");
+    disconnectStream();
+    timeoutId.current = setTimeout(() => {
+      // dispatch({ type: CallActionType.DEL_ALL });
+      // socket을 끊지 않으면 백엔드에서 leaveRoom이 되지 않음
+      // - 소켓을 유지하는 방법은 없는가?
+      // - 소켓이 끊어질 때는 당연히 끊고, 방을 나갈 때도 소켓을 유지하면서 끊어보자
+      // disconnectSocket();
+      setIsMuted(true);
+    }, COUNT.HANG_UP * MILLISECOND);
   }, [callInfo]);
 
   const openTopicSelect = useCallback(() => {
@@ -310,14 +322,8 @@ const Call = () => {
         }
         if (closed) {
           // 혼자 남은 경우 종료
-          toast.error("통화가 종료되었습니다.");
           dispatch({ type: CallActionType.SET_CURRNUM, payload: 1 });
-          timeoutId.current = setTimeout(() => {
-            dispatch({ type: CallActionType.DEL_ALL });
-            socket?.disconnect();
-            setSocket(null);
-            hangUp();
-          }, COUNT.HANG_UP * MILLISECOND);
+          navigate("/main");
         }
         return copy;
       });
@@ -419,7 +425,15 @@ const Call = () => {
         </div>
       </div>
       <div className="flex justify-center h-[10%]">
-        <CallButton onClick={hangUp} type="hang-up" img="hang-up.svg" />
+        <CallButton
+          onClick={() => {
+            // 이렇게 하면 3초를 기다리지 못함
+            // 3초를 기다리고 main으로 가게 하고 싶음
+            navigate("/main");
+          }}
+          type="hang-up"
+          img="hang-up.svg"
+        />
       </div>
     </div>
   );
