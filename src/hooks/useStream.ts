@@ -9,11 +9,10 @@ export function useStream() {
       audio.stream.getTracks().forEach((track) => {
         track.stop();
       });
-      // dispatch({ type: CallActionType.DEL_ALL });
     }
   };
 
-  const connectStream = async (deviceId: string) => {
+  const connectStream = async (deviceId: string = "default") => {
     let stream = null;
 
     try {

@@ -1,3 +1,4 @@
+import MicrophoneSelector from "@components/Setting/MicrophoneSelector";
 import { CallContext, CallActionType } from "@contexts/CallProvider";
 import { useAudio } from "@hooks/useAudio";
 import { useMyInfo } from "@hooks/useMyInfo";
@@ -19,7 +20,7 @@ import {
 import { useCallback, useEffect, useContext, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { ClipLoader, PulseLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 import { toast, Id } from "react-toastify";
 
 const Setting = () => {
@@ -30,15 +31,8 @@ const Setting = () => {
   const { dispatch } = useContext(CallContext);
   const [matchStatus, setMatchStatus] = useState(MATCHSTATUS.WAITING);
   const [roomType] = useRoomType();
-  const { deviceId, stream, connectStream, disconnectStream } = useStream();
-  const {
-    audioList,
-    isAudioLoading,
-    selectedDeviceId,
-    setSelectedDeviceId,
-    refresh,
-    findDeviceIdIndex,
-  } = useAudio();
+  const { stream, connectStream, disconnectStream } = useStream();
+  const { getAudioInputs } = useAudio();
   const matchToastId = useRef<Id>(-1);
 
   useEffect(() => {
@@ -56,21 +50,15 @@ const Setting = () => {
   }, [roomType]);
 
   useEffect(() => {
-    if (audioList.length) {
-      const index = findDeviceIdIndex(deviceId);
-      getMicrophone(audioList[index].deviceId);
-    }
-  }, [audioList]);
+    const init = async () => {
+      disconnectStream();
+      await connectStream();
+      // enumerateDevices는 getUserMedia를 호출한 뒤에만 사용할 수 있음
+      await getAudioInputs();
+    };
 
-  const getMicrophone = async (deviceId: string) => {
-    if (isLoading) {
-      return;
-    }
-
-    disconnectStream();
-    await connectStream(deviceId);
-    setSelectedDeviceId(deviceId);
-  };
+    init();
+  }, []);
 
   useEffect(() => {
     socket?.on(
@@ -138,11 +126,6 @@ const Setting = () => {
     matchToastId.current = -1;
   };
 
-  const handleInput = ({ target }: React.ChangeEvent<HTMLSelectElement>) => {
-    const targetDeviceId = target.value;
-    getMicrophone(targetDeviceId);
-  };
-
   if (isLoading) {
     return <Loading />;
   }
@@ -156,40 +139,10 @@ const Setting = () => {
         <section className="flex flex-col justify-center items-center gap-10">
           <div className="w-[350px] h-[300px] flex flex-col justify-around items-center gap-2 rounded-lg bg-gray-100">
             <div className="flex justify-around items-center gap-5 h-[200px]">
-              <MicrophoneSoundChecker icon={true} />
+              <MicrophoneSoundChecker stream={stream!} icon={true} />
             </div>
             <div className="flex w-[90%] justify-center gap-3">
-              {isAudioLoading ? (
-                <ClipLoader size="25px" />
-              ) : (
-                <>
-                  <div>
-                    <label>Mic: </label>
-                    <select
-                      className="w-[200px] rounded-md"
-                      onInput={handleInput}
-                      value={selectedDeviceId}
-                    >
-                      {audioList.length === 0 && (
-                        <option>마이크를 연결해주세요.</option>
-                      )}
-                      {audioList.map((audio) => (
-                        <option key={audio.label} value={audio.deviceId}>
-                          {audio.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <button onClick={refresh}>
-                    <img
-                      width="15"
-                      height="15"
-                      src="refresh.png"
-                      alt="reList"
-                    />
-                  </button>
-                </>
-              )}
+              <MicrophoneSelector />
             </div>
           </div>
           <div>
@@ -199,7 +152,6 @@ const Setting = () => {
             </div>
           </div>
         </section>
-
         <div>
           <TextButton
             onClick={matchStatus > 0 ? matchingStop : matchingStart}
