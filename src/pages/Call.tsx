@@ -38,7 +38,7 @@ const Call = () => {
   const [contents, setContents] = useState<any>([]);
   const { audio } = useContext(AudioContext);
   const { callInfo, dispatch } = useContext(CallContext);
-  const { disconnectStream } = useStream();
+  const { stream, disconnectStream } = useStream();
   const { socket } = useSocket();
   const videos = [
     useRef<HTMLVideoElement>(null),
@@ -420,7 +420,11 @@ const Call = () => {
             text={isMuted ? "mute off" : "mute"}
             img={isMuted ? "mute.svg" : "mute-off.svg"}
           >
-            <MicrophoneSoundChecker isSmallSize={true} bgColor="lightgray" />
+            <MicrophoneSoundChecker
+              stream={stream!}
+              isSmallSize={true}
+              bgColor="lightgray"
+            />
           </CallButton>
         </div>
       </div>

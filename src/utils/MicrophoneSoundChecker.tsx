@@ -1,18 +1,18 @@
-import { useStream } from "@hooks/useStream";
 import { useState, useEffect, FC, useRef } from "react";
 
 interface Props {
+  stream: MediaStream; // useAudio가 필요없이 호출되는 것을 방지하기 위해 Props로 전환
   icon?: boolean;
   isSmallSize?: boolean;
   bgColor?: string;
 }
 
 const MicrophoneSoundChecker: FC<Props> = ({
+  stream,
   icon = false,
   isSmallSize = false,
   bgColor = "white",
 }) => {
-  const { stream } = useStream();
   const [value, setValue] = useState(0);
   const divRef = useRef<HTMLDivElement>(null);
 
