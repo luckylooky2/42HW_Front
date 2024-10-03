@@ -12,13 +12,14 @@ export function useStream() {
     }
   };
 
-  const connectStream = async (deviceId: string = "default") => {
+  // safari에서는 default라는 deviceId가 존재하지 않음
+  const connectStream = async (deviceId?: string) => {
     let stream = null;
 
     try {
       stream = await navigator.mediaDevices.getUserMedia({
         video: false,
-        audio: { deviceId: { exact: deviceId } },
+        audio: deviceId ? { deviceId: { exact: deviceId } } : true,
       });
       dispatch({
         type: AudioActionType.SET_STREAM,
