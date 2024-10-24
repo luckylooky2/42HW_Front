@@ -57,12 +57,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      // PWA 앱 모드에서 열림
-      console.log("PWA 앱 모드에서 열림");
-    } else {
-      // 웹 브라우저에서 열림
-      toast.info(
+    const PWAInstallToast = () => {
+      return (
         <div>
           <div className="text-center">
             42Hello World는 앱에서 원활한 사용을 할 수 있습니다.
@@ -89,12 +85,19 @@ function App() {
               </button>
             )}
           </div>
-        </div>,
-        {
-          autoClose: 10000,
-          hideProgressBar: false,
-        }
+        </div>
       );
+    };
+
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      // PWA 앱 모드에서 열림
+      console.log("PWA 앱 모드에서 열림");
+    } else {
+      // 웹 브라우저에서 열림
+      toast.info(<PWAInstallToast />, {
+        autoClose: 10000,
+        hideProgressBar: false,
+      });
     }
   }, []);
 
@@ -114,7 +117,7 @@ function App() {
           pauseOnFocusLoss={false}
           autoClose={COUNT.DEFAULT * MILLISECOND}
           transition={Zoom}
-          className="max-w-[500px] w-[100vw]"
+          className="max-w-[400px] w-[100vw]"
         />
       </div>
     </div>
