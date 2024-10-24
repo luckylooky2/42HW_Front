@@ -13,3 +13,10 @@ export interface ICallHistory {
   endTime: string;
   user: IUser[];
 }
+
+export interface ITopicDTO {
+  id: number;
+  category: string;
+  question: string;
+  hint: string[];
+}

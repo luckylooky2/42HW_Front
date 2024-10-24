@@ -8,6 +8,7 @@ import { AudioContext } from "@contexts/AudioProvider";
 import { CallActionType, CallContext } from "@contexts/CallProvider";
 import { useSocket } from "@hooks/useSocket";
 import { useStream } from "@hooks/useStream";
+import { ITopicDTO } from "@typings/db";
 import Loading from "@utils/Loading";
 import MicrophoneSoundChecker from "@utils/MicrophoneSoundChecker";
 import {
@@ -273,12 +274,10 @@ const Call = () => {
   const onVoteResult = useCallback(
     // TODO : contents type 지정하기
     // TODO : 찬성 반대 몇 표인지 나타내기
-    (data: { result: boolean; contents: any }) => {
+    (data: { result: boolean; contents: ITopicDTO }) => {
       toast.update(voteId, {
         type: data.result ? toast.TYPE.SUCCESS : toast.TYPE.ERROR,
-        render: data.result
-          ? "투표가 가결되었습니다."
-          : "투표가 부결되었습니다.",
+        render: `투표가 ${data.result ? "가결" : "부결"}되었습니다.`,
         autoClose: COUNT.DEFAULT * MILLISECOND,
         isLoading: false,
         hideProgressBar: true,
