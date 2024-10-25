@@ -15,7 +15,7 @@ interface Props {
 
 const VoteStatusBoard: FC<Props> = ({ totalNum }) => {
   const { socket } = useContext(SocketContext);
-  const [voteStatus, setVoteStatus] = useState<string[]>(
+  const [voteStatus, setVoteStatus] = useState<string[]>(() =>
     [VOTE_SELECT.YES].concat(new Array(totalNum! - 1).fill(VOTE_SELECT.ONGOING))
   );
   const indexRef = useRef<number>(1);
