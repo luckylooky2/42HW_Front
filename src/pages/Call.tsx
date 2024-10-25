@@ -41,27 +41,28 @@ const Call = () => {
   const { callInfo, dispatch } = useContext(CallContext);
   const { stream, disconnectStream } = useStream();
   const { socket } = useSocket();
-  const videos = [
-    useRef<HTMLVideoElement>(null),
-    useRef<HTMLVideoElement>(null),
-    useRef<HTMLVideoElement>(null),
-  ];
-  const timeoutId = useRef<any>(0);
-  const peerRef = useRef<Peer.Instance[]>([]);
-  const peer = peerRef.current;
-  const nameListRef = useRef<HTMLDivElement>(null);
   const totalNum =
     callInfo.roomType === SINGLE_CALL.TYPE
-      ? SINGLE_CALL.TOTAL_NUM - 1
-      : GROUP_CALL.TOTAL_NUM - 1;
+      ? SINGLE_CALL.TOTAL_NUM
+      : GROUP_CALL.TOTAL_NUM;
+  const videoRefs = useRef<HTMLVideoElement[]>([]);
+  const timeoutId = useRef<any>(0);
+  const peerRefs = useRef<Peer.Instance[]>([]);
+  const peer = peerRefs.current;
+  const nameListRef = useRef<HTMLDivElement>(null);
 
   // /call로 접근하였을 때 잘 login 화면으로 가는지?
   useEffect(() => {
     const status = [];
     if (callInfo.opponent && audio.stream)
       for (let i = 0; i < totalNum; i++) {
+        if (i === callInfo.myIndex) {
+          status.push(false);
+          continue;
+        }
+
         peer[i] = new Peer({
-          initiator: callInfo.opponent[i].initiator,
+          initiator: i < callInfo.myIndex!,
           trickle: true,
           stream: audio.stream,
           config: { iceServers: ICE_SERVER },
@@ -76,6 +77,10 @@ const Call = () => {
   useEffect(() => {
     if (peer && callInfo.opponent) {
       for (let i = 0; i < totalNum; i++) {
+        if (i === callInfo.myIndex) {
+          continue;
+        }
+
         // 1. Initiator -> Signal Server 전송: Initiator일 때만?
         // 4. Receiver -> Signal Server
         peer[i].on("signal", (data) => {
@@ -85,13 +90,14 @@ const Call = () => {
               opponentNickname: callInfo.opponent[i].opponentNickname,
               roomName: callInfo.roomName,
               // 내가 상대방 Peer 배열의 몇 번째 인덱스인가?
-              peerIndex: callInfo.opponent[i].peerIndex,
+              // - 기존에는 callInfo.opponent[i].peerIndex를 넘겨주었는데, myIndex를 넘겨준다.
+              peerIndex: callInfo.myIndex,
             });
           }
         });
 
         peer[i].on("stream", (currentStream) => {
-          videos[i].current!.srcObject = currentStream;
+          videoRefs.current[i].srcObject = currentStream;
         });
 
         // TODO : error 예외 처리
@@ -106,6 +112,7 @@ const Call = () => {
         });
 
         peer[i].on("close", () => {
+          // TODO: 마지막에 한 번에 정리하는 것이 아니라 여기서 정리해주기
           console.log("Peer 연결이 종료되었습니다.");
         });
 
@@ -127,6 +134,7 @@ const Call = () => {
       if (peer) {
         // 3. Receiver: offer 처리, answer 생성 및 시그널 발생시켜 Signal Server로 전송
         // 6. Initiator answer 생성
+        // peerIndex: 상대방의 내 배열에서의 인덱스(즉, 상대방의 번호)
         peer[data.peerIndex].signal(data.signal);
       }
     },
@@ -301,7 +309,9 @@ const Call = () => {
 
       if (callInfo.opponent)
         callInfo.opponent.forEach((v, i) => {
-          if (v.opponentNickname === data.nickname) target = i;
+          if (v && v.opponentNickname === data.nickname) {
+            target = i;
+          }
         });
 
       dispatch({
@@ -339,17 +349,24 @@ const Call = () => {
   ) : (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="h-[15%] flex flex-col justify-evenly">
-        {callInfo.opponent?.map((v, i) => (
-          <video
-            key={`opponentVideo-${v}-${i}`}
-            width={1}
-            height={1}
-            playsInline
-            autoPlay
-            muted={false}
-            ref={videos[i]}
-          />
-        ))}
+        {callInfo.opponent?.map(
+          (v, i) =>
+            v && (
+              <video
+                key={`opponentVideo-${v}-${i}`}
+                width={1}
+                height={1}
+                playsInline
+                autoPlay
+                muted={false}
+                ref={(el) => {
+                  if (el) {
+                    videoRefs.current[i] = el;
+                  }
+                }}
+              />
+            )
+        )}
         <div
           className={`${determineWidth(
             OPPONENT_LIST.BOX_WIDTH
@@ -367,16 +384,19 @@ const Call = () => {
             }}
           >
             <div className="text-center" ref={nameListRef}>
-              {callInfo.opponent?.map((v, i) => (
-                <span
-                  key={`opponent-${v}-${i}`}
-                  className={`text-4xl ${
-                    opponentStatus[i] ? "text-black" : "text-gray-300"
-                  }`}
-                >
-                  {" " + v.opponentNickname + " "}
-                </span>
-              ))}
+              {callInfo.opponent?.map(
+                (v, i) =>
+                  v && (
+                    <span
+                      key={`opponent-${v}-${i}`}
+                      className={`text-4xl ${
+                        opponentStatus[i] ? "text-black" : "text-gray-300"
+                      }`}
+                    >
+                      {" " + v.opponentNickname + " "}
+                    </span>
+                  )
+              )}
             </div>
           </div>
         </div>
