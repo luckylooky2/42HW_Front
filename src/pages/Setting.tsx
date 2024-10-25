@@ -65,12 +65,27 @@ const Setting = () => {
       "matching",
       (data: { opponent: OpponentInfo[]; roomName: string }) => {
         console.log("matching");
+        const myIndex =
+          data.opponent
+            .map(({ peerIndex }) => peerIndex)
+            .reduce((acc, curr) => acc + curr, 0) /
+          ((data.opponent.length + 1) / 2);
+        const opponent = new Array(data.opponent.length + 1).fill(null);
+
+        for (let i = 0, j = 0; i < opponent.length; i++) {
+          if (i === myIndex) {
+            continue;
+          }
+          opponent[i] = data.opponent[j++];
+        }
+
         setMatchStatus(MATCHSTATUS.COMPLETED);
         dispatch({
           type: CallActionType.SET_MATCHING,
           payload: {
-            opponent: data.opponent,
+            opponent: opponent,
             roomName: data.roomName,
+            myIndex: myIndex,
           },
         });
         setTimeout(() => {

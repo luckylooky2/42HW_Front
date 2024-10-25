@@ -17,6 +17,7 @@ export interface CallInfo {
   roomType: RoomType;
   opponent: OpponentInfo[] | null;
   currNum: number | null;
+  myIndex: number | null;
 }
 
 export interface AudioInfo {

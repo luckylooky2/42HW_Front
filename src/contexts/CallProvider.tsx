@@ -17,6 +17,7 @@ const initialCallState: CallInfo = {
   roomType: null,
   opponent: null,
   currNum: null,
+  myIndex: null,
 };
 
 export const CallContext = createContext<{
@@ -40,6 +41,7 @@ const callReducer = (
         ...state,
         roomName: action.payload.roomName,
         opponent: action.payload.opponent,
+        myIndex: action.payload.myIndex,
       };
     case CallActionType.DEL_ALL:
       return {
@@ -47,6 +49,7 @@ const callReducer = (
         roomType: null,
         opponent: null,
         currNum: null,
+        myIndex: null,
       };
     case CallActionType.SET_ROOMTYPE:
       return {
