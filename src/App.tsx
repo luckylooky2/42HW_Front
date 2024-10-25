@@ -117,7 +117,7 @@ function App() {
           pauseOnFocusLoss={false}
           autoClose={COUNT.DEFAULT * MILLISECOND}
           transition={Zoom}
-          className="max-w-[400px] w-[100vw]"
+          className="max-w-[500px] w-[100vw]"
         />
       </div>
     </div>
