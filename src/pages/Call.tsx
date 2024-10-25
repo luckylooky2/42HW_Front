@@ -62,7 +62,7 @@ const Call = () => {
         }
 
         peer[i] = new Peer({
-          initiator: i < callInfo.myIndex!,
+          initiator: i > callInfo.myIndex!,
           trickle: true,
           stream: audio.stream,
           config: { iceServers: ICE_SERVER },
@@ -70,7 +70,7 @@ const Call = () => {
         status.push(true);
       }
     setOpponentStatus(status);
-    dispatch({ type: CallActionType.SET_CURRNUM, payload: totalNum + 1 });
+    dispatch({ type: CallActionType.SET_CURRNUM, payload: totalNum });
   }, []);
 
   // TODO : 좌우 반전, 마이크 mute
